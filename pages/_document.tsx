@@ -1,6 +1,6 @@
-import Document, { Html, Head, Main, NextScript } from "next/document";
+import NextDocument, { Html, Head, Main, NextScript } from "next/document";
 
-class CoworkingDocument extends Document {
+class Document extends NextDocument {
 	render() {
 		return (
 			<Html lang="ko">
@@ -8,11 +8,11 @@ class CoworkingDocument extends Document {
 				<body className="font-custom">
 					<Main />
 					<NextScript />
-					<div id="notifications"></div>
+					{/* <div id="notifications"></div> */}
 				</body>
 			</Html>
 		);
 	}
 }
 
-export default CoworkingDocument;
+export default Document;

@@ -34,38 +34,6 @@ module.exports = {
 				"2xs": "0.625rem",
 				"3xs": "0.5rem",
 			},
-			keyframes: {
-				textLoop: {
-					"0%": {
-						transform: "translate3d(-10%, 0, 0)",
-					},
-					"100%": {
-						transform: "translate3d(-110%, 0, 0)",
-					},
-				},
-				"text-animation-mobile": {
-					"0%": { transform: "translate3d(0, 0, 0)" },
-					"20%": { transform: "translate3d(0, 0, 0)" },
-					"25%": { transform: "translate3d(0, -64px, 0)" },
-					"45%": { transform: "translate3d(0, -64px, 0)" },
-					"50%": { transform: "translate3d(0, -128px, 0)" },
-					"70%": { transform: "translate3d(0, -128px, 0)" },
-					"75%": { transform: "translate3d(0, -192px, 0)" },
-					"95%": { transform: "translate3d(0, -192px, 0)" },
-					"100%": { transform: "translate3d(0, -256px, 0)" },
-				},
-				"text-animation-web": {
-					"0%": { transform: "translate3d(0, 0, 0)" },
-					"20%": { transform: "translate3d(0, 0, 0)" },
-					"25%": { transform: "translate3d(0, -96px, 0)" },
-					"45%": { transform: "translate3d(0, -96px, 0)" },
-					"50%": { transform: "translate3d(0, -192px, 0)" },
-					"70%": { transform: "translate3d(0, -192px, 0)" },
-					"75%": { transform: "translate3d(0, -288px, 0)" },
-					"95%": { transform: "translate3d(0, -288px, 0)" },
-					"100%": { transform: "translate3d(0, -384px, 0)" },
-				},
-			},
 		},
 		container: {
 			center: true,

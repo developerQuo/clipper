@@ -1,13 +1,8 @@
-# Outsourcing WEB
-외주 서비스 웹페이지
+# WEB
+리뷰 서비스 웹페이지
 
 ## todo
 
-- [ ] slack api message
-- [ ] SEO
-- [ ] DB 연동
-- [ ] animation effect
-- [ ] 페이지내 이동링크
 
 ## spec
 
@@ -16,4 +11,5 @@
 - NextJS
 - React Hook Form
 - Typescript
+- NextAuth
 
