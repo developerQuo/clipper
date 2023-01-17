@@ -16,9 +16,7 @@ function Header() {
 							alt="Logo"
 							width={101}
 							height={30}
-						/>{" "}
-						<div className="text-text-secondary">|</div>
-						<div>Coworking</div>
+						/>
 					</Link>
 				</div>
 				<div className="block lg:hidden">
@@ -31,9 +29,7 @@ function Header() {
 							alt="Logo"
 							width={60.5}
 							height={15}
-						/>{" "}
-						<div className="text-text-secondary">|</div>
-						<div>Coworking</div>
+						/>
 					</Link>
 				</div>
 			</div>

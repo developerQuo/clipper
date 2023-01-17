@@ -1,7 +1,7 @@
 import "../styles/globals.css";
 import type { AppProps } from "next/app";
 import { NotificationContextProvider } from "../store/notification-context";
-gsap.registerPlugin(CSSPlugin);
+import Layout from "../components/layout/Layout";
 
 export default function App({ Component, pageProps }: AppProps) {
 	return (
@@ -20,7 +20,9 @@ export default function App({ Component, pageProps }: AppProps) {
 				`}
 			</Script> */}
 			<NotificationContextProvider>
-				<Component {...pageProps} />
+				<Layout>
+					<Component {...pageProps} />
+				</Layout>
 			</NotificationContextProvider>
 		</>
 	);

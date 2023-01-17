@@ -1,4 +1,5 @@
 import { Fragment, useEffect, useState } from "react";
+import Upload from "../components/ui/Upload";
 
 // TODO: add favicon
 export default function HomePage(props: any) {
@@ -13,5 +14,12 @@ export default function HomePage(props: any) {
 		// You can show some kind of placeholder UI here
 		return null;
 	}
-	return <Fragment></Fragment>;
+	return (
+		<Fragment>
+			<div>데이터 그리드</div>
+			<Upload />
+			<div>텍스트 폼</div>
+			<div>전송 버튼</div>
+		</Fragment>
+	);
 }

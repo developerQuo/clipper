@@ -1,9 +1,11 @@
 import Link from "next/link";
 
-const menu = [
-	{ name: "OUR PARTNERS", path: "/#partners" },
-	{ name: "OUR SERVICES", path: "/#service" },
-	{ name: "CONTACT US", path: "contact-us" },
+type MenuType = { name: string; path: string }[] | undefined;
+
+const menu: MenuType = [
+	// { name: "OUR PARTNERS", path: "/#partners" },
+	// { name: "OUR SERVICES", path: "/#service" },
+	// { name: "CONTACT US", path: "contact-us" },
 ];
 
 function Navigation() {
