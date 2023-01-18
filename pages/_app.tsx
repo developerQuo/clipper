@@ -2,6 +2,7 @@ import "../styles/globals.css";
 import type { AppProps } from "next/app";
 import { NotificationContextProvider } from "../store/notification-context";
 import Layout from "../components/layout/Layout";
+import { RecoilRoot } from "recoil";
 
 export default function App({ Component, pageProps }: AppProps) {
 	return (
@@ -19,11 +20,13 @@ export default function App({ Component, pageProps }: AppProps) {
 					gtag('config', '${process.env.GA_TRACKING_ID}');
 				`}
 			</Script> */}
-			<NotificationContextProvider>
-				<Layout>
-					<Component {...pageProps} />
-				</Layout>
-			</NotificationContextProvider>
+			<RecoilRoot>
+				<NotificationContextProvider>
+					<Layout>
+						<Component {...pageProps} />
+					</Layout>
+				</NotificationContextProvider>
+			</RecoilRoot>
 		</>
 	);
 }

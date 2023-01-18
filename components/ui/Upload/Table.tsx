@@ -1,25 +1,45 @@
 import React from "react";
+import { useRecoilValue } from "recoil";
+import { csvState, CSVType } from "../../../store/recoilState";
+import RcTable from "rc-table";
+import { ColumnType } from "rc-table/lib/interface";
+
+const columns: ColumnType<CSVType>[] = [
+	{
+		title: "이름",
+		dataIndex: "name",
+	},
+	{
+		title: "날짜",
+		dataIndex: "dateTime",
+	},
+];
 
 export default function Table() {
-	// TODO: 전역변수에서 데이터를 가져와서 테이블에 뿌려준다.
+	const csvData = useRecoilValue(csvState);
+	console.log(csvData);
+
 	return (
-		<div className="overflow-x-auto">
-			<table className="table-zebra table-compact table w-full">
-				<thead>
-					<tr>
-						<th>Column 1</th>
-						<th>Column 2</th>
-						<th>Column 3</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr>
-						<td>Row 1</td>
-						<td>Row 1</td>
-						<td>Row 1</td>
-					</tr>
-				</tbody>
-			</table>
-		</div>
+		<RcTable
+			columns={columns}
+			data={csvData}
+			components={{
+				table: (props: any) => (
+					<table
+						{...props}
+						className="table-zebra table-compact table w-full"
+					/>
+				),
+			}}
+			rowClassName="text-center"
+			scroll={{ y: "30rem" }}
+			emptyText="데이터가 없습니다."
+			footer={() => (
+				<div className="flex justify-end space-x-2 py-2 px-4 font-semibold text-gray-500">
+					<span className="">전체:</span>
+					<span className="">{csvData.length}</span>
+				</div>
+			)}
+		/>
 	);
 }

@@ -1,4 +1,5 @@
-import { Fragment, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import MMS from "../components/ui/MMS";
 import Upload from "../components/ui/Upload";
 
 // TODO: add favicon
@@ -15,11 +16,9 @@ export default function HomePage(props: any) {
 		return null;
 	}
 	return (
-		<Fragment>
-			<div>데이터 그리드</div>
+		<div className="space-y-20">
 			<Upload />
-			<div>텍스트 폼</div>
-			<div>전송 버튼</div>
-		</Fragment>
+			<MMS />
+		</div>
 	);
 }

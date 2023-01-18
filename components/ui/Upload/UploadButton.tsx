@@ -1,12 +1,15 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import Papa from "papaparse";
+import { useSetRecoilState } from "recoil";
+import { csvState, CSVType } from "../../../store/recoilState";
 
 export interface IForm {
 	file: File;
 }
 
 export default function UploadButton() {
+	const setCsvData = useSetRecoilState<CSVType[]>(csvState);
 	const [uploading, setUploading] = useState(false);
 
 	const { register, handleSubmit, getValues } = useForm<IForm>({
@@ -30,40 +33,32 @@ export default function UploadButton() {
 		reader.onloadend = ({ target }) => {
 			const csv = Papa.parse(target?.result as any, { header: true });
 
-			console.log(csv);
 			// TODO: 전역 변수에 가공해서 저장
-			// fetch("http://localhost:5001/uploads/csv", {
-			// 	method: "POST",
-			// 	headers: {
-			// 		"Content-Type": "application/json",
-			// 	},
-			// 	body: JSON.stringify({
-			// 		csv: csv?.data,
-			// 	}),
-			// })
-			// 	.then(() => {
-			// 		setUploading(false);
-			// 		//   pong.success("CSV uploaded!");
-			// 	})
-			// 	.catch((error) => {
-			// 		setUploading(false);
-			// 		console.warn(error);
-			// 	});
+			console.log(csv);
+			try {
+				const csvData = csv.data.map((row: any) => ({
+					name: row["행정구역별(시군구)"],
+					dateTime: row["계"],
+				}));
+				setCsvData(csvData);
+			} catch (error) {
+				console.warn(error);
+			} finally {
+				setUploading(false);
+			}
 		};
 
 		reader.readAsText(file);
 	};
 
 	return (
-		<form onChange={handleSubmit(handleUploadCSV)}>
-			<div className="mb-4">
-				<input
-					disabled={uploading}
-					type="file"
-					className="form-control file-input-bordered file-input w-full max-w-xs"
-					{...register("file")}
-				/>
-			</div>
+		<form onChange={handleSubmit(handleUploadCSV)} className="flex justify-end">
+			<input
+				disabled={uploading}
+				type="file"
+				className="form-control file-input-bordered file-input w-full max-w-xs"
+				{...register("file")}
+			/>
 		</form>
 	);
 }

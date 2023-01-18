@@ -12,7 +12,7 @@ function Layout({ children }: any) {
 	return (
 		<div className="xl:max-x-[1280px] relative flex h-full min-h-screen min-w-[360px] flex-col lg:container">
 			<Header />
-			<main className="mt-[100px] px-20">{children}</main>
+			<main className="mt-[100px] px-20 pb-40">{children}</main>
 			{activeNotification && <Notification {...activeNotification} />}
 		</div>
 	);
