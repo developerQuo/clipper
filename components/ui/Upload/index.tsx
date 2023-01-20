@@ -8,7 +8,7 @@ const Upload = () => {
 		<div>
 			<div className="mb-4 ">
 				<div className="flex justify-center">
-					<h2 className="text-3xl font-bold">CSV 업로드</h2>
+					<h1 className="text-3xl font-bold">CSV 업로드</h1>
 				</div>
 				<UploadButton />
 			</div>
