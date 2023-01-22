@@ -40,7 +40,7 @@ export default function Form() {
 			status: "pending",
 		});
 
-		fetch("/api/mms/send", {
+		fetch("/api/mms/form-save", {
 			method: "POST",
 			body: JSON.stringify(data),
 			headers: {

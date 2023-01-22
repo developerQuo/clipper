@@ -10,6 +10,10 @@ const columns: ColumnType<CSVType>[] = [
 		dataIndex: "name",
 	},
 	{
+		title: "전화번호",
+		dataIndex: "phone",
+	},
+	{
 		title: "날짜",
 		dataIndex: "dateTime",
 	},
@@ -32,6 +36,7 @@ export default function Table() {
 				),
 			}}
 			rowClassName="text-center"
+			rowKey={(record) => record.phone}
 			scroll={{ y: "30rem" }}
 			emptyText="데이터가 없습니다."
 			footer={() => (

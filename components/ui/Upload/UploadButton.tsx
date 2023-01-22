@@ -37,8 +37,10 @@ export default function UploadButton() {
 			console.log(csv);
 			try {
 				const csvData = csv.data.map((row: any) => ({
-					name: row["행정구역별(시군구)"],
-					dateTime: row["계"],
+					name: row["name"],
+					phone: row["phone"],
+					dateTime: new Date().toISOString(),
+					// dateTime: row["dateTime"],
 				}));
 				setCsvData(csvData);
 			} catch (error) {

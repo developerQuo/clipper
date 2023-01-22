@@ -1,26 +1,31 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { IForm } from "../../../components/ui/survey/Form";
+import { IForm } from "../../../components/ui/MMS";
+import { sendMMS } from "../../../lib/MMS";
 
 export default async function handler(
 	req: NextApiRequest,
-	res: NextApiResponse,
+	res: NextApiResponse, 
+
 ) {
 	try {
 		const database_id = process.env.NOTION_DATABASE_ID_CONTACT;
 		if (req.method === "POST" && database_id) {
 			const data = req.body;
 
-			const { name, phone, rating, description, dateTime } =
+			const { csvData, message } =
 				data as unknown as IForm;
 
-                console.log(rating)
-			// if (!result) {
-			// 	throw new Error("Fail");
-			// }
+				console.log(csvData)
+				console.log(message)
+			// mms 발송
+			const {ok, data: failedData} = sendMMS({csvData, message});
+			if (!ok) {
+				throw new Error(`${failedData?.name}님에게 전송 실패(${failedData?.phone})`);
+			}
 
 			res.status(201).json({ ok: true, message: "Success" });
 		}
 	} catch (error) {
-		res.status(400).json({ ok: false, message: "Fail" });
+		res.status(400).json({ ok: false, message: (error as any).message });
 	}
 }

@@ -2,6 +2,7 @@ import { atom } from "recoil";
 
 export type CSVType = {
     name: string;
+    phone: string;
     dateTime: string;
 }
 
