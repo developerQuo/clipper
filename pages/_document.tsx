@@ -8,7 +8,7 @@ class Document extends NextDocument {
 				<body className="font-custom">
 					<Main />
 					<NextScript />
-					{/* <div id="notifications"></div> */}
+					<div id="notifications"></div>
 				</body>
 			</Html>
 		);

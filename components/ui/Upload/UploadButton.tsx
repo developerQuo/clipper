@@ -39,8 +39,8 @@ export default function UploadButton() {
 				const csvData = csv.data.map((row: any) => ({
 					name: row["name"],
 					phone: row["phone"],
-					dateTime: new Date().toISOString(),
-					// dateTime: row["dateTime"],
+					datetime: new Date().toISOString(),
+					// datetime: row["datetime"],
 				}));
 				setCsvData(csvData);
 			} catch (error) {

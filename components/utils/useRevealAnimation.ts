@@ -1,8 +1,6 @@
 import { useEffect } from "react";
 
-
-export default function useRevealAnimation(){
-
+export default function useRevealAnimation() {
 	function reveal() {
 		var reveals = document.querySelectorAll(".reveal");
 
@@ -22,5 +20,4 @@ export default function useRevealAnimation(){
 	useEffect(() => {
 		window.addEventListener("scroll", reveal);
 	}, []);
-
 }

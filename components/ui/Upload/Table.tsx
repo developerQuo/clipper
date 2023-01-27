@@ -15,7 +15,7 @@ const columns: ColumnType<CSVType>[] = [
 	},
 	{
 		title: "날짜",
-		dataIndex: "dateTime",
+		dataIndex: "datetime",
 	},
 ];
 

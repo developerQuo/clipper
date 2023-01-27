@@ -1,5 +1,6 @@
 /* 설문조사 폼 */
 
+import { AppInitialProps } from "next/app";
 import { useRouter } from "next/router";
 import { useContext, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -15,23 +16,29 @@ export interface IForm {
 	rating: string;
 	description?: string;
 	// 방문일
-	dateTime: string;
+	datetime: string;
 }
 
 export default function Form() {
+	const router = useRouter();
+	const { name, phone, datetime } = router.query as Pick<
+		IForm,
+		"name" | "phone" | "datetime"
+	>;
+
 	const notificationCtx = useContext(NotificationContext);
 	const {
 		register,
 		handleSubmit,
 		formState: { isValid, errors },
+		setValue,
 	} = useForm<IForm>({
 		defaultValues: {
-			name: "김창민",
-			phone: "010-4744-7289",
-			dateTime: "2023-01-10 10:10",
+			name,
+			phone,
+			datetime,
 		},
 	});
-	const router = useRouter();
 
 	const onSubmit = (data: IForm) => {
 		notificationCtx.showNotification({
@@ -39,7 +46,6 @@ export default function Form() {
 			message: "",
 			status: "pending",
 		});
-
 		fetch("/api/mms/form-save", {
 			method: "POST",
 			body: JSON.stringify(data),
@@ -74,6 +80,12 @@ export default function Form() {
 			});
 	};
 
+	useEffect(() => {
+		setValue("name", name);
+		setValue("phone", phone);
+		setValue("datetime", datetime);
+	}, [name, phone, datetime, setValue]);
+
 	return (
 		<form
 			className="form-control gap-y-8 px-[24px] md:gap-y-[92px] lg:px-0"
@@ -89,6 +101,11 @@ export default function Form() {
 				// className="input-bordered input w-full focus:border-secondary focus:text-secondary"
 				{...register("phone", { required: true })}
 			/>
+			<input
+				hidden
+				// className="input-bordered input w-full focus:border-secondary focus:text-secondary"
+				{...register("datetime", { required: true })}
+			/>
 			<div className="form-control w-full items-start gap-4 text-[18px]">
 				<label className="text-base font-bold text-text-primary">만족도</label>
 				<div className="rating rating-lg rating-half">
@@ -101,7 +118,7 @@ export default function Form() {
 								i % 2 ? "2" : "1"
 							} mask mask-star-2 bg-orange-400`}
 							value={(i + 1) / 2}
-							defaultChecked={i === 4}
+							defaultChecked={i === 5}
 							{...register("rating", {
 								required: "만족도를 선택하세요.",
 							})}
