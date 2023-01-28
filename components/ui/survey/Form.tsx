@@ -88,29 +88,17 @@ export default function Form() {
 
 	return (
 		<form
-			className="form-control gap-y-8 px-[24px] md:gap-y-[92px] lg:px-0"
+			className="form-control flex flex-col items-center gap-y-8 md:gap-y-[92px]"
 			onSubmit={handleSubmit(onSubmit)}
 		>
-			<input
-				hidden
-				// className="input-bordered input w-full focus:border-secondary focus:text-secondary"
-				{...register("name", { required: true })}
-			/>
-			<input
-				hidden
-				// className="input-bordered input w-full focus:border-secondary focus:text-secondary"
-				{...register("phone", { required: true })}
-			/>
-			<input
-				hidden
-				// className="input-bordered input w-full focus:border-secondary focus:text-secondary"
-				{...register("datetime", { required: true })}
-			/>
+			<input hidden {...register("name", { required: true })} />
+			<input hidden {...register("phone", { required: true })} />
+			<input hidden {...register("datetime", { required: true })} />
 			<div className="form-control w-full items-start gap-4 text-[18px]">
 				<label className="text-base font-bold text-text-primary">만족도</label>
 				<div className="rating rating-lg rating-half">
 					<input type="radio" name="rating" className="rating-hidden" />
-					{[...Array(10)].map((_, i) => (
+					{/* {[...Array(10)].map((_, i) => (
 						<input
 							key={i}
 							type="radio"
@@ -123,7 +111,88 @@ export default function Form() {
 								required: "만족도를 선택하세요.",
 							})}
 						/>
-					))}
+					))} */}
+
+					<input
+						type="radio"
+						className={`mask mask-half-1 mask-star-2 bg-orange-400`}
+						value={1 / 2}
+						{...register("rating", {
+							required: "만족도를 선택하세요.",
+						})}
+					/>
+					<input
+						type="radio"
+						className={`mask mask-half-2 mask-star-2 bg-orange-400`}
+						value={2 / 2}
+						{...register("rating", {
+							required: "만족도를 선택하세요.",
+						})}
+					/>
+					<input
+						type="radio"
+						className={`mask mask-half-1 mask-star-2 bg-orange-400`}
+						value={3 / 2}
+						{...register("rating", {
+							required: "만족도를 선택하세요.",
+						})}
+					/>
+					<input
+						type="radio"
+						className={`mask mask-half-2 mask-star-2 bg-orange-400`}
+						value={4 / 2}
+						{...register("rating", {
+							required: "만족도를 선택하세요.",
+						})}
+					/>
+					<input
+						type="radio"
+						className={`mask mask-half-1 mask-star-2 bg-orange-400`}
+						value={5 / 2}
+						{...register("rating", {
+							required: "만족도를 선택하세요.",
+						})}
+					/>
+					<input
+						type="radio"
+						className={`mask mask-half-2 mask-star-2 bg-orange-400`}
+						value={6 / 2}
+						{...register("rating", {
+							required: "만족도를 선택하세요.",
+						})}
+					/>
+					<input
+						type="radio"
+						className={`mask mask-half-1 mask-star-2 bg-orange-400`}
+						value={7 / 2}
+						{...register("rating", {
+							required: "만족도를 선택하세요.",
+						})}
+					/>
+					<input
+						type="radio"
+						className={`mask mask-half-2 mask-star-2 bg-orange-400`}
+						value={8 / 2}
+						{...register("rating", {
+							required: "만족도를 선택하세요.",
+						})}
+					/>
+					<input
+						type="radio"
+						className={`mask mask-half-1 mask-star-2 bg-orange-400`}
+						value={9 / 2}
+						{...register("rating", {
+							required: "만족도를 선택하세요.",
+						})}
+					/>
+					<input
+						type="radio"
+						className={`mask mask-half-2 mask-star-2 bg-orange-400`}
+						value={10 / 2}
+						{...register("rating", {
+							required: "만족도를 선택하세요.",
+						})}
+					/>
 				</div>
 				{errors.rating?.type === "required" && (
 					<p role="alert" className="text-error">
@@ -143,7 +212,10 @@ export default function Form() {
 					/>
 				</div>
 			</div>
-			<Button className="btn-primary" disabled={!isValid}>
+			<Button
+				className="btn-primary h-[56px] max-w-xs text-text-light-primary"
+				disabled={!isValid}
+			>
 				제출하기
 			</Button>
 		</form>

@@ -63,14 +63,15 @@ export default function MMS() {
 	};
 
 	return (
-		<>
-			<div className="mb-4">
-				<div className="flex justify-center">
-					<h2 className="text-3xl font-bold">MMS 발송</h2>
-				</div>
+		<div className="space-y-12">
+			<div className="flex justify-center">
+				<h2 className="text-3xl font-bold">MMS 발송</h2>
 			</div>
-			<form onSubmit={handleSubmit(handleSendMMS)} className="px-12">
-				<div className="space-y-2">
+			<form
+				onSubmit={handleSubmit(handleSendMMS)}
+				className="flex flex-col items-center px-12"
+			>
+				<div className="w-full space-y-2">
 					<label className="text-base font-bold text-text-primary">
 						MMS Message
 					</label>
@@ -81,10 +82,10 @@ export default function MMS() {
 						{...register("message")}
 					/>
 				</div>
-				<Button className="btn-primary btn mt-12 h-[56px] max-w-xs text-text-light-primary">
+				<Button className="btn-primary mt-12 h-[56px] max-w-xs text-text-light-primary">
 					MMS 발송
 				</Button>
 			</form>
-		</>
+		</div>
 	);
 }

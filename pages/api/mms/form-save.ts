@@ -7,8 +7,7 @@ export default async function handler(
 	res: NextApiResponse,
 ) {
 	try {
-		const database_id = process.env.NOTION_DATABASE_ID_CONTACT;
-		if (req.method === "POST" && database_id) {
+		if (req.method === "POST") {
 			const data = req.body;
 
 			const values = data as unknown as IForm;

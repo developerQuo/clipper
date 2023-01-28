@@ -7,6 +7,6 @@ export type CSVType = {
 };
 
 export const csvState = atom<CSVType[]>({
-	key: "csvState",
+	key: "csvDataState",
 	default: [],
 });
