@@ -1,6 +1,4 @@
 import { useEffect, useState } from "react";
-import MMS from "../components/ui/MMS";
-import Upload from "../components/ui/Upload";
 
 // TODO: add favicon
 export default function HomePage(props: any) {
@@ -15,10 +13,5 @@ export default function HomePage(props: any) {
 		// You can show some kind of placeholder UI here
 		return null;
 	}
-	return (
-		<div className="space-y-20">
-			<Upload />
-			<MMS />
-		</div>
-	);
+	return <div className="space-y-20"></div>;
 }
