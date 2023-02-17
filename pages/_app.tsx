@@ -3,6 +3,7 @@ import type { AppProps } from "next/app";
 import { NotificationContextProvider } from "../store/notification-context";
 import Layout from "../components/layout/Layout";
 import { RecoilRoot } from "recoil";
+import { SessionProvider } from "next-auth/react";
 
 export default function App({ Component, pageProps }: AppProps) {
 	return (
@@ -21,11 +22,13 @@ export default function App({ Component, pageProps }: AppProps) {
 				`}
 			</Script> */}
 			<RecoilRoot>
-				<NotificationContextProvider>
-					<Layout>
-						<Component {...pageProps} />
-					</Layout>
-				</NotificationContextProvider>
+				<SessionProvider session={pageProps.session}>
+					<NotificationContextProvider>
+						<Layout>
+							<Component {...pageProps} />
+						</Layout>
+					</NotificationContextProvider>
+				</SessionProvider>
 			</RecoilRoot>
 		</>
 	);

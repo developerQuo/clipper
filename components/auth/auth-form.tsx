@@ -1,72 +1,129 @@
-import { useContext, useState } from "react";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/router";
+import { useCallback, useContext } from "react";
 import { useForm } from "react-hook-form";
 import NotificationContext from "../../store/notification-context";
-import Button from "../ui/Button";
+import { emailPattern } from "../../utils/patterns";
+import { FormError } from "../ui/FormError";
 
 export interface IForm {
-	username: string;
+	email: string;
 	password: string;
 }
 
-async function login(username: string, password: string) {
-	const response = await fetch("/api/auth/signin", {
+async function createUser(email: string, password: string) {
+	const response = await fetch("/api/auth/signup", {
 		method: "POST",
+		body: JSON.stringify({ email, password }),
 		headers: {
 			"Content-Type": "application/json",
 		},
-		body: JSON.stringify({ username, password }),
 	});
 
-	const data = await response.json();
+	const result = await response.json();
 
 	if (!response.ok) {
-		throw new Error(data.message || "로그인을 실패했습니다.");
+		throw new Error(result.message || "Something went wrong!");
 	}
 
-	return data;
+	return result;
 }
 
-export default function AuthForm() {
-	const notificationCtx = useContext(NotificationContext);
-	const { register, handleSubmit, getValues } = useForm<IForm>();
+type AuthFormProps = {
+	title: string;
+	isLogin: boolean;
+};
 
-	async function handleLogin() {
+export default function AuthForm({ title, isLogin }: AuthFormProps) {
+	const notificationCtx = useContext(NotificationContext);
+	const router = useRouter();
+
+	const { register, getValues, getFieldState, handleSubmit, formState } =
+		useForm<IForm>();
+
+	const onSubmit = useCallback(async () => {
 		notificationCtx.showNotification({
 			title: "로딩중...",
 			message: "",
 			status: "pending",
 		});
-		const { username, password } = getValues();
-		try {
-			const result = await login(username, password);
+		const { email, password } = getValues();
 
+		try {
+			if (isLogin) {
+				// login
+				const result = await signIn("credentials", {
+					redirect: false,
+					email,
+					password,
+				});
+				if (!result?.error) {
+					notificationCtx.showNotification({
+						title: `${title} 성공`,
+						message: `${title}되었습니다.`,
+						status: "success",
+					});
+					router.replace("/");
+				} else {
+					notificationCtx.showNotification({
+						title: `${title} 실패`,
+						message: result.error,
+						status: "error",
+					});
+				}
+			} else {
+				// register
+				const result = await createUser(email, password);
+				notificationCtx.showNotification({
+					title: `${title} 성공`,
+					message: `${title}이 완료되었습니다.`,
+					status: "success",
+				});
+				router.replace("/auth");
+			}
+		} catch (error: any) {
 			notificationCtx.showNotification({
-				title: "로그인 성공!",
-				message: result.message,
-				status: "success",
-			});
-		} catch (error) {
-			notificationCtx.showNotification({
-				title: "로그인 실패!",
-				message: (error as any).message,
+				title: `${title} 실패`,
+				message: error.message,
 				status: "error",
 			});
 		}
-	}
+	}, [notificationCtx, getValues, isLogin, title, router]);
+
 	return (
-		<section>
-			<div className="flex justify-center">
-				<h1 className="text-3xl font-bold">로그인</h1>
-			</div>
-			<form onSubmit={handleSubmit(handleLogin)}>
-				<input hidden required defaultValue="admin" {...register("username")} />
-				<div>
-					<input type="password" required {...register("password")} />
-				</div>
-				<div>
-					<Button className="btn-primary max-w-xs">로그인</Button>
-				</div>
-			</form>
-		</section>
+		<form className="form space-y-4" onSubmit={handleSubmit(onSubmit)}>
+			<input
+				type="email"
+				className="input-bordered input w-full"
+				placeholder="Email"
+				required
+				{...register("email", {
+					pattern: emailPattern,
+				})}
+			/>
+			{getFieldState("email").error && (
+				<FormError message={getFieldState("email").error?.message} />
+			)}
+			{getFieldState("email").error?.type === "pattern" && (
+				<FormError message={"올바른 이메일 형식을 입력하세요."} />
+			)}
+			<input
+				type="password"
+				className="input-bordered input w-full"
+				placeholder="비밀번호"
+				required
+				{...register("password")}
+			/>
+			{getFieldState("password").error && (
+				<FormError message={getFieldState("password").error?.message} />
+			)}
+			<button
+				disabled={!formState.isValid}
+				// loading={loading}
+				className="btn-primary btn w-full"
+			>
+				{title}
+			</button>
+		</form>
 	);
 }
