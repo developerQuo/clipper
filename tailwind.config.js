@@ -34,6 +34,14 @@ module.exports = {
 				"2xs": "0.625rem",
 				"3xs": "0.5rem",
 			},
+			backgroundImage: {
+				"google-sign-in":
+					"url('/images/google/btn_google_signin_dark_normal_web.png')",
+				"google-sign-in-focus":
+					"url('/images/google/btn_google_signin_dark_focus_web.png')",
+				"google-sign-in-pressed":
+					"url('/images/google/btn_google_signin_dark_pressed_web.png')",
+			},
 		},
 		container: {
 			center: true,

@@ -35,7 +35,10 @@ const SignIn: NextPage = () => {
 					</div>
 					<div className="card flex-shrink-0">
 						<div className="card-body">
-							<button onClick={() => signIn("google")}>구글 {title}</button>
+							<button
+								className="h-[46px] w-[191px] bg-google-sign-in focus:bg-google-sign-in-focus active:bg-google-sign-in-pressed"
+								onClick={() => signIn("google")}
+							></button>
 						</div>
 					</div>
 				</div>

@@ -33,7 +33,7 @@ function Menu() {
 			message: `로그아웃 되었습니다.`,
 			status: "success",
 		});
-		signOut({ callbackUrl: "/auth" });
+		signOut();
 	}
 	return (
 		<>

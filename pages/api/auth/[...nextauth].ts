@@ -1,10 +1,13 @@
+import { FirestoreAdapter } from "@next-auth/firebase-adapter";
 import { collection, getDocs, query, where } from "firebase/firestore/lite";
 import NextAuth from "next-auth/next";
 import CredentialsProvider from "next-auth/providers/credentials";
+import GoogleProvider from "next-auth/providers/google";
 import { verifyPassword } from "../../../lib/auth";
 import { db } from "../../../lib/firebase";
 
 export default NextAuth({
+	secret: process.env.SECRET,
 	session: {
 		strategy: "jwt",
 	},
@@ -35,5 +38,18 @@ export default NextAuth({
 				return { id: email, email };
 			},
 		}),
+		GoogleProvider({
+			clientId: process.env.GOOGLE_ID as string,
+			clientSecret: process.env.GOOGLE_SECRET as string,
+		}),
 	],
+	adapter: FirestoreAdapter({
+		apiKey: process.env.DATABASE_API_KEY,
+		appId: process.env.DATABASE_APP_ID,
+		authDomain: process.env.DATABASE_AUTH_DOMAIN,
+		databaseURL: process.env.DATABASE_DATABASE_URL,
+		projectId: process.env.DATABASE_PROJECT_ID,
+		storageBucket: process.env.DATABASE_STORAGE_BUCKET,
+		messagingSenderId: process.env.DATABASE_MESSAGING_SENDER_ID,
+	}),
 });

@@ -45,7 +45,6 @@ export default function ChangePasswordForm() {
 				});
 				router.replace("/");
 			} else {
-				console.log(result);
 				notificationCtx.showNotification({
 					title: `${title} 실패`,
 					message: result.message,
@@ -53,7 +52,6 @@ export default function ChangePasswordForm() {
 				});
 			}
 		} catch (error: any) {
-			console.log(error);
 			notificationCtx.showNotification({
 				title: `${title} 실패`,
 				message: error.message,
