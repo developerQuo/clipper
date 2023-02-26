@@ -38,12 +38,12 @@ function Menu() {
 	return (
 		<>
 			{session && <MenuItem name="마이페이지" path="/user/profile" />}
-			{session && (
+			{/* {session && (
 				<MenuItem name="비밀번호 변경" path="/user/change-password" />
-			)}
-			{session && <MenuItem name="로그아웃" onClick={logoutHandler} />}
+			)} */}
+			{session && <MenuItem name="로그아웃" path="/api/auth/signout" />}
 			{!session && status !== "loading" && (
-				<MenuItem name="로그인" path="/auth" />
+				<MenuItem name="로그인" path="/api/auth/signin" />
 			)}
 		</>
 	);

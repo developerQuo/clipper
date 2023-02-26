@@ -7,7 +7,7 @@ const serverSideAuthGuard: GetServerSideProps = async (context) => {
 	if (!session) {
 		return {
 			redirect: {
-				destination: "/auth",
+				destination: "/api/auth/signin",
 				permanent: false,
 			},
 		};
