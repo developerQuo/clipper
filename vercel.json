@@ -1,0 +1,7 @@
+{
+	"functions": {
+		"api/test/report.ts": {
+			"maxDuration": 60
+		}
+	}
+}
