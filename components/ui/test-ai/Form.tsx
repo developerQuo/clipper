@@ -8,6 +8,7 @@ import {
 	SubKeywrodOutput,
 } from "../../../store/report";
 import Button from "../Button";
+import { mainCategoryOptions, middleCategoryOptions } from "./data";
 
 const TITLE = "스크립트 생성";
 const FUNC_TITLE = "세부 키워드 생성";
@@ -32,7 +33,7 @@ export default function Form() {
 		watch,
 		setValue,
 	} = useForm<IForm>({
-		defaultValues: { mainCategory: "economy", subCategory: [] },
+		defaultValues: { mainCategory: mainCategoryOptions[0], subCategory: [] },
 	});
 	const watchMainCategory = watch("mainCategory");
 	const watchMiddleCategory = watch("middleCategory");
@@ -55,17 +56,15 @@ export default function Form() {
 			},
 		})
 			.then((res) => {
-				console.log(res);
 				if (res.ok) {
 					return res.json();
 				}
 
-				return res.json().then((data: ReportOutput) => {
-					throw new Error(`${TITLE}을 실패하였습니다.`);
+				return res.json().then((data) => {
+					throw new Error(`${TITLE}을 실패하였습니다. \n${data}`);
 				});
 			})
 			.then((data: ReportOutput) => {
-				console.log(data);
 				notificationCtx.showNotification({
 					title: "성공!",
 					message: `${TITLE}을 완료되었습니다.`,
@@ -145,7 +144,6 @@ export default function Form() {
 					});
 				})
 				.then((data: SubKeywrodOutput) => {
-					console.log(data);
 					notificationCtx.showNotification({
 						title: "성공!",
 						message: `${FUNC_TITLE}을 완료되었습니다.`,
@@ -154,7 +152,6 @@ export default function Form() {
 					setSubCategoryOptions(data);
 				})
 				.catch((error) => {
-					console.log(error);
 					notificationCtx.showNotification({
 						title: "실패!",
 						message: error.message,
@@ -179,8 +176,11 @@ export default function Form() {
 						placeholder="대분류를 선택하세요."
 						{...register("mainCategory")}
 					>
-						<option value="economy">경제</option>
-						<option value="tech">기술</option>
+						{mainCategoryOptions.map((option) => (
+							<option key={option} value={option}>
+								{option}
+							</option>
+						))}
 					</select>
 				</div>
 			</div>
@@ -196,18 +196,11 @@ export default function Form() {
 							onChange: onChangeMiddleCategory,
 						})}
 					>
-						{watchMainCategory === "economy" && (
-							<>
-								<option value="estate">부동산</option>
-								<option value="stock">주식</option>
-							</>
-						)}
-						{watchMainCategory === "tech" && (
-							<>
-								<option value="it">IT</option>
-								<option value="eco">친환경</option>
-							</>
-						)}
+						{middleCategoryOptions[watchMainCategory]?.map((option) => (
+							<option key={`${watchMainCategory}-${option}`} value={option}>
+								{option}
+							</option>
+						))}
 					</select>
 				</div>
 			</div>
