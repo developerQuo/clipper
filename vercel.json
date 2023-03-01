@@ -1,6 +1,6 @@
 {
 	"functions": {
-		"api/test/report.ts": {
+		"api/test/**/*": {
 			"maxDuration": 60
 		}
 	}
