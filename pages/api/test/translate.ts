@@ -39,9 +39,18 @@ export default async function handler(
 	// const output = result.data.choices[0].text;
 
 	// Google
+	const credential = JSON.parse(
+		Buffer.from(process.env.GOOGLE_SERVICE_KEY ?? "", "base64")
+			.toString()
+			.replace(/\n/g, ""),
+	);
 	const { Translate } = GoogleTranslate.v2;
 	const translate = new Translate({
-		projectId: "clippr-378608",
+		projectId: process.env.GOOGLE_SERVICE_PROJECT_ID,
+		credentials: {
+			client_email: credential.client_email,
+			private_key: credential.private_key,
+		},
 	});
 
 	let [introduction] = await translate.translate(
