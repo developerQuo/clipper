@@ -6,7 +6,6 @@ import { authOptions } from "./api/auth/[...nextauth]";
 
 // import { supabase } from "../lib/supabaseClient";
 
-// TODO: add favicon
 export default function DBTest(props: any) {
 	console.log(props.test);
 
@@ -19,13 +18,15 @@ export default function DBTest(props: any) {
 		);
 		const { data, error } = await supabase
 			.from("test")
-			.insert([{ name: "someValue" }]);
+			.insert([{ is_ok: true }]);
 		console.log(error);
 		createTest(data);
 	};
 	return (
 		<div className="space-y-20">
-			<button onClick={createTestHandler}>테스트 생성</button>
+			<button className="btn-primary btn" onClick={createTestHandler}>
+				테스트 생성
+			</button>
 			<div>{createdTest}</div>
 		</div>
 	);

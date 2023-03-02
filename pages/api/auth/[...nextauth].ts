@@ -42,20 +42,20 @@ export const authOptions: NextAuthOptions = {
 			clientSecret: process.env.GOOGLE_SECRET ?? "",
 		}),
 	],
-	// adapter: SupabaseAdapter({
-	// 	url: process.env.DATABASE_URL ?? "",
-	// 	secret: process.env.DATABASE_SECRET_KEY ?? "",
-	// }),
-	// debug: true,
-	adapter: FirestoreAdapter({
-		apiKey: process.env.DATABASE_API_KEY,
-		appId: process.env.DATABASE_APP_ID,
-		authDomain: process.env.DATABASE_AUTH_DOMAIN,
-		databaseURL: process.env.DATABASE_URL,
-		projectId: process.env.DATABASE_PROJECT_ID,
-		storageBucket: process.env.DATABASE_STORAGE_BUCKET,
-		messagingSenderId: process.env.DATABASE_MESSAGING_SENDER_ID,
+	adapter: SupabaseAdapter({
+		url: process.env.DATABASE_URL ?? "",
+		secret: process.env.DATABASE_SECRET_KEY ?? "",
 	}),
+	debug: true,
+	// adapter: FirestoreAdapter({
+	// 	apiKey: process.env.DATABASE_API_KEY,
+	// 	appId: process.env.DATABASE_APP_ID,
+	// 	authDomain: process.env.DATABASE_AUTH_DOMAIN,
+	// 	databaseURL: process.env.DATABASE_URL,
+	// 	projectId: process.env.DATABASE_PROJECT_ID,
+	// 	storageBucket: process.env.DATABASE_STORAGE_BUCKET,
+	// 	messagingSenderId: process.env.DATABASE_MESSAGING_SENDER_ID,
+	// }),
 	// callbacks: {
 	// 	async session({ session, user }) {
 	// 		const signingSecret = process.env.DATABASE_JWT_SECRET;
