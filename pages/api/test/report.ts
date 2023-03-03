@@ -1,5 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import generateReport from "../../../lib/open-ai/generate-report";
+import { ReportInput } from "../../../store/report";
 
 export default async function handler(
 	req: NextApiRequest,
@@ -9,15 +10,15 @@ export default async function handler(
 		return;
 	}
 
-	const values = req.body as unknown as any;
+	const { script } = req.body as unknown as ReportInput;
 	// ... check validation
-	if (!values.script) {
+	if (!script) {
 		res.status(422).json({ message: "Invalid input." });
 		return;
 	}
 
-	// short-form report generation
-	const report = await generateReport(values);
+	// report generation
+	const report = await generateReport({ script });
 
 	res.status(200).send(report);
 }

@@ -56,7 +56,7 @@ export default function Output() {
 			<button
 				className="btn-secondary btn self-end"
 				onClick={translate}
-				// disabled={!en}
+				disabled={!en}
 			>
 				한글 번역
 			</button>

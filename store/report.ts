@@ -6,9 +6,9 @@ export type ReportInput = {
 
 export type ReportOutput =
 	| {
-			introduction: string;
-			body: string;
-			conclusion: string;
+			today_summary: string;
+			report: string;
+			insight: string;
 			cited_web_source: Array<{ title: string; url: string }>;
 	  }
 	| undefined;
@@ -25,3 +25,14 @@ export type SubKeywrodInput = {
 	middleCategory: string;
 };
 export type SubKeywrodOutput = string[] | undefined;
+
+export type QuestionInput = {
+	script: string;
+};
+
+export type QuestionOutput = string[] | undefined;
+
+export const QuestionOutputState = atom<QuestionOutput>({
+	key: "QuestionOutputState",
+	default: undefined,
+});

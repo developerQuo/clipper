@@ -25,9 +25,9 @@ export default async function handler(
 	// 	)}\n\n
 	// 	Do not use any special characters or symbols.
 	// 	Example: {
-	// 		"introduction": {translation's introduction},
-	// 		"body": {translation's body},
-	// 		"conclusion": {translation's conclusion},
+	// 		"today_summary": {translation's today_summary},
+	// 		"report": {translation's report},
+	// 		"insight": {translation's insight},
 	// 		"cited_web_source": {translation's cited web source}
 	// 	}`,
 	// 	temperature: 0.3,
@@ -53,13 +53,13 @@ export default async function handler(
 		},
 	});
 
-	let [introduction] = await translate.translate(
-		JSON.stringify(values.introduction),
+	let [today_summary] = await translate.translate(
+		JSON.stringify(values.today_summary),
 		"ko",
 	);
-	let [body] = await translate.translate(JSON.stringify(values.body), "ko");
-	let [conclusion] = await translate.translate(
-		JSON.stringify(values.conclusion),
+	let [report] = await translate.translate(JSON.stringify(values.report), "ko");
+	let [insight] = await translate.translate(
+		JSON.stringify(values.insight),
 		"ko",
 	);
 	let [cited_web_source] = await translate.translate(
@@ -70,9 +70,9 @@ export default async function handler(
 	res.status(200).send(
 		JSON.parse(
 			JSON.stringify({
-				introduction: introduction,
-				body: body,
-				conclusion: conclusion,
+				today_summary,
+				report,
+				insight,
 				cited_web_source: JSON.parse(cited_web_source),
 			}),
 		),
@@ -80,10 +80,10 @@ export default async function handler(
 }
 
 // const values = {
-// 	introduction:
-// 		"This report is about the effects of globalization on the International Monetary Fund (IMF) and how it has transformed the global economy over the past few decades. It will analyze the impact of globalization on the IMF and its role in promoting economic integration and development. It will also discuss the implications of globalization for the global economy and how the IMF can help to mitigate the risks associated with it.",
-// 	body: "The IMF has been at the forefront of promoting economic integration and development through its various programs. These programs have enabled countries to open their economies to global markets, increasing trade and investment flows, and allowing for more efficient capital allocation. This has led to increased economic growth, improved living standards, and greater economic stability. However, globalization has also brought with it increased economic volatility and risk. The IMF has sought to address these issues through its various programs and policies, such as its Structural Adjustment Facility and its Financial Stability Facility. These programs have allowed for greater economic integration and have helped to mitigate the risks associated with globalization.",
-// 	conclusion:
+// 	today_summary:
+// 		"This insight is about the effects of globalization on the International Monetary Fund (IMF) and how it has transformed the global economy over the past few decades. It will analyze the impact of globalization on the IMF and its role in promoting economic integration and development. It will also discuss the implications of globalization for the global economy and how the IMF can help to mitigate the risks associated with it.",
+// 	report: "The IMF has been at the forefront of promoting economic integration and development through its various programs. These programs have enabled countries to open their economies to global markets, increasing trade and investment flows, and allowing for more efficient capital allocation. This has led to increased economic growth, improved living standards, and greater economic stability. However, globalization has also brought with it increased economic volatility and risk. The IMF has sought to address these issues through its various programs and policies, such as its Structural Adjustment Facility and its Financial Stability Facility. These programs have allowed for greater economic integration and have helped to mitigate the risks associated with globalization.",
+// 	insight:
 // 		"Globalization has had a profound impact on the IMF and the global economy. The IMF has played an important role in promoting economic integration and development, and in mitigating the risks associated with globalization. However, it is important to recognize the potential risks and challenges that come with globalization and to ensure that the IMF is able to continue to promote economic stability and development in the global economy.",
 // 	cited_web_source: [
 // 		{

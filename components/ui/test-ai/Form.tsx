@@ -9,9 +9,9 @@ import {
 } from "../../../store/report";
 import Button from "../Button";
 import { mainCategoryOptions, middleCategoryOptions } from "./data";
+import QuestionModal from "./QuestionModal";
 
 const TITLE = "스크립트 생성";
-const FUNC_TITLE = "세부 키워드 생성";
 
 export interface IForm {
 	// 대분류
@@ -89,21 +89,22 @@ export default function Form() {
 		please write report in a JSON format.
 		Do not use any special characters or symbols.
 		Example: {
-			"introduction": {introduction of the report},
-			"body": {body of the report},
-			"conclusion": {conclusion of the report},
+			"today_summary": {summary of the report},
+			"report": {report of the report},
+			"insight": {insight of the report},
 			"cited_web_source": {cited web source of the report}
 		}
 		
 		the report's outline is as follows:
-		introduction
+		today_summary
 			- Briefly introduce the topic of your report and provide background information.
 			- State the purpose of your report and what you hope to achieve.
-			- 500 characters or less
-		body
-			- Describe the cited articles in detail.
-			- Provide your own analysis and insights.
-		conclusion
+			- 500 letters or less
+		report
+			- Describe title and description of the cited articles in detail.
+			- Provide your own analysis.
+			- 1000 letters or more
+		insight
 			- Provide your own insights to readers.
 			- Suggest how to act in the future.
 		cited web source
@@ -115,8 +116,9 @@ export default function Form() {
 		if (watchMainCategory) setValue("middleCategory", "");
 	}, [watchMainCategory, setValue]);
 
-	const onChangeMiddleCategory = useCallback(
+	const generateKeyword = useCallback(
 		(event: any) => {
+			const FUNC_TITLE = "세부 키워드 생성";
 			setSubCategoryOptions(undefined);
 			setValue("subCategory", []);
 			notificationCtx.showNotification({
@@ -161,87 +163,104 @@ export default function Form() {
 		},
 		[notificationCtx, setValue, watchMainCategory],
 	);
+
 	return (
-		<form
-			className="form-control flex w-full flex-col items-center gap-y-8 md:gap-y-[48px]"
-			onSubmit={handleSubmit(onSubmit)}
-		>
-			<div className="form-control w-full">
-				<div className="flex flex-col items-start gap-4">
-					<label className="text-base font-bold text-text-primary">
-						대분류
-					</label>
-					<select
-						className="select-bordered select w-full focus:border-secondary focus:text-secondary"
-						placeholder="대분류를 선택하세요."
-						{...register("mainCategory")}
-					>
-						{mainCategoryOptions.map((option) => (
-							<option key={option} value={option}>
-								{option}
-							</option>
-						))}
-					</select>
-				</div>
-			</div>
-			<div className="form-control w-full">
-				<div className="flex flex-col items-start gap-4">
-					<label className="text-base font-bold text-text-primary">
-						중분류
-					</label>
-					<select
-						className="select-bordered select w-full focus:border-secondary focus:text-secondary"
-						placeholder="중분류를 선택하세요."
-						{...register("middleCategory", {
-							onChange: onChangeMiddleCategory,
-						})}
-					>
-						{middleCategoryOptions[watchMainCategory]?.map((option) => (
-							<option key={`${watchMainCategory}-${option}`} value={option}>
-								{option}
-							</option>
-						))}
-					</select>
-				</div>
-			</div>
-			<div className="form-control w-full">
-				<div className="flex flex-col items-start gap-4">
-					<label className="text-base font-bold text-text-primary">
-						소분류
-					</label>
-					<div className="flex w-full flex-wrap gap-x-8">
-						{subCategoryOptions?.map((option) => (
-							<label key={option} className="label cursor-pointer space-x-3">
-								<span className="label-text">{option}</span>
-								<input
-									type="checkbox"
-									value={option}
-									className="checkbox-secondary checkbox"
-									{...register("subCategory")}
-								/>
-							</label>
-						))}
+		<>
+			<form
+				className="form-control flex w-full flex-col items-center gap-y-8 md:gap-y-[48px]"
+				onSubmit={handleSubmit(onSubmit)}
+			>
+				<div className="form-control w-full">
+					<div className="flex flex-col items-start gap-4">
+						<label className="text-base font-bold text-text-primary">
+							대분류
+						</label>
+						<select
+							className="select-bordered select w-full focus:border-secondary focus:text-secondary"
+							placeholder="대분류를 선택하세요."
+							{...register("mainCategory")}
+						>
+							{mainCategoryOptions.map((option) => (
+								<option key={option} value={option}>
+									{option}
+								</option>
+							))}
+						</select>
 					</div>
 				</div>
-			</div>
-			<div className="form-control w-full">
-				<div className="flex flex-col items-start gap-4">
-					<label className="text-base font-bold text-text-primary">
-						스크립트
-					</label>
-					<textarea
-						className="textarea-bordered textarea h-[500px] w-full focus:border-secondary focus:text-secondary"
-						placeholder="스크립트를 입력해주세요."
-						{...register("script")}
-					/>
+				<div className="form-control w-full">
+					<div className="flex flex-col items-start gap-4">
+						<label className="text-base font-bold text-text-primary">
+							중분류
+						</label>
+						<select
+							className="select-bordered select w-full focus:border-secondary focus:text-secondary"
+							placeholder="중분류를 선택하세요."
+							{...register("middleCategory", {
+								onChange: generateKeyword,
+							})}
+						>
+							{middleCategoryOptions[watchMainCategory]?.map((option) => (
+								<option key={`${watchMainCategory}-${option}`} value={option}>
+									{option}
+								</option>
+							))}
+						</select>
+					</div>
 				</div>
-			</div>
-			<Button
-				className="btn-primary h-[56px] max-w-xs text-text-light-primary"
-				disabled={!isValid}
-			>
-				생성하기
-			</Button>
-		</form>
+				<div className="form-control w-full">
+					<div className="flex flex-col items-start gap-4">
+						<div className="flex w-full items-center">
+							<label className="text-base font-bold text-text-primary">
+								소분류
+							</label>
+							<label
+								htmlFor="question-modal"
+								className="btn-secondary btn ml-auto"
+								{...{ disabled: !watchSubCategory.length }}
+							>
+								질문 생성
+							</label>
+						</div>
+						<div className="flex w-full flex-wrap gap-x-8">
+							{subCategoryOptions?.map((option) => (
+								<label key={option} className="label cursor-pointer space-x-3">
+									<span className="label-text">{option}</span>
+									<input
+										type="checkbox"
+										value={option}
+										className="checkbox-secondary checkbox"
+										{...register("subCategory")}
+									/>
+								</label>
+							))}
+						</div>
+					</div>
+				</div>
+				<div className="form-control w-full">
+					<div className="flex flex-col items-start gap-4">
+						<label className="text-base font-bold text-text-primary">
+							스크립트
+						</label>
+						<textarea
+							className="textarea-bordered textarea h-[500px] w-full focus:border-secondary focus:text-secondary"
+							placeholder="스크립트를 입력해주세요."
+							{...register("script")}
+						/>
+					</div>
+				</div>
+				<Button
+					className="btn-primary h-[56px] max-w-xs text-text-light-primary"
+					disabled={!isValid}
+				>
+					생성하기
+				</Button>
+			</form>
+			<QuestionModal
+				mainCategory={watchMainCategory}
+				middleCategory={watchMiddleCategory}
+				subCategory={watchSubCategory}
+			/>
+		</>
 	);
 }
