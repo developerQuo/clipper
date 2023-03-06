@@ -1,6 +1,9 @@
-export interface RadioOptionProps {
+export interface OptionType {
 	label?: string;
 	value: string | number;
+}
+
+export interface RadioOptionProps extends OptionType {
 	checked?: boolean;
 }
 

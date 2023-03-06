@@ -5,7 +5,7 @@ import NotificationContext from "../../../store/notification-context";
 import {
 	ReportOutput,
 	ReportOutputState,
-	SubKeywrodOutput,
+	TestSubKeywordOutput,
 } from "../../../store/report";
 import Button from "../Button";
 import { mainCategoryOptions, middleCategoryOptions } from "./data";
@@ -145,7 +145,7 @@ export default function Form() {
 						throw new Error(`${FUNC_TITLE}을 실패하였습니다.`);
 					});
 				})
-				.then((data: SubKeywrodOutput) => {
+				.then((data: TestSubKeywordOutput) => {
 					notificationCtx.showNotification({
 						title: "성공!",
 						message: `${FUNC_TITLE}을 완료되었습니다.`,

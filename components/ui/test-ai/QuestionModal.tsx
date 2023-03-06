@@ -5,7 +5,7 @@ import NotificationContext from "../../../store/notification-context";
 import {
 	QuestionOutput,
 	QuestionOutputState,
-	SubKeywrodInput,
+	TestSubKeywordInput,
 } from "../../../store/report";
 
 export interface IForm {
@@ -13,7 +13,7 @@ export interface IForm {
 }
 
 type InputProps =
-	| SubKeywrodInput & {
+	| TestSubKeywordInput & {
 			subCategory: string[];
 	  };
 

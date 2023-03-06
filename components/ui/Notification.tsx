@@ -26,6 +26,11 @@ function Notification(props: NotificationProps) {
 	if (status === "pending") {
 		statusClassName = "alert-info";
 	}
+
+	if (status === "warning") {
+		statusClassName = "alert-warning";
+	}
+
 	const notificationClassName =
 		"cursor-pointer alert text-white fixed top-4 left-1/2 -translate-x-1/2 z-[1000] w-[96%]";
 	const activeClassName = `${notificationClassName} ${statusClassName}`;

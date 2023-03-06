@@ -31,7 +31,8 @@ export function NotificationContextProvider(props: ComponentProps<any>) {
 		if (
 			activeNotification &&
 			(activeNotification.status === "success" ||
-				activeNotification.status === "error")
+				activeNotification.status === "error" ||
+				activeNotification.status === "warning")
 		) {
 			const timer = setTimeout(() => {
 				setActiveNotification(null);

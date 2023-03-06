@@ -37,6 +37,7 @@ function Menu() {
 	}
 	return (
 		<>
+			{session && <MenuItem name="클립" path="/user/clip" />}
 			{session && <MenuItem name="마이페이지" path="/user/profile" />}
 			{/* {session && (
 				<MenuItem name="비밀번호 변경" path="/user/change-password" />

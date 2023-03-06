@@ -18,13 +18,13 @@ export const ReportOutputState = atom<ReportOutput>({
 	default: undefined,
 });
 
-export type SubKeywrodInput = {
+export type TestSubKeywordInput = {
 	// 대분류
 	mainCategory: string;
 	// 중분류
 	middleCategory: string;
 };
-export type SubKeywrodOutput = string[] | undefined;
+export type TestSubKeywordOutput = string[] | undefined;
 
 export type QuestionInput = {
 	script: string;
