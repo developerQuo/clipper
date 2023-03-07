@@ -11,25 +11,46 @@ export default function OutputDetail({
 	return (
 		<div className="space-y-4 text-lg">
 			<div>
-				<span className="block text-2xl font-bold">Today&apos;s Summary</span>
+				{/* <span className="block text-2xl font-bold">Today&apos;s Summary</span> */}
 				<span>{today_summary}</span>
 			</div>
 			<div>
-				<span className="block text-2xl font-bold">Report</span>
+				{/* <span className="block text-2xl font-bold">Report</span> */}
 				<span>{report}</span>
 			</div>
 			<div>
-				<span className="block text-2xl font-bold">Insight</span>
+				{/* <span className="block text-2xl font-bold">Insight</span> */}
 				<span>{insight}</span>
 			</div>
 			<div className="text-base">
 				<span className="block text-2xl font-bold">Cited Web Source</span>
-				{cited_web_source?.map((source, index) => (
-					<div key={source.url}>
-						<div>{source.title}</div>
-						<div className="text-text-secondary">{source.url}</div>
+				{Array.isArray(cited_web_source) ? (
+					cited_web_source.map((source, index) => (
+						<div key={source.url} className="my-2">
+							<div>
+								<span className="font-semibold">{source.title}</span>{" "}
+								<span className="text-text-secondary">
+									published by {source.date}
+								</span>
+							</div>
+							<div className="text-text-secondary">{source.url}</div>
+						</div>
+					))
+				) : (
+					<div key={(cited_web_source as any).url}>
+						<div>
+							<span className="font-semibold">
+								{(cited_web_source as any).title}
+							</span>{" "}
+							<span className="text-text-secondary">
+								published by {(cited_web_source as any).date}
+							</span>
+						</div>
+						<div className="text-text-secondary">
+							{(cited_web_source as any).url}
+						</div>
 					</div>
-				))}
+				)}
 			</div>
 		</div>
 	);

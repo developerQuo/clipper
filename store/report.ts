@@ -9,7 +9,7 @@ export type ReportOutput =
 			today_summary: string;
 			report: string;
 			insight: string;
-			cited_web_source: Array<{ title: string; url: string }>;
+			cited_web_source: Array<{ title: string; url: string; date: string }>;
 	  }
 	| undefined;
 

@@ -14,7 +14,7 @@ export default function Output() {
 		const TITLE = "한글 번역";
 		notificationCtx.showNotification({
 			title: "로딩중...",
-			message: "리포트 생성중...",
+			message: `${TITLE}중...`,
 			status: "pending",
 		});
 		fetch("/api/test/translate", {

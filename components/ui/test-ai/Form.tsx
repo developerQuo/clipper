@@ -82,36 +82,44 @@ export default function Form() {
 	};
 
 	useEffect(() => {
-		const script = `		citing some of articles, make a analysis report. 
-		The category of the report is ${watchMainCategory ?? ""} > ${
-			watchMiddleCategory ?? ""
-		} > ${watchSubCategory?.join(", ") ?? ""}.
+		const script = `		citing some of articles, make a analysis report.
+		I'm going to publish an ${watchMainCategory ?? ""} report.
+		I want the report to include some of [${
+			middleCategoryOptions[watchMainCategory]
+		}].
+		For some of them, the latest content of the citing site is the selection criterion.
 		please write report in a JSON format.
 		Do not use any special characters or symbols.
 		Example: {
 			"today_summary": {summary of the report},
 			"report": {report of the report},
 			"insight": {insight of the report},
-			"cited_web_source": {cited web source of the report}
+			"cited_web_source": Array<{ 
+				"title": {title of cited web source of the report}; 
+				"url": { url of cited web source of the report}; 
+				"date": { date of cited web source of the report} }>
 		}
 		
 		the report's outline is as follows:
 		today_summary
-			- Pick a specific date as a day and summarize the economic articles, news published on that day in an easy-to-understand way to those who study economics.
-			- Summarize the important economic news you have gathered in 500 words or less.
+			- Randomly select a date between 2019 and 2021 and summarize the major economic articles on that date, news published on that day in an easy-to-understand way to those who study economics.
+			- Summarize the important economic news you have gathered in 300 to 600 characters.
 			- Specific terms and numbers are important in this report, so please include them when summarizing them as much as possible.
 		report
 			- Write the articles, news, and reports you want to reflect in detail by dividing them into titles and descriptions.
 			- It is necessary to explain as accurately and clearly as possible to those who need to study economics.
-			- 1000 letters or more.
+			- The number of characters must be 800 to 1500 characters.
 		insight
 			- Provide your own insights to readers.
 			- When referring to the report, the year, month, and day were indicated as to which date was specified.
 		cited web source.
-			- Provide a list of cited web source(title, url).`;
+			- Provide a list of cited web source(title, url).
+			- Show selected date.`;
 		setValue("script", script);
 	}, [setValue, watchMainCategory, watchMiddleCategory, watchSubCategory]);
 
+	// TODO: outline 이름 제거(summary, report, insight)
+	// TODO: 소분류 x -> 레퍼런스 중에서 중분류 키워드 관련해서 새로운 콘텐츠를 발행
 	useEffect(() => {
 		if (watchMainCategory) setValue("middleCategory", "");
 	}, [watchMainCategory, setValue]);
@@ -188,7 +196,7 @@ export default function Form() {
 						</select>
 					</div>
 				</div>
-				<div className="form-control w-full">
+				{/* <div className="form-control w-full">
 					<div className="flex flex-col items-start gap-4">
 						<label className="text-base font-bold text-text-primary">
 							중분류
@@ -236,7 +244,7 @@ export default function Form() {
 							))}
 						</div>
 					</div>
-				</div>
+				</div> */}
 				<div className="form-control w-full">
 					<div className="flex flex-col items-start gap-4">
 						<label className="text-base font-bold text-text-primary">
