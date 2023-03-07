@@ -97,17 +97,17 @@ export default function Form() {
 		
 		the report's outline is as follows:
 		today_summary
-			- Briefly introduce the topic of your report and provide background information.
-			- State the purpose of your report and what you hope to achieve.
-			- 500 letters or less
+			- Pick a specific date as a day and summarize the economic articles, news published on that day in an easy-to-understand way to those who study economics.
+			- Summarize the important economic news you have gathered in 500 words or less.
+			- Specific terms and numbers are important in this report, so please include them when summarizing them as much as possible.
 		report
-			- Describe title and description of the cited articles in detail.
-			- Provide your own analysis.
-			- 1000 letters or more
+			- Write the articles, news, and reports you want to reflect in detail by dividing them into titles and descriptions.
+			- It is necessary to explain as accurately and clearly as possible to those who need to study economics.
+			- 1000 letters or more.
 		insight
 			- Provide your own insights to readers.
-			- Suggest how to act in the future.
-		cited web source
+			- When referring to the report, the year, month, and day were indicated as to which date was specified.
+		cited web source.
 			- Provide a list of cited web source(title, url).`;
 		setValue("script", script);
 	}, [setValue, watchMainCategory, watchMiddleCategory, watchSubCategory]);
