@@ -20,7 +20,6 @@ const columns: ColumnType<DataType>[] = [
 ];
 
 type InputProps = {
-	session: Session;
 	clip: { data: DataType[]; error: any; count: number };
 };
 
@@ -118,5 +117,5 @@ export const getServerSideProps: GetServerSideProps<InputProps> = async (
 		.from("clip")
 		.select("id,name,user_clip(count)", { count: "exact" })
 		.eq("user_clip.user_id", guard.props.session.user.id);
-	return { props: { ...guard.props, clip } };
+	return { props: { clip } };
 };
