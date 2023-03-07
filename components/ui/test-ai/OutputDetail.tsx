@@ -11,15 +11,12 @@ export default function OutputDetail({
 	return (
 		<div className="space-y-4 text-lg">
 			<div>
-				{/* <span className="block text-2xl font-bold">Today&apos;s Summary</span> */}
 				<span>{today_summary}</span>
 			</div>
 			<div>
-				{/* <span className="block text-2xl font-bold">Report</span> */}
 				<span>{report}</span>
 			</div>
 			<div>
-				{/* <span className="block text-2xl font-bold">Insight</span> */}
 				<span>{insight}</span>
 			</div>
 			<div className="text-base">

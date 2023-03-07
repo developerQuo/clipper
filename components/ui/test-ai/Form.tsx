@@ -102,12 +102,20 @@ export default function Form() {
 		
 		the report's outline is as follows:
 		today_summary
-			- Randomly select a date between 2019 and 2021 and summarize the major economic articles on that date, news published on that day in an easy-to-understand way to those who study economics.
-			- Summarize the important economic news you have gathered in 300 to 600 characters.
+			- Randomly select a date between 2019 and 2021 and summarize the major ${
+				watchMainCategory ?? ""
+			} articles on that date, news published on that day in an easy-to-understand way to those who study ${
+			watchMainCategory ?? ""
+		}.
+			- Summarize the important ${
+				watchMainCategory ?? ""
+			} news you have gathered in 300 to 600 characters.
 			- Specific terms and numbers are important in this report, so please include them when summarizing them as much as possible.
 		report
 			- Write the articles, news, and reports you want to reflect in detail by dividing them into titles and descriptions.
-			- It is necessary to explain as accurately and clearly as possible to those who need to study economics.
+			- It is necessary to explain as accurately and clearly as possible to those who need to study ${
+				watchMainCategory ?? ""
+			}.
 			- The number of characters must be 800 to 1500 characters.
 		insight
 			- Provide your own insights to readers.
@@ -118,8 +126,6 @@ export default function Form() {
 		setValue("script", script);
 	}, [setValue, watchMainCategory, watchMiddleCategory, watchSubCategory]);
 
-	// TODO: outline 이름 제거(summary, report, insight)
-	// TODO: 소분류 x -> 레퍼런스 중에서 중분류 키워드 관련해서 새로운 콘텐츠를 발행
 	useEffect(() => {
 		if (watchMainCategory) setValue("middleCategory", "");
 	}, [watchMainCategory, setValue]);
