@@ -1,5 +1,5 @@
 import { GetServerSideProps } from "next";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useRecoilValue } from "recoil";
 import NotificationContext from "../../../store/notification-context";
 import { ReportOutput, ReportOutputState } from "../../../store/report";
@@ -49,6 +49,11 @@ export default function Output() {
 				});
 			});
 	};
+	useEffect(() => {
+		if (en) {
+			setKo(null);
+		}
+	}, [en]);
 	return (
 		<>
 			<h1 className="text-3xl font-bold">결과물 출력</h1>
