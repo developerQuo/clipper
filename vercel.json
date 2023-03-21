@@ -1,6 +1,6 @@
 {
 	"functions": {
-		"pages/api/test/**/*": {
+		"pages/api/chat.ts": {
 			"maxDuration": 10
 		}
 	}
