@@ -82,12 +82,14 @@ export default function Form() {
 	};
 
 	useEffect(() => {
-		const script = `		citing some of articles, make a analysis report.
+		const script = `		Below is a mix of URLs for articles on ${
+			watchMainCategory ?? ""
+		} topics. 
+		Identify the content through URLs and only refer to URLs, make a analysis report.
 		I'm going to publish an ${watchMainCategory ?? ""} report.
 		I want the report to include some of [${
 			middleCategoryOptions[watchMainCategory]
 		}].
-		For some of them, the latest content of the citing site is the selection criterion.
 		please write report in a JSON format.
 		Do not use any special characters or symbols.
 		Example: {

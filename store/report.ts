@@ -2,6 +2,7 @@ import { atom } from "recoil";
 
 export type ReportInput = {
 	script: string;
+	urls?: string[];
 };
 
 export type ReportOutput =
