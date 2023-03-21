@@ -1,6 +1,6 @@
-import Navigation from "./Navigation";
-import Link from "next/link";
-import Image from "next/image";
+import Navigation from './Navigation';
+import Link from 'next/link';
+import Image from 'next/image';
 
 function Header() {
 	return (
@@ -33,7 +33,7 @@ function Header() {
 					</Link>
 				</div>
 			</div>
-			<div className="navbar-end">
+			{/* <div className="navbar-end">
 				<div className="hidden lg:block">
 					<Navigation />
 				</div>
@@ -56,7 +56,7 @@ function Header() {
 					</label>
 					<Navigation />
 				</div>
-			</div>
+			</div> */}
 		</header>
 	);
 }

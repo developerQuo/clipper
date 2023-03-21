@@ -4,5 +4,7 @@
 	"trailingComma": "all",
 	"orderedImports": true,
 	"bracketSpacing": true,
-	"jsxBracketSameLine": false
+	"jsxBracketSameLine": false,
+	"singleQuote": true,
+	"printWidth": 80
 }
