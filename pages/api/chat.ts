@@ -9,7 +9,7 @@ export default async function handler(
 	req: NextApiRequest,
 	res: NextApiResponse,
 ) {
-	const { question, history } = req.body;
+	const { question, history, pdfId } = req.body;
 
 	if (!question) {
 		return res.status(400).json({ message: 'No question in the request' });
@@ -22,7 +22,7 @@ export default async function handler(
 	/* create vectorstore*/
 	const vectorStore = await PineconeStore.fromExistingIndex(
 		new OpenAIEmbeddings({}),
-		{ pineconeIndex: index, textKey: 'text', namespace: PINECONE_NAME_SPACE },
+		{ pineconeIndex: index, textKey: 'text', namespace: `${pdfId}` },
 	);
 
 	res.writeHead(200, {

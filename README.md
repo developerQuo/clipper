@@ -4,13 +4,17 @@
 
 
 ## spec
-
 - TailwindCSS
 - daisyUI
 - NextJS
 - React Hook Form
 - Typescript
 - NextAuth
+
+### Chat ([reference](https://github.com/mayooear/gpt4-pdf-chatbot-langchain))
+- [Langchain](https://hwchase17.github.io/langchainjs/docs/overview)
+- [Pinecone](https://docs.pinecone.io/docs/overview)
+- [OpenAI](https://platform.openai.com/docs/api-reference/introduction)
 
 
 ## stage
@@ -57,8 +61,28 @@
 - 1. pdf 요약 -> Chatgpt가 기억하게 하기
 - 2. pdf를 ChatGPT에 입력
    - 토큰 제한에 걸리지 않는지? 만약 그렇다면 용량 제한? 어떻게 해결?
+- pdf별 대화 가능하게
 - 보고서 내용에 대한 답변을 ChatGPT가 해주기
 - 번역 매끄럽게
+- 여러개의 pdf들이 chat을 열 수 있게
+- 로그인 유저별 북마크, 대화기록 유지
+- cloud file system(pdf 파일 로드)
 
 ### 추후 
 - 입력된 보고서들 학습
+- vector store 비교후 변경 여부 결정(Pinecone -> Supabase)
+- 보고서 수정 사항 발생시 어떻게 vector store와 embed model에 적용할지
+- pdf 임베딩 비용 계산(많은 데이터를 넣으면 비용이 커질 수 있음)
+- 테스트, 인프라 등 제품 안정성
+- 대화 세션을 계속 유지하게 할 것인지
+- 해당 보고서에 내용이 없으면 다른 보고서에서 내용 찾기 -> 가능할 듯([Pinecone namespace 찾기 -> index 에서 찾기](https://docs.pinecone.io/docs/namespaces))
+
+## 이슈
+- chat: en -> en, ko -> ko 언어를 안정적으로 답변
+
+### 결제 요망
+- [Vercel](https://vercel.com/pricing)
+- [Pinecone](https://www.pinecone.io/pricing/)
+- [OpenAI](https://platform.openai.com/account/billing/overview)
+#### 추후 결제 요망
+- [supabase](https://supabase.com/pricing)
