@@ -62,7 +62,7 @@ export default function HomePage({ content }: InputProps) {
 	}
 
 	return (
-		<div className="drawer drawer-end">
+		<div className="drawer">
 			<input
 				ref={drawerRef}
 				id="report-drawer"
@@ -97,7 +97,7 @@ export default function HomePage({ content }: InputProps) {
 							<Viewer />
 						</div>
 					</div>
-					<div className="absolute left-24 top-32">
+					<div className="absolute right-24 top-32">
 						<ChatDoc />
 					</div>
 				</>
@@ -117,6 +117,6 @@ export const getServerSideProps: GetServerSideProps<InputProps> = async (
 		.select('id,title,description,from', { count: 'exact' })
 		.eq('is_pdf', true)
 		.eq('vector_upload', true)
-		.in('id', [3, 4]);
+		.in('id', [3, 4, 5]);
 	return { props: { content } };
 };
