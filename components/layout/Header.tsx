@@ -33,7 +33,7 @@ function Header() {
 					</Link>
 				</div>
 			</div>
-			{/* <div className="navbar-end">
+			<div className="navbar-end">
 				<div className="hidden lg:block">
 					<Navigation />
 				</div>
@@ -56,7 +56,7 @@ function Header() {
 					</label>
 					<Navigation />
 				</div>
-			</div> */}
+			</div>
 		</header>
 	);
 }

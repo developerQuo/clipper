@@ -1,7 +1,7 @@
-import { signOut, useSession } from "next-auth/react";
-import Link from "next/link";
-import { useContext } from "react";
-import NotificationContext from "../../store/notification-context";
+import { signOut, useSession } from 'next-auth/react';
+import Link from 'next/link';
+import { useContext } from 'react';
+import NotificationContext from '../../store/notification-context';
 
 type MenuItemProps = {
 	name: string;
@@ -31,19 +31,18 @@ function Menu() {
 		notificationCtx.showNotification({
 			title: `로그아웃 완료`,
 			message: `로그아웃 되었습니다.`,
-			status: "success",
+			status: 'success',
 		});
 		signOut();
 	}
 	return (
 		<>
-			{session && <MenuItem name="클립" path="/user/clip" />}
 			{session && <MenuItem name="마이페이지" path="/user/profile" />}
 			{/* {session && (
 				<MenuItem name="비밀번호 변경" path="/user/change-password" />
 			)} */}
 			{session && <MenuItem name="로그아웃" path="/api/auth/signout" />}
-			{!session && status !== "loading" && (
+			{!session && status !== 'loading' && (
 				<MenuItem name="로그인" path="/api/auth/signin" />
 			)}
 		</>
