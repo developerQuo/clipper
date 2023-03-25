@@ -1,4 +1,4 @@
-import { SelectedPDFState, SelectedPDFType } from '@/store/pdf';
+import { SelectedContent, SelectedContentState } from '@/store/content';
 import { useMemo, useState } from 'react';
 import { Document, Page, pdfjs } from 'react-pdf';
 import { useRecoilValue } from 'recoil';
@@ -8,8 +8,8 @@ import useWindowSize from './useWindowSize';
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
 const Viewer = () => {
-	const { title, from } =
-		useRecoilValue<SelectedPDFType>(SelectedPDFState) || {};
+	const { title, path } =
+		useRecoilValue<SelectedContent>(SelectedContentState) || {};
 	const windowSize = useWindowSize();
 	const [numPages, setNumPages] = useState(0);
 	const [pageNumber, setPageNumber] = useState(1);
@@ -19,7 +19,7 @@ const Viewer = () => {
 		setNumPages(numPages);
 		setPageNumber(1);
 	}
-	const filePath = useMemo(() => `/docs/${from}/${title}.pdf`, [title, from]);
+	const filePath = useMemo(() => `/docs${path}.pdf`, [path]);
 	return (
 		<>
 			{/* Page {pageNumber} of {numPages}

@@ -1,24 +1,23 @@
 import ChatDoc from '@/components/ui/chat';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ColumnType } from 'rc-table/lib/interface';
 import Table from '@/components/ui/Table';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import { SelectedKeyType, SelectedKeyState } from '@/store/table';
 import Viewer from '@/components/ui/pdf/viewer';
-import { SelectedPDFState, SelectedPDFType } from '@/store/pdf';
+import {
+	SelectedContent,
+	Content,
+	SelectedContentState,
+} from '@/store/content';
 import { PostgrestSingleResponse } from '@supabase/supabase-js';
+import Bookmark from './bookmark';
+import { supabase } from '@/utils/supabase-client';
 
-export type DataType = {
-	id: string;
-	title: string;
-	description: string;
-	from: string;
-};
-
-const columns: ColumnType<DataType>[] = [
+const columns: ColumnType<Content>[] = [
 	{
 		title: 'Media',
-		dataIndex: 'from',
+		dataIndex: 'media',
 		width: 300,
 	},
 	{
@@ -27,15 +26,14 @@ const columns: ColumnType<DataType>[] = [
 	},
 ];
 
-type InputProps = {
-	content: PostgrestSingleResponse<DataType[]>;
-};
+type QueryType = PostgrestSingleResponse<Content[]>;
 
-export default function Drawer({ content }: InputProps) {
+export default function Drawer() {
 	const drawerRef = useRef<HTMLInputElement | null>(null);
 	const [selectedKey, setSelectedKey] =
 		useRecoilState<SelectedKeyType>(SelectedKeyState);
-	const setPDF = useSetRecoilState<SelectedPDFType>(SelectedPDFState) || {};
+	const [selectedContent, setSelectedContent] =
+		useRecoilState<SelectedContent>(SelectedContentState) || {};
 
 	useEffect(() => {
 		if (selectedKey) {
@@ -43,6 +41,53 @@ export default function Drawer({ content }: InputProps) {
 		}
 	}, [selectedKey]);
 
+	const [isLoading, setIsLoading] = useState(true);
+	const [query, setQuery] = useState<QueryType>();
+	const [bookmarkQuery, setBookmarkQuery] = useState<QueryType>();
+
+	useEffect(() => {
+		const fetch = async () => {
+			const { data, ...result } = await supabase
+				.from('content')
+				.select(
+					'id,title,summary,published_at,path,views,content_source(media(name)),bookmark(count)',
+					{
+						count: 'exact',
+					},
+				)
+				.eq('file_type', 'pdf');
+
+			setQuery({
+				...result,
+				data: data?.map(({ content_source, bookmark, ...row }) => ({
+					...row,
+					media:
+						content_source && (content_source as any).length
+							? (content_source as any[])[0].media.name
+							: null,
+					bookmark: Boolean((bookmark as any)[0].count),
+				})) as any,
+			});
+			const bookmarkData = data
+				?.filter(({ bookmark }) => Boolean((bookmark as any)[0].count))
+				.map(({ content_source, bookmark, ...row }) => ({
+					...row,
+					media:
+						content_source && (content_source as any).length
+							? (content_source as any[])[0].media.name
+							: null,
+					bookmark: Boolean((bookmark as any)[0].count),
+				})) as any;
+			setBookmarkQuery({
+				...result,
+				data: bookmarkData,
+				count: bookmarkData.length,
+			});
+			setIsLoading(false);
+		};
+
+		fetch();
+	}, [selectedContent?.bookmark]);
 	return (
 		<div className="drawer">
 			<input
@@ -57,17 +102,28 @@ export default function Drawer({ content }: InputProps) {
 				}}
 			/>
 			<div className="drawer-content">
-				<div className="space-y-8">
-					<h1 className="text-center text-3xl font-bold">Report</h1>
-					<div className="flex flex-col space-y-2">
-						<Table
-							data={content.data ?? []}
-							columns={columns}
-							count={content.count ?? 0}
-							additionalRowClick={({ title, from }) => {
-								setPDF({ title, from });
-							}}
-						/>
+				<div className="space-y-24">
+					<div className="space-y-8">
+						<h1 className="text-center text-3xl font-bold">Today</h1>
+						<div className="flex flex-col space-y-2">
+							<Table
+								data={query?.data ?? []}
+								columns={columns}
+								count={query?.count ?? 0}
+								additionalRowClick={setSelectedContent}
+							/>
+						</div>
+					</div>
+					<div className="space-y-8">
+						<h1 className="text-center text-3xl font-bold">Bookmark</h1>
+						<div className="flex flex-col space-y-2">
+							<Table
+								data={bookmarkQuery?.data ?? []}
+								columns={columns}
+								count={bookmarkQuery?.count ?? 0}
+								additionalRowClick={setSelectedContent}
+							/>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -76,6 +132,7 @@ export default function Drawer({ content }: InputProps) {
 					<div className="drawer-side">
 						<label htmlFor="report-drawer" className="drawer-overlay"></label>
 						<div className="w-1/2 overflow-auto bg-base-100 p-4">
+							<Bookmark />
 							<Viewer />
 						</div>
 					</div>
