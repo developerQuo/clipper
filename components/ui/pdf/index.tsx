@@ -13,6 +13,7 @@ import {
 import { PostgrestSingleResponse } from '@supabase/supabase-js';
 import Bookmark from './bookmark';
 import { supabase } from '@/utils/supabase-client';
+import { getSession, useSession } from 'next-auth/react';
 
 const columns: ColumnType<Content>[] = [
 	{
@@ -41,6 +42,8 @@ export default function Drawer() {
 		}
 	}, [selectedKey]);
 
+	const { data: session } = useSession();
+	const { id: userId } = session?.user ?? {};
 	const [isLoading, setIsLoading] = useState(true);
 	const [query, setQuery] = useState<QueryType>();
 	const [bookmarkQuery, setBookmarkQuery] = useState<QueryType>();
@@ -50,12 +53,13 @@ export default function Drawer() {
 			const { data, ...result } = await supabase
 				.from('content')
 				.select(
-					'id,title,summary,published_at,path,views,content_source(media(name)),bookmark(count)',
+					'id,title,summary,published_at,path,views,content_source(media(name)),bookmark(user_id)',
 					{
 						count: 'exact',
 					},
 				)
-				.eq('file_type', 'pdf');
+				.eq('file_type', 'pdf')
+				.eq('bookmark.user_id', userId);
 
 			setQuery({
 				...result,
@@ -65,29 +69,39 @@ export default function Drawer() {
 						content_source && (content_source as any).length
 							? (content_source as any[])[0].media.name
 							: null,
-					bookmark: Boolean((bookmark as any)[0].count),
+					bookmark: Boolean(
+						(bookmark as any).length && (bookmark as any)[0].user_id === userId,
+					),
 				})) as any,
 			});
 			const bookmarkData = data
-				?.filter(({ bookmark }) => Boolean((bookmark as any)[0].count))
+				?.filter(({ bookmark }) =>
+					Boolean(
+						(bookmark as any).length && (bookmark as any)[0].user_id === userId,
+					),
+				)
 				.map(({ content_source, bookmark, ...row }) => ({
 					...row,
 					media:
 						content_source && (content_source as any).length
 							? (content_source as any[])[0].media.name
 							: null,
-					bookmark: Boolean((bookmark as any)[0].count),
+					bookmark: Boolean(
+						(bookmark as any).length && (bookmark as any)[0].user_id === userId,
+					),
 				})) as any;
 			setBookmarkQuery({
 				...result,
 				data: bookmarkData,
-				count: bookmarkData.length,
+				count: bookmarkData?.length,
 			});
 			setIsLoading(false);
 		};
 
-		fetch();
-	}, [selectedContent?.bookmark]);
+		if (userId) {
+			fetch();
+		}
+	}, [selectedContent?.bookmark, userId]);
 	return (
 		<div className="drawer">
 			<input
