@@ -14,31 +14,75 @@ import {
 } from '@/components/ui/accordion';
 import { useRecoilValue } from 'recoil';
 import { SelectedKeyState, SelectedKeyType } from '@/store/table';
+import { supabase } from '@/utils/supabase-client';
+import { useSession } from 'next-auth/react';
+
+type MessageState = {
+	messages: Message[];
+	pending?: string;
+	history: [string, string][];
+	pendingSourceDocs?: Document[];
+};
+
+const defaultMessageState: MessageState = {
+	messages: [
+		{
+			message: 'Hi, what would you like to learn about this document?',
+			type: 'apiMessage',
+		},
+	],
+	history: [],
+	pendingSourceDocs: [],
+};
 
 export default function ChatDoc() {
 	const selectedKey = useRecoilValue<SelectedKeyType>(SelectedKeyState);
 	const [query, setQuery] = useState<string>('');
 	const [loading, setLoading] = useState<boolean>(false);
 	const [sourceDocs, setSourceDocs] = useState<Document[]>([]);
-	const [messageState, setMessageState] = useState<{
-		messages: Message[];
-		pending?: string;
-		history: [string, string][];
-		pendingSourceDocs?: Document[];
-	}>({
-		messages: [
-			{
-				message: 'Hi, what would you like to learn about this document?',
-				type: 'apiMessage',
-			},
-		],
-		history: [],
-		pendingSourceDocs: [],
-	});
+	const [messageState, setMessageState] =
+		useState<MessageState>(defaultMessageState);
+
+	const { data: session } = useSession();
+	const { id: userId } = session?.user ?? {};
+	useEffect(() => {
+		const fetch = async () => {
+			const { data, error } = await supabase
+				.from('chat_history')
+				.select('user_history,bot_history')
+				.eq('content_id', selectedKey)
+				.eq('user_id', userId);
+
+			if (!error && data && data.length > 0) {
+				setMessageState(({ history, messages, ...state }) => {
+					const { user_history, bot_history } = data[0];
+					const historyOrdering = bot_history.map(
+						(text: string, index: number) => [user_history[index], text],
+					);
+					return {
+						...defaultMessageState,
+						history: historyOrdering,
+						messages: [
+							...defaultMessageState.messages,
+							...historyOrdering
+								.flat()
+								.map((message: string, index: number) => ({
+									type: index % 2 === 0 ? 'userMessage' : 'apiMessage',
+									message,
+								})),
+						],
+					};
+				});
+				setLoading(false);
+			}
+		};
+
+		if (userId && selectedKey) {
+			fetch();
+		}
+	}, [selectedKey, userId]);
 
 	const { messages, pending, history, pendingSourceDocs } = messageState;
-
-	console.log('messageState', messageState);
 
 	const messageListRef = useRef<HTMLDivElement>(null);
 	const textAreaRef = useRef<HTMLTextAreaElement>(null);
@@ -85,24 +129,27 @@ export default function ChatDoc() {
 				body: JSON.stringify({
 					question,
 					history,
-					pdfId: selectedKey,
+					contentId: selectedKey,
 				}),
 				signal: ctrl.signal,
 				onmessage: (event) => {
 					if (event.data === '[DONE]') {
-						setMessageState((state) => ({
-							history: [...state.history, [question, state.pending ?? '']],
-							messages: [
-								...state.messages,
-								{
-									type: 'apiMessage',
-									message: state.pending ?? '',
-									sourceDocs: state.pendingSourceDocs,
-								},
-							],
-							pending: undefined,
-							pendingSourceDocs: undefined,
-						}));
+						setMessageState((state) => {
+							console.log('state', state);
+							return {
+								history: [...state.history, [question, state.pending ?? '']],
+								messages: [
+									...state.messages,
+									{
+										type: 'apiMessage',
+										message: state.pending ?? '',
+										sourceDocs: state.pendingSourceDocs,
+									},
+								],
+								pending: undefined,
+								pendingSourceDocs: undefined,
+							};
+						});
 						setLoading(false);
 						ctrl.abort();
 					} else {
@@ -150,6 +197,19 @@ export default function ChatDoc() {
 				: []),
 		];
 	}, [messages, pending, pendingSourceDocs]);
+
+	// 채팅 기록 초기화
+	const resetChatHistory = async () => {
+		const { error } = await supabase
+			.from('chat_history')
+			.update({ user_history: [], bot_history: [] })
+			.eq('content_id', selectedKey)
+			.eq('user_id', userId);
+
+		if (!error) {
+			setMessageState(defaultMessageState);
+		}
+	};
 
 	return (
 		<>
@@ -290,6 +350,9 @@ export default function ChatDoc() {
 						</form>
 					</div>
 				</div>
+				<button className="btn-error btn" onClick={resetChatHistory}>
+					채팅 기록 삭제
+				</button>
 			</main>
 		</>
 	);

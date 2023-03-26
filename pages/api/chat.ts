@@ -4,14 +4,24 @@ import { PineconeStore } from 'langchain/vectorstores';
 import { makeChain } from '@/utils/makechain';
 import { pinecone } from '@/utils/pinecone-client';
 import { PINECONE_INDEX_NAME, PINECONE_NAME_SPACE } from '@/config/pinecone';
+import { supabase } from '@/lib/supabaseClient';
+import { getSession } from 'next-auth/react';
 
 export default async function handler(
 	req: NextApiRequest,
 	res: NextApiResponse,
 ) {
-	const { question, history, pdfId } = req.body;
+	if (req.method !== 'POST') {
+		return;
+	}
 
-	if (!question) {
+	// get user id
+	const session = await getSession({ req });
+	const userId = session?.user?.id;
+
+	const { question, history, contentId } = req.body;
+
+	if (!userId || !question) {
 		return res.status(400).json({ message: 'No question in the request' });
 	}
 	// OpenAI recommends replacing newlines with spaces for best results
@@ -22,7 +32,7 @@ export default async function handler(
 	/* create vectorstore*/
 	const vectorStore = await PineconeStore.fromExistingIndex(
 		new OpenAIEmbeddings({}),
-		{ pineconeIndex: index, textKey: 'text', namespace: `${pdfId}` },
+		{ pineconeIndex: index, textKey: 'text', namespace: `${contentId}` },
 	);
 
 	res.writeHead(200, {
@@ -51,6 +61,22 @@ export default async function handler(
 
 		console.log('response', response);
 		sendData(JSON.stringify({ sourceDocs: response.sourceDocuments }));
+		await supabase
+			.from('chat_history')
+			.upsert({
+				user_id: userId,
+				content_id: contentId,
+				user_history: [
+					...history.map((chat: [string, string]) => chat[0]),
+					sanitizedQuestion,
+				],
+				bot_history: [
+					...history.map((chat: [string, string]) => chat[1]),
+					response.text,
+				],
+			})
+			.eq('user_id', userId)
+			.eq('content_id', contentId);
 	} catch (error) {
 		console.log('error', error);
 	} finally {
