@@ -145,12 +145,34 @@ export default function Drawer() {
 				<>
 					<div className="drawer-side">
 						<label htmlFor="report-drawer" className="drawer-overlay"></label>
-						<div className="w-1/2 overflow-auto bg-base-100 p-4">
-							<Bookmark />
+						<div className="w-1/2 bg-base-100">
+							<div className="flex justify-between p-4">
+								<Bookmark />
+								<button
+									className="btn-outline btn-error btn-square btn"
+									onClick={() => drawerRef.current?.click()}
+								>
+									{' '}
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										className="h-6 w-6"
+										fill="none"
+										viewBox="0 0 24 24"
+										stroke="currentColor"
+									>
+										<path
+											strokeLinecap="round"
+											strokeLinejoin="round"
+											strokeWidth="2"
+											d="M6 18L18 6M6 6l12 12"
+										/>
+									</svg>
+								</button>
+							</div>
 							<Viewer />
 						</div>
 					</div>
-					<div className="absolute right-24 top-32">
+					<div className="absolute right-24 top-48">
 						<ChatDoc />
 					</div>
 				</>

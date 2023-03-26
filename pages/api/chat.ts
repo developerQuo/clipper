@@ -59,7 +59,7 @@ export default async function handler(
 			chat_history: history || [],
 		});
 
-		console.log('response', response);
+		// console.log('response', response);
 		sendData(JSON.stringify({ sourceDocs: response.sourceDocuments }));
 		await supabase
 			.from('chat_history')
