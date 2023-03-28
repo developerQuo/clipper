@@ -1,13 +1,13 @@
-import { NextApiRequest, NextApiResponse } from "next";
-import { IForm } from "../../../components/ui/clip/Form";
-import { supabase } from "../../../lib/supabaseClient";
+import { NextApiRequest, NextApiResponse } from 'next';
+import { IForm } from '../../../components/ui/clip/Form';
+import { supabase } from '@/utils/supabase-client';
 
 // TODO: tx
 export default async function handler(
 	req: NextApiRequest,
 	res: NextApiResponse,
 ) {
-	if (req.method !== "POST") {
+	if (req.method !== 'POST') {
 		return;
 	}
 
@@ -15,11 +15,11 @@ export default async function handler(
 	const { id, subTopic, aiTopic, aiTopicKo, name } =
 		req.body as unknown as Pick<
 			IForm,
-			"subTopic" | "aiTopic" | "name" | "id"
+			'subTopic' | 'aiTopic' | 'name' | 'id'
 		> & { aiTopicKo: string[] };
 	// ... check validation
 	if (!id) {
-		res.status(422).json({ message: "Invalid input." });
+		res.status(422).json({ message: 'Invalid input.' });
 		return;
 	}
 
@@ -29,10 +29,10 @@ export default async function handler(
 		// sub_topic 변경 -> ai_topic, clip_topic 삭제 후 추가
 		// ai_topic 변경 -> clip_topic 삭제 후 추가
 		const { data: clipTopicData, error: clipTopicError } = await supabase
-			.from("clip_topic")
+			.from('clip_topic')
 			.delete()
-			.eq("clip_id", id)
-			.select("ai_topic_id");
+			.eq('clip_id', id)
+			.select('ai_topic_id');
 		if (clipTopicError) {
 			res.status(500).json({ message: clipTopicError.message });
 			return;
@@ -42,10 +42,10 @@ export default async function handler(
 		if (aiTopicId) {
 			const { data: aiTopicDeleteData, error: aiTopicDeleteError } =
 				await supabase
-					.from("customized_ai_topic")
+					.from('customized_ai_topic')
 					.delete()
-					.in("id", aiTopicId)
-					.select("sub_topic_id");
+					.in('id', aiTopicId)
+					.select('sub_topic_id');
 			if (aiTopicDeleteError) {
 				res.status(500).json({ message: aiTopicDeleteError.message });
 				return;
@@ -53,7 +53,7 @@ export default async function handler(
 
 			const { data: aiTopicCreateData, error: aiTopicCreateError } =
 				await supabase
-					.from("customized_ai_topic")
+					.from('customized_ai_topic')
 					.insert(
 						aiTopic.map((en, index) => ({
 							name: en,
@@ -61,7 +61,7 @@ export default async function handler(
 							sub_topic_id: subTopic ?? aiTopicDeleteData[0].sub_topic_id,
 						})),
 					)
-					.select("id");
+					.select('id');
 			if (aiTopicCreateError) {
 				res.status(500).json({ message: aiTopicCreateError.message });
 				return;
@@ -69,7 +69,7 @@ export default async function handler(
 
 			if (aiTopicCreateData?.length) {
 				const { error: clipTopicError } = await supabase
-					.from("clip_topic")
+					.from('clip_topic')
 					.insert(
 						aiTopicCreateData.map(({ id: aiTopicId }) => ({
 							clip_id: id,
@@ -87,9 +87,9 @@ export default async function handler(
 	// clip mutate
 	if (name) {
 		const { error: clipError } = await supabase
-			.from("clip")
+			.from('clip')
 			.update({ name })
-			.eq("id", id);
+			.eq('id', id);
 		if (clipError) {
 			res.status(500).json({ message: clipError.message });
 			return;

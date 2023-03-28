@@ -1,5 +1,4 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import generateReport from "../../../lib/open-ai/generate-report";
 import getRSS from "../../../lib/rss/getRSS";
 import { ReportInput } from "../../../store/report";
 
@@ -21,8 +20,7 @@ export default async function handler(
 	// get RSS feeds
 	const rssFeeds = await getRSS();
 
-	// report generation
-	const report = await generateReport({ script });
 
-	res.status(200).send(report);
+
+	res.status(200).send({});
 }

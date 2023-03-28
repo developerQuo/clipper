@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { getSession } from "next-auth/react";
 import { IForm } from "../../../components/ui/clip/Form";
-import { supabase } from "../../../lib/supabaseClient";
+import { supabase } from '@/utils/supabase-client';
 
 // TODO: tx
 export default async function handler(

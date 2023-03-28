@@ -1,21 +1,21 @@
-import { GetServerSideProps } from "next";
-import { Session } from "next-auth";
-import { useRouter } from "next/router";
-import { ColumnType } from "rc-table/lib/interface";
-import { useContext } from "react";
-import { useRecoilValue } from "recoil";
-import Table from "../../../components/ui/Table";
-import serverSideAuthGuard from "../../../components/utils/serverSideAuthGuard";
-import { supabase } from "../../../lib/supabaseClient";
-import NotificationContext from "../../../store/notification-context";
-import { SelectedKeyState, SelectedKeyType } from "../../../store/table";
+import { GetServerSideProps } from 'next';
+import { Session } from 'next-auth';
+import { useRouter } from 'next/router';
+import { ColumnType } from 'rc-table/lib/interface';
+import { useContext } from 'react';
+import { useRecoilValue } from 'recoil';
+import Table from '../../../components/ui/Table';
+import serverSideAuthGuard from '../../../components/utils/serverSideAuthGuard';
+import { supabase } from '@/utils/supabase-client';
+import NotificationContext from '../../../store/notification-context';
+import { SelectedKeyState, SelectedKeyType } from '../../../store/table';
 
 export type DataType = { id: string; name: string };
 
 const columns: ColumnType<DataType>[] = [
 	{
-		title: "이름",
-		dataIndex: "name",
+		title: '이름',
+		dataIndex: 'name',
 	},
 ];
 
@@ -30,24 +30,24 @@ export default function Clip({ clip }: InputProps) {
 	const onCreate = () => {
 		if (clip.count >= 2) {
 			notificationCtx.showNotification({
-				title: "",
-				message: "클립은 최대 2개까지만 생성할 수 있습니다.",
-				status: "warning",
+				title: '',
+				message: '클립은 최대 2개까지만 생성할 수 있습니다.',
+				status: 'warning',
 			});
 		} else {
-			router.push("clip/mutate");
+			router.push('clip/mutate');
 		}
 	};
 	const onUpdate = () => {
-		router.push({ pathname: "clip/mutate", query: { id: selectedKey } });
+		router.push({ pathname: 'clip/mutate', query: { id: selectedKey } });
 	};
 	const onDelete = () => {
-		const TITLE = "클립 삭제";
-		fetch("/api/clip/delete", {
-			method: "POST",
+		const TITLE = '클립 삭제';
+		fetch('/api/clip/delete', {
+			method: 'POST',
 			body: JSON.stringify({ clipId: selectedKey }),
 			headers: {
-				"Content-Type": "application/json",
+				'Content-Type': 'application/json',
 			},
 		})
 			.then((res) => {
@@ -61,17 +61,17 @@ export default function Clip({ clip }: InputProps) {
 			})
 			.then(() => {
 				notificationCtx.showNotification({
-					title: "성공!",
+					title: '성공!',
 					message: `${TITLE}을 완료되었습니다.`,
-					status: "success",
+					status: 'success',
 				});
 				router.reload();
 			})
 			.catch((error) => {
 				notificationCtx.showNotification({
-					title: "실패!",
+					title: '실패!',
 					message: error.message,
-					status: "error",
+					status: 'error',
 				});
 			});
 	};
@@ -111,11 +111,11 @@ export const getServerSideProps: GetServerSideProps<InputProps> = async (
 	context,
 ) => {
 	const guard = (await serverSideAuthGuard(context)) as any;
-	if (guard.hasOwnProperty("redirect")) return guard;
+	if (guard.hasOwnProperty('redirect')) return guard;
 	console.log(guard.props.session.user.id);
 	const clip = await supabase
-		.from("clip")
-		.select("id,name,user_clip(count)", { count: "exact" })
-		.eq("user_clip.user_id", guard.props.session.user.id);
+		.from('clip')
+		.select('id,name,user_clip(count)', { count: 'exact' })
+		.eq('user_clip.user_id', guard.props.session.user.id);
 	return { props: { clip } };
 };

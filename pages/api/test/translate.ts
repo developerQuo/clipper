@@ -1,5 +1,4 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { openai } from "../../../lib/open-ai/openai";
 import GoogleTranslate from "@google-cloud/translate";
 
 export default async function handler(

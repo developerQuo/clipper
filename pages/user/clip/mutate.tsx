@@ -1,12 +1,12 @@
-import { GetServerSideProps } from "next";
-import serverSideAuthGuard from "../../../components/utils/serverSideAuthGuard";
-import { supabase } from "../../../lib/supabaseClient";
+import { GetServerSideProps } from 'next';
+import serverSideAuthGuard from '../../../components/utils/serverSideAuthGuard';
+import { supabase } from '@/utils/supabase-client';
 import Form, {
 	IForm,
 	SubTopicOptionType,
-} from "../../../components/ui/clip/Form";
-import { OptionType } from "../../../components/ui/types";
-import { SubKeywordOutput } from "../../../store/clip";
+} from '../../../components/ui/clip/Form';
+import { OptionType } from '../../../components/ui/types';
+import { SubKeywordOutput } from '../../../store/clip';
 
 type InputProps = {
 	initialValues: IForm;
@@ -16,7 +16,7 @@ type InputProps = {
 };
 
 export default function MutateClip(props: InputProps) {
-	const ACTION = props.initialValues?.id ? "Update" : "Create";
+	const ACTION = props.initialValues?.id ? 'Update' : 'Create';
 
 	return (
 		<>
@@ -30,11 +30,11 @@ export default function MutateClip(props: InputProps) {
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
 	const guard = (await serverSideAuthGuard(context)) as any;
-	if (guard.hasOwnProperty("redirect")) return guard;
+	if (guard.hasOwnProperty('redirect')) return guard;
 
 	const { id } = context.query;
 	const { data: clipData } = await supabase
-		.from("clip")
+		.from('clip')
 		.select(
 			`
 		id,
@@ -52,7 +52,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 		)
 		`,
 		)
-		.eq("id", id);
+		.eq('id', id);
 
 	const initialValues =
 		clipData && clipData[0].clip_topic
@@ -74,7 +74,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 				ko: customized_ai_topic.korean,
 		  }))
 		: null;
-	const topics = await supabase.from("main_topic").select(`
+	const topics = await supabase.from('main_topic').select(`
 		id,
 		name,
 		korean,
@@ -85,7 +85,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 	)`);
 	const mainTopicOptions: OptionType[] = [];
 	let subTopicOptions: SubTopicOptionType = {};
-	if (topics.statusText === "OK") {
+	if (topics.statusText === 'OK') {
 		topics.data?.forEach((mainTopic) => {
 			mainTopicOptions.push({
 				value: mainTopic.id,
