@@ -6,6 +6,7 @@ import { pinecone } from '@/utils/pinecone-client';
 import { PINECONE_INDEX_NAME } from '@/config/pinecone';
 import { getSession } from 'next-auth/react';
 import { supabase } from '@/utils/supabase-client';
+import { ChatInput } from '@/types/chat';
 
 export default async function handler(
 	req: NextApiRequest,
@@ -19,7 +20,12 @@ export default async function handler(
 	const session = await getSession({ req });
 	const userId = session?.user?.id;
 
-	const { question, history, contentId, condensePrompt, qaPrompt } = req.body;
+	const { question, history, contentId, condensePrompt, qaPrompt } =
+		req.body as unknown as ChatInput & {
+			contentId: string;
+			condensePrompt: string;
+			qaPrompt: string;
+		};
 
 	if (!userId || !question) {
 		return res.status(400).json({ message: 'No question in the request' });

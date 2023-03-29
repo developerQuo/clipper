@@ -1,3 +1,4 @@
+import { ChatInput } from '@/types/chat';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { getSession } from 'next-auth/react';
 import {
@@ -24,11 +25,10 @@ export default async function handler(
 	const session = await getSession({ req });
 	const userId = session?.user?.id;
 
-	const { question, history, systemMessage } = req.body as unknown as {
-		question: string;
-		history: [string, string][];
-		systemMessage?: string;
-	};
+	const { question, history, systemMessage } =
+		req.body as unknown as ChatInput & {
+			systemMessage?: string;
+		};
 
 	if (!userId || !question) {
 		return res.status(400).json({ message: 'No question in the request' });
