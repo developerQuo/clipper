@@ -27,8 +27,9 @@ const Viewer = () => {
 		null,
 	);
 
-	const { path } = useRecoilValue<SelectedContent>(SelectedContentState) || {};
-	const filePath = useMemo(() => `/docs${path}.pdf`, [path]);
+	const { file_path } =
+		useRecoilValue<SelectedContent>(SelectedContentState) || {};
+	const filePath = useMemo(() => `/docs${file_path}.pdf`, [file_path]);
 	/**
 	 * React-Window cannot get item size using async getter, therefore we need to
 	 * calculate them ahead of time.

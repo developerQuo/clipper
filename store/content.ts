@@ -5,7 +5,7 @@ export type Content = {
 	title: string;
 	summary: string;
 	published_at: any;
-	path: string;
+	file_path: string;
 	views: number;
 	media: string | undefined;
 	bookmark: boolean;

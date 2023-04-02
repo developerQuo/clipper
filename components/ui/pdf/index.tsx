@@ -1,5 +1,5 @@
 import ChatDoc from '@/components/ui/chat';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { ColumnType } from 'rc-table/lib/interface';
 import Table from '@/components/ui/Table';
 import { useRecoilState, useSetRecoilState } from 'recoil';
@@ -14,6 +14,7 @@ import { PostgrestSingleResponse } from '@supabase/supabase-js';
 import Bookmark from './bookmark';
 import { supabase } from '@/utils/supabase-client';
 import { getSession, useSession } from 'next-auth/react';
+import Link from 'next/link';
 
 const columns: ColumnType<Content>[] = [
 	{
@@ -53,12 +54,13 @@ export default function Drawer() {
 			const { data, ...result } = await supabase
 				.from('content')
 				.select(
-					'id,title,summary,published_at,path,views,content_source(media(name)),bookmark(user_id)',
+					'id,title,summary,published_at,file_path,views,content_source(media(name)),bookmark(user_id)',
 					{
 						count: 'exact',
 					},
 				)
 				.eq('file_type', 'pdf')
+				.eq('vector_upload', true)
 				.eq('bookmark.user_id', userId);
 
 			setQuery({
@@ -102,6 +104,16 @@ export default function Drawer() {
 			fetch();
 		}
 	}, [selectedContent?.bookmark, userId]);
+
+	const fileUrl = useMemo(() => {
+		if (selectedContent?.file_path) {
+			const { data } = supabase.storage
+				.from('docs')
+				.getPublicUrl(selectedContent.file_path);
+
+			return data.publicUrl;
+		}
+	}, [selectedContent?.file_path]);
 	return (
 		<div className="drawer">
 			<input
@@ -148,6 +160,11 @@ export default function Drawer() {
 						<div className="w-1/2 bg-base-100">
 							<div className="flex justify-between p-4">
 								<Bookmark />
+								<Link href={fileUrl ?? '#'} legacyBehavior>
+									<a target="_blank" className="btn-secondary btn">
+										원본 보기
+									</a>
+								</Link>
 								<button
 									className="btn-outline btn-error btn-square btn"
 									onClick={() => drawerRef.current?.click()}
