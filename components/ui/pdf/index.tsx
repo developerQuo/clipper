@@ -189,7 +189,6 @@ export default function Drawer() {
 									</svg>
 								</button>
 							</div>
-							<Viewer />
 						</div>
 					</div>
 					<div className="absolute right-24 top-48">

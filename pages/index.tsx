@@ -1,9 +1,7 @@
 import { useEffect, useState } from 'react';
 import { GetServerSideProps } from 'next';
 import serverSideAuthGuard from '@/components/utils/serverSideAuthGuard';
-import dynamic from 'next/dynamic';
-
-const PDF = dynamic(() => import('@/components/ui/pdf'));
+import PDF from '@/components/ui/pdf';
 
 // TODO: add favicon
 export default function HomePage() {
