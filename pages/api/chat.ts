@@ -3,10 +3,12 @@ import { OpenAIEmbeddings } from 'langchain/embeddings';
 import { PineconeStore } from 'langchain/vectorstores';
 import { makeChain } from '@/utils/makechain';
 import { pinecone } from '@/utils/pinecone-client';
-import { PINECONE_INDEX_NAME } from '@/config/pinecone';
+import { PINECONE_INDEX_NAME, PINECONE_NAME_SPACE } from '@/config/pinecone';
 import { getSession } from 'next-auth/react';
 import { supabase } from '@/utils/supabase-client';
 import { ChatInput } from '@/types/chat';
+import { OpenAI } from 'langchain';
+import { VectorDBQAChain } from 'langchain/chains';
 
 export default async function handler(
 	req: NextApiRequest,
@@ -20,22 +22,30 @@ export default async function handler(
 	const session = await getSession({ req });
 	const userId = session?.user?.id;
 
-	const { question, history, contentId } = req.body as unknown as ChatInput & {
-		contentId: string;
-	};
+	const { question, history, contentId, source } =
+		req.body as unknown as ChatInput & {
+			contentId: string;
+			source: string;
+		};
 
-	if (!userId || !question) {
+	if (!userId || !question || !contentId || !source) {
 		return res.status(400).json({ message: 'No question in the request' });
 	}
 	// OpenAI recommends replacing newlines with spaces for best results
 	const sanitizedQuestion = question.trim().replaceAll('\n', ' ');
 
 	const index = pinecone.Index(PINECONE_INDEX_NAME);
+	console.log('source', source);
 
 	/* create vectorstore*/
 	const vectorStore = await PineconeStore.fromExistingIndex(
 		new OpenAIEmbeddings({}),
-		{ pineconeIndex: index, textKey: 'text', namespace: `${contentId}` },
+		{
+			pineconeIndex: index,
+			textKey: 'text',
+			namespace: PINECONE_NAME_SPACE,
+			filter: { source: { $eq: source } },
+		},
 	);
 
 	res.writeHead(200, {
@@ -54,19 +64,36 @@ export default async function handler(
 	const chain = makeChain(vectorStore, (token: string) => {
 		sendData(JSON.stringify({ data: token }));
 	});
-
 	try {
 		//Ask a question
-		const response = await chain.call({
+		const chainCall = {
 			question: sanitizedQuestion,
 			chat_history:
 				history.map((chat: [string, string]) => [
 					`me: ${chat[0]}\n`,
 					`someone: ${chat[1]}\n`,
 				]) || [],
-		});
+			source,
+		};
+		let response = await chain.call(chainCall);
 
-		// console.log('response', response);
+		if (response.text.includes('no data')) {
+			const vectorStoreAllDocs = await PineconeStore.fromExistingIndex(
+				new OpenAIEmbeddings({}),
+				{
+					pineconeIndex: index,
+					textKey: 'text',
+					namespace: PINECONE_NAME_SPACE,
+				},
+			);
+			const chainAllDocs = makeChain(vectorStoreAllDocs, (token: string) => {
+				sendData(JSON.stringify({ data: token }));
+			});
+
+			sendData(JSON.stringify({ data: '\n\n' }));
+			response = await chainAllDocs.call(chainCall);
+		}
+
 		sendData(JSON.stringify({ sourceDocs: response.sourceDocuments }));
 
 		const [userHistory, botHistory] = history.reduce(

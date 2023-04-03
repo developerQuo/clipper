@@ -4,4 +4,6 @@
 
 const PINECONE_INDEX_NAME = 'clipper';
 
-export { PINECONE_INDEX_NAME };
+const PINECONE_NAME_SPACE = 'docs';
+
+export { PINECONE_INDEX_NAME, PINECONE_NAME_SPACE };
