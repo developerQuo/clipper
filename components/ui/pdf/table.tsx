@@ -13,19 +13,23 @@ export default function Table<RecordType extends DefaultRecordType>({
 	const router = useRouter();
 	const { contentId } = router.query;
 
-	useEffect(() => {
-		
-		router.query.contentId = undefined;
-	}, [router.query, router.query.contentId]);
 	return (
 		<BaseTable
 			onRow={(record) => ({
 				onClick: () => {
 					if (contentId === record.id) {
-						router.query.contentId = undefined;
+						router.push(
+							{ query: { ...router.query, contentId: undefined } },
+							undefined,
+							{ shallow: true },
+						);
 						return;
 					}
-					router.query.contentId = record.id;
+					router.push(
+						{ query: { ...router.query, contentId: record.id } },
+						undefined,
+						{ shallow: true },
+					);
 				},
 				className: `cursor-pointer hover ${
 					contentId === record.id && 'active'

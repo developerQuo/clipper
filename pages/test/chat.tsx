@@ -119,7 +119,6 @@ export default function Drawer() {
 			return data.publicUrl;
 		}
 	}, [selectedContent?.file_path]);
-	console.log(fileUrl);
 	return (
 		<div className="drawer">
 			<input
@@ -214,7 +213,6 @@ export default function Drawer() {
 									</svg>
 								</button>
 							</div>
-							<Viewer />
 						</div>
 					</div>
 					<div className="absolute right-24 top-48">
