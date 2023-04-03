@@ -69,7 +69,12 @@ const Viewer = () => {
 	}
 
 	return (
-		<Document file={filePath} onLoadSuccess={onDocumentLoadSuccess}>
+		<Document
+			file={filePath}
+			onLoadSuccess={(pdf) =>
+				onDocumentLoadSuccess(pdf as unknown as PDFDocumentProxy)
+			}
+		>
 			{pdf && pageViewports ? (
 				<List
 					width={windowWidth!}

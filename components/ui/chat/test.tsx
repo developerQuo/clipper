@@ -16,6 +16,7 @@ import { useRecoilValue } from 'recoil';
 import { SelectedKeyState, SelectedKeyType } from '@/store/table';
 import { supabase } from '@/utils/supabase-client';
 import { useSession } from 'next-auth/react';
+import { SelectedContent, SelectedContentState } from '@/store/content';
 
 type MessageState = {
 	messages: Message[];
@@ -39,6 +40,7 @@ type InputProps = { condensePrompt: string; qaPrompt: string };
 
 export default function ChatDoc({ condensePrompt, qaPrompt }: InputProps) {
 	const selectedKey = useRecoilValue<SelectedKeyType>(SelectedKeyState);
+	const selectedContent = useRecoilValue<SelectedContent>(SelectedContentState);
 	const [query, setQuery] = useState<string>('');
 	const [loading, setLoading] = useState<boolean>(false);
 	const [sourceDocs, setSourceDocs] = useState<Document[]>([]);
@@ -134,6 +136,7 @@ export default function ChatDoc({ condensePrompt, qaPrompt }: InputProps) {
 					contentId: selectedKey,
 					condensePrompt,
 					qaPrompt,
+					source: `${selectedContent?.title}`,
 				}),
 				signal: ctrl.signal,
 				onmessage: (event) => {

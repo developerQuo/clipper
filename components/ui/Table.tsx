@@ -4,7 +4,7 @@ import { DefaultRecordType } from 'rc-table/lib/interface';
 import { useRecoilState } from 'recoil';
 import { SelectedKeyType, SelectedKeyState } from '../../store/table';
 
-type InputProps<RecordType> = TableProps<RecordType> & {
+export type InputProps<RecordType> = TableProps<RecordType> & {
 	count?: number;
 	additionalRowClick?: (record: RecordType) => void;
 };

@@ -1,5 +1,5 @@
 import ChatDoc from '@/components/ui/chat/test';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { ColumnType } from 'rc-table/lib/interface';
 import Table from '@/components/ui/Table';
 import { useRecoilState, useSetRecoilState } from 'recoil';
@@ -15,6 +15,8 @@ import Bookmark from '../../components/ui/pdf/bookmark';
 import { supabase } from '@/utils/supabase-client';
 import { getSession, useSession } from 'next-auth/react';
 import { Textarea } from '@/components/ui/TextArea';
+import { CONDENSE_PROMPT, QA_PROMPT } from '@/config/prompt';
+import Link from 'next/link';
 
 const columns: ColumnType<Content>[] = [
 	{
@@ -29,25 +31,6 @@ const columns: ColumnType<Content>[] = [
 ];
 
 type QueryType = PostgrestSingleResponse<Content[]>;
-
-const CONDENSE_PROMPT = `Given the following conversation and a follow up question, rephrase the follow up question to be a standalone question.
-
-Chat History:
-{chat_history}
-Follow Up Input: {question}
-Standalone question:`;
-
-const QA_PROMPT = `You are an AI assistant providing helpful advice. You are given the following extracted parts of a long document and a question. Provide a conversational answer based on the context provided.
-You should only provide hyperlinks that reference the context below. Do NOT make up hyperlinks.
-If you can't find the answer in the context below, just say "Hmm, I'm not sure." Don't try to make up an answer.
-If the question is not related to the context, politely respond that you are tuned to only answer questions that are related to the context.
-Provide a answer in the language of the question asked.
-
-Question: {question}
-=========
-{context}
-=========
-Answer in Markdown:`;
 
 export default function Drawer() {
 	const drawerRef = useRef<HTMLInputElement | null>(null);
@@ -73,13 +56,14 @@ export default function Drawer() {
 			const { data, ...result } = await supabase
 				.from('content')
 				.select(
-					'id,title,summary,published_at,path,views,content_source(media(name)),bookmark(user_id)',
+					'id,title,summary,published_at,file_path,views,content_source(media(name)),bookmark(user_id)',
 					{
 						count: 'exact',
 					},
 				)
 				.eq('file_type', 'pdf')
-				.eq('bookmark.user_id', userId);
+				.eq('bookmark.user_id', userId)
+				.in('id', [23, 24, 25, 26, 27, 28]);
 
 			setQuery({
 				...result,
@@ -125,6 +109,17 @@ export default function Drawer() {
 	const [standalonePrompt, setStandalonePrompt] =
 		useState<string>(CONDENSE_PROMPT);
 	const [docPrompt, setDocPrompt] = useState<string>(QA_PROMPT);
+
+	const fileUrl = useMemo(() => {
+		if (selectedContent?.file_path) {
+			const { data } = supabase.storage
+				.from('test')
+				.getPublicUrl(selectedContent.file_path);
+
+			return data.publicUrl;
+		}
+	}, [selectedContent?.file_path]);
+	console.log(fileUrl);
 	return (
 		<div className="drawer">
 			<input
@@ -193,8 +188,13 @@ export default function Drawer() {
 						<div className="w-1/2 bg-base-100">
 							<div className="flex justify-between p-4">
 								<Bookmark />
+								<Link href={fileUrl ?? '#'} legacyBehavior>
+									<a target="_blank" className="btn-secondary btn">
+										원본 보기
+									</a>
+								</Link>
 								<button
-									className="btn-error btn-outline btn-square btn"
+									className="btn-outline btn-error btn-square btn"
 									onClick={() => drawerRef.current?.click()}
 								>
 									{' '}

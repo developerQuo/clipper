@@ -15,6 +15,7 @@ import Bookmark from './bookmark';
 import { supabase } from '@/utils/supabase-client';
 import { getSession, useSession } from 'next-auth/react';
 import Link from 'next/link';
+import Share from './share';
 
 const columns: ColumnType<Content>[] = [
 	{
@@ -61,7 +62,8 @@ export default function Drawer() {
 				)
 				.eq('file_type', 'pdf')
 				.eq('vector_upload', true)
-				.eq('bookmark.user_id', userId);
+				.eq('bookmark.user_id', userId)
+				.not('id', 'in', '(23, 24, 25, 26, 27, 28)');
 
 			setQuery({
 				...result,
@@ -165,6 +167,7 @@ export default function Drawer() {
 										원본 보기
 									</a>
 								</Link>
+								<Share />
 								<button
 									className="btn-outline btn-error btn-square btn"
 									onClick={() => drawerRef.current?.click()}

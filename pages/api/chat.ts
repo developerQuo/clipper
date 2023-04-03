@@ -7,8 +7,6 @@ import { PINECONE_INDEX_NAME, PINECONE_NAME_SPACE } from '@/config/pinecone';
 import { getSession } from 'next-auth/react';
 import { supabase } from '@/utils/supabase-client';
 import { ChatInput } from '@/types/chat';
-import { OpenAI } from 'langchain';
-import { VectorDBQAChain } from 'langchain/chains';
 
 export default async function handler(
 	req: NextApiRequest,
@@ -73,7 +71,6 @@ export default async function handler(
 					`me: ${chat[0]}\n`,
 					`someone: ${chat[1]}\n`,
 				]) || [],
-			source,
 		};
 		let response = await chain.call(chainCall);
 

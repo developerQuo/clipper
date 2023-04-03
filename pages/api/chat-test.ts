@@ -3,7 +3,10 @@ import { OpenAIEmbeddings } from 'langchain/embeddings';
 import { PineconeStore } from 'langchain/vectorstores';
 import { makeChain } from '@/utils/makechain-test';
 import { pinecone } from '@/utils/pinecone-client';
-import { PINECONE_INDEX_NAME } from '@/config/pinecone';
+import {
+	PINECONE_INDEX_NAME,
+	TEST_PINECONE_NAME_SPACE,
+} from '@/config/pinecone';
 import { getSession } from 'next-auth/react';
 import { supabase } from '@/utils/supabase-client';
 import { ChatInput } from '@/types/chat';
@@ -20,11 +23,12 @@ export default async function handler(
 	const session = await getSession({ req });
 	const userId = session?.user?.id;
 
-	const { question, history, contentId, condensePrompt, qaPrompt } =
+	const { question, history, contentId, condensePrompt, qaPrompt, source } =
 		req.body as unknown as ChatInput & {
 			contentId: string;
 			condensePrompt: string;
 			qaPrompt: string;
+			source: string;
 		};
 
 	if (!userId || !question) {
@@ -38,7 +42,12 @@ export default async function handler(
 	/* create vectorstore*/
 	const vectorStore = await PineconeStore.fromExistingIndex(
 		new OpenAIEmbeddings({}),
-		{ pineconeIndex: index, textKey: 'text', namespace: `${contentId}` },
+		{
+			pineconeIndex: index,
+			textKey: 'text',
+			namespace: TEST_PINECONE_NAME_SPACE,
+			filter: { source: { $eq: source } },
+		},
 	);
 
 	res.writeHead(200, {
@@ -67,11 +76,16 @@ export default async function handler(
 		//Ask a question
 		const response = await chain.call({
 			question: sanitizedQuestion,
-			chat_history: history || [],
+			chat_history:
+				history.map((chat: [string, string]) => [
+					`me: ${chat[0]}\n`,
+					`someone: ${chat[1]}\n`,
+				]) || [],
 		});
 
 		// console.log('response', response);
 		sendData(JSON.stringify({ sourceDocs: response.sourceDocuments }));
+
 		await supabase
 			.from('chat_history')
 			.upsert({
