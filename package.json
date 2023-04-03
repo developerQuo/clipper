@@ -8,7 +8,9 @@
 		"build": "next build",
 		"start": "next start",
 		"lint": "eslint --ignore-path .gitignore \"**/*.+(ts|js|tsx)\"",
-		"ingest": "tsx scripts/ingest-data.ts"
+		"analyze": "cross-env ANALYZE=true next build",
+		"analyze:server": "cross-env BUNDLE_ANALYZE=server next build",
+		"analyze:browser": "cross-env BUNDLE_ANALYZE=browser next build"
 	},
 	"dependencies": {
 		"@google-cloud/translate": "^7.2.0",
@@ -50,6 +52,7 @@
 		"typescript": "5.0.3"
 	},
 	"devDependencies": {
+		"@next/bundle-analyzer": "^13.2.4",
 		"@types/bcryptjs": "^2.4.2",
 		"@types/crypto-js": "^4.1.1",
 		"@types/jsonwebtoken": "^9.0.1",
@@ -58,6 +61,7 @@
 		"@types/react-dom": "^18.0.11",
 		"@types/react-pdf": "^6.2.0",
 		"@types/react-window": "^1.8.5",
+		"cross-env": "^7.0.3",
 		"eslint-config-next": "^13.2.4",
 		"prettier-plugin-tailwindcss": "^0.2.6",
 		"tsx": "^3.12.6"
