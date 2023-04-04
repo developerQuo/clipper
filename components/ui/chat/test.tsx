@@ -17,6 +17,7 @@ import { SelectedKeyState, SelectedKeyType } from '@/store/table';
 import { supabase } from '@/utils/supabase-client';
 import { useSession } from 'next-auth/react';
 import { SelectedContent, SelectedContentState } from '@/store/content';
+import { Textarea } from '../TextArea';
 
 type MessageState = {
 	messages: Message[];
@@ -316,13 +317,12 @@ export default function ChatDoc({ condensePrompt, qaPrompt }: InputProps) {
 				<div className={styles.center}>
 					<div className={styles.cloudform}>
 						<form onSubmit={handleSubmit}>
-							<textarea
+							<Textarea
 								disabled={loading}
 								onKeyDown={handleEnter}
 								ref={textAreaRef}
 								autoFocus={false}
 								rows={1}
-								maxLength={512}
 								id="userInput"
 								name="userInput"
 								placeholder={
