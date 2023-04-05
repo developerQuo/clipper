@@ -24,7 +24,7 @@ function MenuItem({ name, path, onClick }: MenuItemProps) {
 function Navigation() {
 	const { data: session } = useSession();
 	return (
-		<nav className="flex flex-col justify-between text-xs font-bold lg:text-sm">
+		<nav className="flex flex-col justify-between bg-white text-xs font-bold lg:text-sm">
 			<div className="justify-start">
 				<ul className="menu w-40 bg-base-100 text-base-content">
 					<MenuItem name="Live Chat" path="/" />

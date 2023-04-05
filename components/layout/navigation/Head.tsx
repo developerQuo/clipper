@@ -29,7 +29,7 @@ function Navigation() {
 		<nav className="text-xs font-bold lg:text-sm">
 			<ul
 				tabIndex={0}
-				className="dropdown-content menu menu-compact mt-3 w-52 bg-base-100 p-2"
+				className="dropdown-content menu menu-compact mt-3 w-36 bg-base-100 p-2"
 			>
 				{session && <MenuItem name="Log out" path="/api/auth/signout" />}
 			</ul>

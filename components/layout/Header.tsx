@@ -5,6 +5,23 @@ import Image from 'next/image';
 function Header() {
 	return (
 		<header className="navbar z-10 h-[100px] bg-transparent bg-opacity-90 px-4">
+			<div className="flex-none">
+				<label htmlFor="menu-drawer" className="btn-ghost btn-square btn">
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						fill="none"
+						viewBox="0 0 24 24"
+						className="inline-block h-5 w-5 stroke-current"
+					>
+						<path
+							strokeLinecap="round"
+							strokeLinejoin="round"
+							strokeWidth="2"
+							d="M4 6h16M4 12h16M4 18h16"
+						></path>
+					</svg>
+				</label>
+			</div>
 			<div className="navbar-start pl-[24px] lg:pl-[32px]">
 				<div className="hidden lg:block">
 					<Link
