@@ -1,4 +1,4 @@
-import { atom } from 'recoil';
+import { PostgrestSingleResponse } from "@supabase/supabase-js";
 
 export type Content = {
 	id: string;
@@ -13,9 +13,4 @@ export type Content = {
 	bookmarks: number; // 전체 유저 북마크 수
 };
 
-export type SelectedContent = Content | undefined;
-
-export const SelectedContentState = atom<SelectedContent>({
-	key: 'SelectedContentState',
-	default: undefined,
-});
+export type QueryType = PostgrestSingleResponse<Content[]>;

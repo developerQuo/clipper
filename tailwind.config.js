@@ -42,15 +42,18 @@ module.exports = {
 				'google-sign-in-pressed':
 					"url('/images/google/btn_google_signin_dark_pressed_web.png')",
 			},
+			screens: {
+				'3xl': '1920px',
+			},
 		},
 		container: {
 			center: true,
-			// screens: {
-			// 	sm: "640px",
-			// 	md: "768px",
-			// 	lg: "1024px",
-			// 	xl: "1280px",
-			// },
+			screens: {
+				// sm: '640px',
+				// md: '768px',
+				// lg: '1024px',
+				// xl: '1280px',
+			},
 		},
 	},
 	daisyui: {

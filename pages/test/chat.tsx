@@ -4,14 +4,14 @@ import { ColumnType } from 'rc-table/lib/interface';
 import Table from '@/components/ui/Table';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import { SelectedKeyType, SelectedKeyState } from '@/store/table';
-import Viewer from '@/components/ui/pdf/viewer';
+import Viewer from '@/components/ui/content/viewer';
 import {
 	SelectedContent,
 	Content,
 	SelectedContentState,
 } from '@/store/content';
 import { PostgrestSingleResponse } from '@supabase/supabase-js';
-import Bookmark from '../../components/ui/pdf/bookmark';
+import Bookmark from '../../components/ui/bookmark/button';
 import { supabase } from '@/utils/supabase-client';
 import { getSession, useSession } from 'next-auth/react';
 import { Textarea } from '@/components/ui/TextArea';
@@ -186,14 +186,13 @@ export default function Drawer() {
 						<label htmlFor="report-drawer" className="drawer-overlay"></label>
 						<div className="w-1/2 bg-base-100">
 							<div className="flex justify-between p-4">
-								<Bookmark />
 								<Link href={fileUrl ?? '#'} legacyBehavior>
 									<a target="_blank" className="btn-secondary btn">
 										원본 보기
 									</a>
 								</Link>
 								<button
-									className="btn-outline btn-error btn-square btn"
+									className="btn-error btn-outline btn-square btn"
 									onClick={() => drawerRef.current?.click()}
 								>
 									{' '}
@@ -215,7 +214,7 @@ export default function Drawer() {
 							</div>
 						</div>
 					</div>
-					<div className="absolute right-24 top-48">
+					<div className="absolute right-24 top-72">
 						<ChatDoc condensePrompt={standalonePrompt} qaPrompt={docPrompt} />
 					</div>
 				</>

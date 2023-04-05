@@ -1,9 +1,8 @@
 import { useEffect, useState } from 'react';
 import { GetServerSideProps } from 'next';
 import serverSideAuthGuard from '@/components/utils/serverSideAuthGuard';
-import PDF from '@/components/ui/pdf';
+import Content from '@/components/ui/content';
 
-// TODO: add favicon
 export default function HomePage() {
 	const [showChild, setShowChild] = useState(false);
 
@@ -19,7 +18,7 @@ export default function HomePage() {
 
 	return (
 		<div>
-			<PDF />
+			<Content />
 		</div>
 	);
 }

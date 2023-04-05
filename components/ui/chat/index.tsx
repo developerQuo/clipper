@@ -36,9 +36,12 @@ const defaultMessageState: MessageState = {
 	pendingSourceDocs: [],
 };
 
-export default function ChatDoc() {
-	const selectedKey = useRecoilValue<SelectedKeyType>(SelectedKeyState);
-	const selectedContent = useRecoilValue<SelectedContent>(SelectedContentState);
+type InputProps = {
+	contentId: string;
+	source: string;
+};
+
+export default function ChatDoc({ contentId, source }: InputProps) {
 	const [query, setQuery] = useState<string>('');
 	const [loading, setLoading] = useState<boolean>(false);
 	const [sourceDocs, setSourceDocs] = useState<Document[]>([]);
@@ -52,7 +55,7 @@ export default function ChatDoc() {
 			const { data, error } = await supabase
 				.from('chat_history')
 				.select('user_history,bot_history')
-				.eq('content_id', selectedKey)
+				.eq('content_id', contentId)
 				.eq('user_id', userId);
 
 			if (!error && data && data.length > 0) {
@@ -79,10 +82,10 @@ export default function ChatDoc() {
 			}
 		};
 
-		if (userId && selectedKey) {
+		if (userId && contentId) {
 			fetch();
 		}
-	}, [selectedKey, userId]);
+	}, [contentId, userId]);
 
 	const { messages, pending, history, pendingSourceDocs } = messageState;
 
@@ -131,8 +134,8 @@ export default function ChatDoc() {
 				body: JSON.stringify({
 					question,
 					history,
-					contentId: selectedKey,
-					source: `${selectedContent?.media}/${selectedContent?.title}`,
+					contentId,
+					source,
 				}),
 				signal: ctrl.signal,
 				onmessage: (event) => {
@@ -206,7 +209,7 @@ export default function ChatDoc() {
 		const { error } = await supabase
 			.from('chat_history')
 			.update({ user_history: [], bot_history: [] })
-			.eq('content_id', selectedKey)
+			.eq('content_id', contentId)
 			.eq('user_id', userId);
 
 		if (!error) {
@@ -216,9 +219,12 @@ export default function ChatDoc() {
 
 	return (
 		<>
-			<main className={styles.main}>
-				<div className={styles.cloud}>
-					<div ref={messageListRef} className={styles.messagelist}>
+			<main className="flex w-full flex-1 flex-col items-center justify-between bg-white p-2">
+				<div className="flex h-[65vh] w-full items-center justify-center rounded-lg border">
+					<div
+						ref={messageListRef}
+						className="h-full w-full overflow-y-scroll rounded-lg"
+					>
 						{chatMessages.map((message, index) => {
 							let icon;
 							let className;
@@ -309,8 +315,8 @@ export default function ChatDoc() {
 						)}
 					</div>
 				</div>
-				<div className={styles.center}>
-					<div className={styles.cloudform}>
+				<div className="relative flex w-full flex-col items-center justify-center py-8">
+					<div className="relative w-full flex-1">
 						<form onSubmit={handleSubmit}>
 							<textarea
 								disabled={loading}
@@ -328,7 +334,7 @@ export default function ChatDoc() {
 								}
 								value={query}
 								onChange={(e) => setQuery(e.target.value)}
-								className={styles.textarea}
+								className="relative w-full resize-none rounded-lg border bg-white px-4 py-8 text-lg text-black outline-0"
 							/>
 							<button
 								type="submit"

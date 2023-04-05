@@ -5,7 +5,7 @@ import Image from 'next/image';
 function Header() {
 	return (
 		<header className="navbar z-10 h-[100px] border-b bg-transparent bg-opacity-90 px-4">
-			<div className="flex-none">
+			<div className="flex-none lg:hidden">
 				<label htmlFor="menu-drawer" className="btn-ghost btn-square btn">
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
@@ -29,7 +29,7 @@ function Header() {
 						className="flex items-baseline gap-x-3 text-2xl font-bold"
 					>
 						<Image
-							src="/images/logo/wiillus_logo.svg"
+							src="/images/logo/clipper_logo.png"
 							alt="Logo"
 							width={101}
 							height={30}
@@ -42,7 +42,7 @@ function Header() {
 						className="flex items-baseline gap-x-3 text-base font-bold"
 					>
 						<Image
-							src="/images/logo/wiillus_logo.svg"
+							src="/images/logo/clipper_logo.png"
 							alt="Logo"
 							width={60.5}
 							height={15}
