@@ -14,10 +14,10 @@ function Layout({ children }: any) {
 			<Header />
 			<div className="drawer-mobile drawer flex-1">
 				<input id="menu-drawer" type="checkbox" className="drawer-toggle" />
-				<div className="drawer-content flex flex-col items-center justify-center">
+				<div className="drawer-content">
 					<main className="px-auto mt-[100px] pb-40 sm:px-20">{children}</main>
 				</div>
-				<div className="drawer-side">
+				<div className="drawer-side border-r">
 					<label htmlFor="menu-drawer" className="drawer-overlay"></label>
 					<SideNavigation />
 				</div>

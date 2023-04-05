@@ -4,7 +4,7 @@ import Image from 'next/image';
 
 function Header() {
 	return (
-		<header className="navbar z-10 h-[100px] bg-transparent bg-opacity-90 px-4">
+		<header className="navbar z-10 h-[100px] border-b bg-transparent bg-opacity-90 px-4">
 			<div className="flex-none">
 				<label htmlFor="menu-drawer" className="btn-ghost btn-square btn">
 					<svg
