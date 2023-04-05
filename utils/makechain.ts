@@ -19,7 +19,7 @@ export const makeChain = (
 	const questionGenerator = new LLMChain({
 		llm: new OpenAIChat({
 			temperature: 0,
-			modelName: 'gpt-3.5-turbo',
+			modelName: 'gpt-4',
 		}),
 		prompt: CONDENSE_PROMPT,
 	});

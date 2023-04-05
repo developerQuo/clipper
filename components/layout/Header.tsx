@@ -1,10 +1,10 @@
-import Navigation from './Navigation';
+import HeadNavigation from './navigation/Head';
 import Link from 'next/link';
 import Image from 'next/image';
 
 function Header() {
 	return (
-		<header className="navbar fixed z-10 h-[100px] justify-between bg-transparent bg-opacity-90 px-4 lg:container">
+		<header className="navbar z-10 h-[100px] bg-transparent bg-opacity-90 px-4">
 			<div className="navbar-start pl-[24px] lg:pl-[32px]">
 				<div className="hidden lg:block">
 					<Link
@@ -34,28 +34,7 @@ function Header() {
 				</div>
 			</div>
 			<div className="navbar-end">
-				<div className="hidden lg:block">
-					<Navigation />
-				</div>
-				<div className="dropdown-end dropdown lg:hidden">
-					<label tabIndex={0} className="btn-ghost btn-circle btn">
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							className="h-5 w-5"
-							fill="none"
-							viewBox="0 0 24 24"
-							stroke="currentColor"
-						>
-							<path
-								strokeLinecap="round"
-								strokeLinejoin="round"
-								strokeWidth="2"
-								d="M4 6h16M4 12h16M4 18h7"
-							/>
-						</svg>
-					</label>
-					<Navigation />
-				</div>
+				<HeadNavigation />
 			</div>
 		</header>
 	);
