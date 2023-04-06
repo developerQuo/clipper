@@ -9,7 +9,7 @@ import {
 } from '@/config/pinecone';
 import { getSession } from 'next-auth/react';
 import { supabase } from '@/utils/supabase-client';
-import { ChatInput } from '@/types/chat';
+import { ChatInput, ChatOptionInput } from '@/types/chat';
 
 export default async function handler(
 	req: NextApiRequest,
@@ -23,13 +23,21 @@ export default async function handler(
 	const session = await getSession({ req });
 	const userId = session?.user?.id;
 
-	const { question, history, contentId, condensePrompt, qaPrompt, source } =
-		req.body as unknown as ChatInput & {
-			contentId: string;
-			condensePrompt: string;
-			qaPrompt: string;
-			source: string;
-		};
+	const {
+		question,
+		history,
+		contentId,
+		condensePrompt,
+		qaPrompt,
+		source,
+		chatOptions,
+	} = req.body as unknown as ChatInput & {
+		contentId: string;
+		condensePrompt: string;
+		qaPrompt: string;
+		source: string;
+		chatOptions: ChatOptionInput;
+	};
 
 	if (!userId || !question) {
 		return res.status(400).json({ message: 'No question in the request' });
@@ -67,6 +75,7 @@ export default async function handler(
 		vectorStore,
 		condensePrompt,
 		qaPrompt,
+		chatOptions,
 		(token: string) => {
 			sendData(JSON.stringify({ data: token }));
 		},

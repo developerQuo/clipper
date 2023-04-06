@@ -1,6 +1,6 @@
 import { useRef, useState, useEffect, useMemo } from 'react';
 import styles from '@/styles/Home.module.css';
-import { Message } from '@/types/chat';
+import { ChatOptionInput, Message } from '@/types/chat';
 import { fetchEventSource } from '@microsoft/fetch-event-source';
 import Image from 'next/image';
 import ReactMarkdown from 'react-markdown';
@@ -37,9 +37,16 @@ const defaultMessageState: MessageState = {
 	pendingSourceDocs: [],
 };
 
-type InputProps = { condensePrompt: string; qaPrompt: string };
+type InputProps = {
+	condensePrompt: string;
+	qaPrompt: string;
+} & ChatOptionInput;
 
-export default function ChatDoc({ condensePrompt, qaPrompt }: InputProps) {
+export default function ChatDoc({
+	condensePrompt,
+	qaPrompt,
+	...chatOptions
+}: InputProps) {
 	const selectedKey = useRecoilValue<SelectedKeyType>(SelectedKeyState);
 	const selectedContent = useRecoilValue<SelectedContent>(SelectedContentState);
 	const [query, setQuery] = useState<string>('');
@@ -138,6 +145,7 @@ export default function ChatDoc({ condensePrompt, qaPrompt }: InputProps) {
 					condensePrompt,
 					qaPrompt,
 					source: `${selectedContent?.title}`,
+					chatOptions,
 				}),
 				signal: ctrl.signal,
 				onmessage: (event) => {

@@ -3,11 +3,13 @@ import { LLMChain, ChatVectorDBQAChain, loadQAChain } from 'langchain/chains';
 import { PineconeStore } from 'langchain/vectorstores';
 import { PromptTemplate } from 'langchain/prompts';
 import { CallbackManager } from 'langchain/callbacks';
+import { ChatOptionInput } from '@/types/chat';
 
 export const makeChain = (
 	vectorstore: PineconeStore,
 	condensePrompt: string,
 	qaPrompt: string,
+	chatOptions: ChatOptionInput,
 	onTokenStream?: (token: string) => void,
 ) => {
 	const CONDENSE_PROMPT = PromptTemplate.fromTemplate(condensePrompt);
@@ -20,8 +22,6 @@ export const makeChain = (
 	});
 	const docChain = loadQAChain(
 		new OpenAIChat({
-			temperature: 0,
-			modelName: 'gpt-3.5-turbo', //change this to older versions if you don't have access to gpt-4
 			streaming: Boolean(onTokenStream),
 			callbackManager: onTokenStream
 				? CallbackManager.fromHandlers({
@@ -31,6 +31,7 @@ export const makeChain = (
 						},
 				  })
 				: undefined,
+			...chatOptions,
 		}),
 		{ prompt: QA_PROMPT },
 	);

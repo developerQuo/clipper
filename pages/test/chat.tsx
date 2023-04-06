@@ -110,6 +110,13 @@ export default function Drawer() {
 		useState<string>(CONDENSE_PROMPT);
 	const [docPrompt, setDocPrompt] = useState<string>(QA_PROMPT);
 
+	const [model, setModel] = useState<string>('gpt-3.5-turbo');
+	const [temperature, setTemperature] = useState<number>(0);
+	const [top_p, setTop_p] = useState<number>(1);
+	const [n, setN] = useState<number>(1);
+	const [presence_penalty, setPresence_penalty] = useState<number>(0);
+	const [frequency_penalty, setFrequency_penalty] = useState<number>(0);
+
 	const fileUrl = useMemo(() => {
 		if (selectedContent?.file_path) {
 			const { data } = supabase.storage
@@ -156,6 +163,76 @@ export default function Drawer() {
 							/>
 						</div>
 					</div>
+					<div className="space-y-4 border border-gray-100 p-4">
+						<div className="text-center text-xl font-bold">Chat Options</div>
+						<div className="flex gap-2">
+							<div className="form-control w-full items-start gap-4">
+								<label className="text-base font-bold text-text-primary">
+									model
+								</label>
+								<input
+									className="input-bordered input focus:border-secondary focus:text-secondary"
+									value={model}
+									onChange={(e: any) => setModel(e.target.value)}
+								/>
+							</div>
+							<div className="form-control w-full items-start gap-4">
+								<label className="text-base font-bold text-text-primary">
+									temperature
+								</label>
+								<input
+									type="number"
+									className="input-bordered input focus:border-secondary focus:text-secondary"
+									value={temperature}
+									onChange={(e: any) => setTemperature(e.target.value)}
+								/>
+							</div>
+							<div className="form-control w-full items-start gap-4">
+								<label className="text-base font-bold text-text-primary">
+									top_p
+								</label>
+								<input
+									type="number"
+									className="input-bordered input focus:border-secondary focus:text-secondary"
+									value={top_p}
+									onChange={(e: any) => setTop_p(e.target.value)}
+								/>
+							</div>
+							<div className="form-control w-full items-start gap-4">
+								<label className="text-base font-bold text-text-primary">
+									n
+								</label>
+								<input
+									type="number"
+									className="input-bordered input focus:border-secondary focus:text-secondary"
+									value={n}
+									onChange={(e: any) => setN(e.target.value)}
+								/>
+							</div>
+							<div className="form-control w-full items-start gap-4">
+								<label className="text-base font-bold text-text-primary">
+									presence_penalty
+								</label>
+								<input
+									type="number"
+									className="input-bordered input focus:border-secondary focus:text-secondary"
+									value={presence_penalty}
+									onChange={(e: any) => setPresence_penalty(e.target.value)}
+								/>
+							</div>
+							<div className="form-control w-full items-start gap-4">
+								<label className="text-base font-bold text-text-primary">
+									frequency_penalty
+								</label>
+								<input
+									type="number"
+									className="input-bordered input focus:border-secondary focus:text-secondary"
+									value={frequency_penalty}
+									onChange={(e: any) => setFrequency_penalty(e.target.value)}
+								/>
+							</div>
+						</div>
+					</div>
 					<div className="space-y-8">
 						<h1 className="text-center text-3xl font-bold">Today</h1>
 						<div className="flex flex-col space-y-2">
@@ -192,7 +269,7 @@ export default function Drawer() {
 									</a>
 								</Link>
 								<button
-									className="btn-error btn-outline btn-square btn"
+									className="btn-outline btn-error btn-square btn"
 									onClick={() => drawerRef.current?.click()}
 								>
 									{' '}
@@ -215,7 +292,18 @@ export default function Drawer() {
 						</div>
 					</div>
 					<div className="absolute right-24 top-72">
-						<ChatDoc condensePrompt={standalonePrompt} qaPrompt={docPrompt} />
+						<ChatDoc
+							condensePrompt={standalonePrompt}
+							qaPrompt={docPrompt}
+							{...{
+								model,
+								temperature,
+								top_p,
+								n,
+								presence_penalty,
+								frequency_penalty,
+							}}
+						/>
 					</div>
 				</>
 			)}
