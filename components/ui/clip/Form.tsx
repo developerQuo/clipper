@@ -1,12 +1,12 @@
-import { useRouter } from "next/router";
-import { useCallback, useContext, useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import { SubKeywordOutput } from "../../../store/clip";
-import NotificationContext from "../../../store/notification-context";
-import Button from "../Button";
-import { OptionType } from "../types";
+import { useRouter } from 'next/router';
+import { useCallback, useContext, useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { SubKeywordOutput } from '../../../store/clip';
+import NotificationContext from '../../../store/notification-context';
+import Button from '../Button';
+import { OptionType } from '../types';
 
-const SUBJECT = "클립";
+const SUBJECT = '클립';
 
 export type SubTopicOptionType = { [key: string]: OptionType[] };
 
@@ -38,7 +38,7 @@ export default function Form({
 	initialValues,
 	initialAiTopicOptions,
 }: InputProps) {
-	const ACTION = initialValues ? "수정" : "생성";
+	const ACTION = initialValues ? '수정' : '생성';
 	const notificationCtx = useContext(NotificationContext);
 	const router = useRouter();
 	const {
@@ -57,14 +57,14 @@ export default function Form({
 			...{ ...(initialValues || {}) },
 		},
 	});
-	const watchMainTopic = watch("mainTopic");
+	const watchMainTopic = watch('mainTopic');
 
 	const onSubmit = ({ subTopic, aiTopic, name }: IForm) => {
 		const TITLE = `${SUBJECT} ${ACTION}`;
 		notificationCtx.showNotification({
-			title: "로딩중...",
+			title: '로딩중...',
 			message: `${TITLE}중...`,
-			status: "pending",
+			status: 'pending',
 		});
 		const values = initialValues
 			? {
@@ -91,11 +91,11 @@ export default function Form({
 					),
 					name,
 			  };
-		fetch(`/api/clip/${initialValues ? "update" : "create"}`, {
-			method: "POST",
+		fetch(`/api/clip/${initialValues ? 'update' : 'create'}`, {
+			method: 'POST',
 			body: JSON.stringify(values),
 			headers: {
-				"Content-Type": "application/json",
+				'Content-Type': 'application/json',
 			},
 		})
 			.then((res) => {
@@ -109,17 +109,17 @@ export default function Form({
 			})
 			.then(() => {
 				notificationCtx.showNotification({
-					title: "성공!",
+					title: '성공!',
 					message: `${TITLE}을 완료되었습니다.`,
-					status: "success",
+					status: 'success',
 				});
-				router.push("/user/clip");
+				router.push('/user/clip');
 			})
 			.catch((error) => {
 				notificationCtx.showNotification({
-					title: "실패!",
+					title: '실패!',
 					message: error.message,
-					status: "error",
+					status: 'error',
 				});
 			});
 	};
@@ -129,7 +129,7 @@ export default function Form({
 	);
 
 	useEffect(() => {
-		if (watchMainTopic) setValue("subTopic", "");
+		if (watchMainTopic) setValue('subTopic', '');
 	}, [watchMainTopic, setValue]);
 
 	useEffect(() => {
@@ -140,24 +140,24 @@ export default function Form({
 
 	const generateKeyword = useCallback(
 		(event: any) => {
-			const FUNC_TITLE = "세부 키워드 생성";
+			const FUNC_TITLE = '세부 키워드 생성';
 			setAiTopicOptions(undefined);
-			setValue("aiTopic", []);
+			setValue('aiTopic', []);
 			notificationCtx.showNotification({
-				title: "로딩중...",
-				message: "키워드 생성중...",
-				status: "pending",
+				title: '로딩중...',
+				message: '키워드 생성중...',
+				status: 'pending',
 			});
-			const mainTopicKo = getValues("mainTopicKo");
+			const mainTopicKo = getValues('mainTopicKo');
 			const subTopicKo = event.target.options[event.target.selectedIndex].text;
-			fetch("/api/clip/subkeyword", {
-				method: "POST",
+			fetch('/api/clip/subkeyword', {
+				method: 'POST',
 				body: JSON.stringify({
 					mainTopicKo,
 					subTopicKo,
 				}),
 				headers: {
-					"Content-Type": "application/json",
+					'Content-Type': 'application/json',
 				},
 			})
 				.then((res) => {
@@ -171,9 +171,9 @@ export default function Form({
 				})
 				.then((data: SubKeywordOutput) => {
 					notificationCtx.showNotification({
-						title: "성공!",
+						title: '성공!',
 						message: `${FUNC_TITLE}을 완료되었습니다.`,
-						status: "success",
+						status: 'success',
 					});
 					setAiTopicOptions([
 						...(initialAiTopicOptions || []),
@@ -182,9 +182,9 @@ export default function Form({
 				})
 				.catch((error) => {
 					notificationCtx.showNotification({
-						title: "실패!",
+						title: '실패!',
 						message: error.message,
-						status: "error",
+						status: 'error',
 					});
 				});
 		},
@@ -195,7 +195,7 @@ export default function Form({
 			className="form-control flex w-full flex-col items-center gap-y-8 md:gap-y-[48px]"
 			onSubmit={handleSubmit((values) => onSubmit(values))}
 		>
-			<input hidden {...register("id")} />
+			<input hidden {...register('id')} />
 			<div className="form-control w-full">
 				<div className="flex flex-col items-start gap-4">
 					<label className="text-base font-bold text-text-primary">
@@ -204,11 +204,11 @@ export default function Form({
 					<select
 						className="select-bordered select w-full focus:border-secondary focus:text-secondary"
 						placeholder="대분류를 선택하세요."
-						{...register("mainTopic", {
+						{...register('mainTopic', {
 							required: true,
 							onChange(event) {
 								setValue(
-									"mainTopicKo",
+									'mainTopicKo',
 									event.target.options[event.target.selectedIndex].text,
 								);
 							},
@@ -220,7 +220,7 @@ export default function Form({
 							</option>
 						))}
 					</select>
-					<input hidden {...register("mainTopicKo")} />
+					<input hidden {...register('mainTopicKo')} />
 				</div>
 			</div>
 			<div className="form-control w-full">
@@ -231,7 +231,7 @@ export default function Form({
 					<select
 						className="select-bordered select w-full focus:border-secondary focus:text-secondary"
 						placeholder="중분류를 선택하세요."
-						{...register("subTopic", {
+						{...register('subTopic', {
 							required: true,
 							onChange: generateKeyword,
 						})}
@@ -259,7 +259,7 @@ export default function Form({
 									type="checkbox"
 									value={en}
 									className="checkbox-secondary checkbox"
-									{...register("aiTopic", { required: true })}
+									{...register('aiTopic', { required: true })}
 								/>
 							</label>
 						))}
@@ -274,7 +274,7 @@ export default function Form({
 					<input
 						className="input-bordered input w-full focus:border-secondary focus:text-secondary"
 						placeholder="클립 이름을 입력하세요."
-						{...register("name", {
+						{...register('name', {
 							required: true,
 						})}
 					/>

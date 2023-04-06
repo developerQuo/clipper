@@ -5,7 +5,8 @@ import Layout from '../components/layout/Layout';
 import { RecoilRoot } from 'recoil';
 import { SessionProvider } from 'next-auth/react';
 
-export default function App({ Component, pageProps }: AppProps) {
+export default function App({ Component, pageProps, router }: AppProps) {
+	const isLogin = router.pathname === '/auth/signin';
 	return (
 		<>
 			{/* <Script
@@ -24,9 +25,13 @@ export default function App({ Component, pageProps }: AppProps) {
 			<RecoilRoot>
 				<SessionProvider session={pageProps.session}>
 					<NotificationContextProvider>
-						<Layout>
+						{isLogin ? (
 							<Component {...pageProps} />
-						</Layout>
+						) : (
+							<Layout>
+								<Component {...pageProps} />
+							</Layout>
+						)}
 					</NotificationContextProvider>
 				</SessionProvider>
 			</RecoilRoot>

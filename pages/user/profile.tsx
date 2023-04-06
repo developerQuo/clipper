@@ -1,14 +1,14 @@
-import { GetServerSideProps } from "next";
-import { Session } from "next-auth";
-import Image from "next/image";
-import serverSideAuthGuard from "../../components/utils/serverSideAuthGuard";
+import { GetServerSideProps } from 'next';
+import { Session } from 'next-auth';
+import Image from 'next/image';
+import serverSideAuthGuard from '../../components/utils/serverSideAuthGuard';
+import Personalization from '@/components/ui/auth/personalization';
 
 type InputProps = {
 	session: Session;
 };
 
 export default function Profile({ session }: InputProps) {
-	console.log(session);
 	const {
 		user: { name, email, image },
 	} = session;
@@ -20,7 +20,7 @@ export default function Profile({ session }: InputProps) {
 					<div className="w-24 rounded-full">
 						<Image
 							alt="profile-image"
-							src={image ?? ""}
+							src={image ?? ''}
 							width={64}
 							height={64}
 						/>

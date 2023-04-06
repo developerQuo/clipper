@@ -74,7 +74,7 @@ export default function Content() {
 						onTimeFilterChange={handleTimeFilterChange}
 					/>
 				</div>
-				<div className="3xl:grid-cols-5 grid grid-cols-2 gap-4 xl:grid-cols-3 2xl:grid-cols-4">
+				<div className="grid grid-cols-2 gap-4 xl:grid-cols-3 2xl:grid-cols-4 3xl:grid-cols-5">
 					{query?.data?.map((content, index) => (
 						<Card key={index} {...content} />
 					))}

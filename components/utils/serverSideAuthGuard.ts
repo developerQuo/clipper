@@ -1,5 +1,5 @@
-import { GetServerSideProps } from "next";
-import { getSession } from "next-auth/react";
+import { GetServerSideProps } from 'next';
+import { getSession } from 'next-auth/react';
 
 const serverSideAuthGuard: GetServerSideProps = async (context) => {
 	const session = await getSession({ req: context.req });
@@ -7,7 +7,8 @@ const serverSideAuthGuard: GetServerSideProps = async (context) => {
 	if (!session) {
 		return {
 			redirect: {
-				destination: "/api/auth/signin",
+				destination: '/auth/signin',
+				// destination: '/api/auth/signin',
 				permanent: false,
 			},
 		};

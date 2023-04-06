@@ -10,6 +10,7 @@ class Document extends NextDocument {
 				</Head>
 				<body className="font-custom">
 					<Main />
+					<div id="drawer-root"></div>
 					<NextScript />
 					<div id="notifications"></div>
 				</body>
