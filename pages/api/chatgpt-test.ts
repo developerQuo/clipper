@@ -42,7 +42,7 @@ export default async function handler(
 	try {
 		//Ask a question
 		const completion = await openai.createChatCompletion({
-			model: 'gpt-4',
+			model: 'gpt-3.5-turbo',
 			temperature: 0,
 			messages: [
 				...(sanitizedSystemMessage
