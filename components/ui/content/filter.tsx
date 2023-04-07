@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import { useState } from 'react';
 
 type InputProps = {
@@ -19,7 +20,15 @@ const Filter = ({ onSearch, onTimeFilterChange }: InputProps) => {
 
 	return (
 		<div className="flex items-center justify-between">
-			<div className="input-group">
+			<button className="btn-circle btn" disabled>
+				<Image
+					src={`/icons/search.svg`}
+					alt={`search`}
+					width={19.46}
+					height={19.46}
+				/>
+			</button>
+			{/* <div className="input-group">
 				<input
 					className="input-bordered input"
 					type="text"
@@ -44,7 +53,7 @@ const Filter = ({ onSearch, onTimeFilterChange }: InputProps) => {
 						/>
 					</svg>
 				</button>
-			</div>
+			</div> */}
 			{/* <div className="ml-4 p-2" onChange={handleTimeFilterChange}>
 				<option value="1_week">1주일</option>
 				<option value="1_month">1개월</option>

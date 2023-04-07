@@ -4,18 +4,21 @@ import dynamic from 'next/dynamic';
 import Tabs from '@/components/ui/Tabs';
 
 const loading = () => <div>Loading...</div>;
-const Bookmark = dynamic(() => import('@/components/ui/bookmark'), { loading });
-const GeneratedContent = dynamic(
-	() => import('@/components/ui/generate/content'),
-	{ loading },
-);
+const WeeklyHot = dynamic(() => import('@/components/ui/content'), { loading });
+const MonthlyHot = dynamic(() => import('@/components/ui/content'), {
+	loading,
+});
 
 const menuArr = [
-	{ name: '북마크', pathName: 'bookmark', content: <Bookmark /> },
-	{ name: '마이리포트', pathName: 'my-report', content: <GeneratedContent /> },
+	{ name: 'Weekly Hot', pathName: 'weekly-hot', content: <WeeklyHot /> },
+	{
+		name: 'Monthly Hot',
+		pathName: 'monthly-hot',
+		content: <MonthlyHot />,
+	},
 ];
 
-export default function MyClip() {
+export default function Trend() {
 	return (
 		<div className="px-10 py-16">
 			<Tabs menuArr={menuArr} />

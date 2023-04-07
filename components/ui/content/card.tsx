@@ -19,16 +19,27 @@ const Card = ({
 	const publishedAt = moment(published_at).format('YYYY-MM-DD');
 	return (
 		<Link href={`/clip/${id}`}>
-			<div className="card w-80 bg-base-100 shadow-xl">
-				<div className="card-body">
-					<div className="relative">
-						<h2 className="link card-title">{title}</h2>
-						<p>
-							{media} {publishedAt}
+			<div className="card h-full cursor-default bg-base-100 shadow-xl">
+				<div className="card-body min-h-[12rem] p-6">
+					<div className="relatives flex flex-1 flex-col justify-evenly">
+						<h2 className="link card-title text-lg">{title}</h2>
+						<p className="pt-4 text-default">
+							<span className="font-medium">{media}</span>{' '}
+							<span className="text-text-secondary">{publishedAt}</span>
 						</p>
-
-						<div>
-							<Bookmark id={id} bookmark={bookmark} />
+						<div className="flex items-center justify-between pt-10">
+							<div>
+								{/* TODO: random color*/}
+								{tags?.map((tag, index) => (
+									<div key={index} className="badge-secondary badge">
+										{tag}
+									</div>
+								))}
+							</div>
+							<div className="flex">
+								<Bookmark id={id} bookmark={bookmark} />
+								{bookmarks}
+							</div>
 						</div>
 					</div>
 					{/* <div className="card-actions justify-end">

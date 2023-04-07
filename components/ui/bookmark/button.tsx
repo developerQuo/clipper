@@ -1,12 +1,7 @@
-import {
-	Content,
-	SelectedContent,
-	SelectedContentState,
-} from '@/store/content';
+import { Content } from '@/store/content';
 import NotificationContext from '@/store/notification-context';
-import { SelectedKeyState, SelectedKeyType } from '@/store/table';
+import Image from 'next/image';
 import { useContext, useState } from 'react';
-import { useRecoilState, useRecoilValue } from 'recoil';
 
 type InputProps = Pick<Content, 'id' | 'bookmark'>;
 
@@ -44,21 +39,46 @@ export default function Bookmark({ id, bookmark }: InputProps) {
 				});
 			});
 	};
+	const bookmarkId = `bookmark-${id}`;
 	return (
-		<div className="form-control">
-			<label className="label cursor-pointer space-x-2">
-				<span className="label-text text-lg font-bold">북마크</span>
-				<input
-					type="checkbox"
-					checked={checked}
-					onChange={(e) => {
-						e.stopPropagation();
-						onChange();
-					}}
-					onClick={(e) => {
-						e.stopPropagation();
-					}}
-					className="checkbox-warning checkbox"
+		// <div className="form-control">
+		// 	<label className="label cursor-pointer space-x-2"> */}
+		// 	{/* <span className="label-text text-lg font-bold">북마크</span> */}
+		// 	{/* <input
+		// 			type="checkbox"
+		// 			checked={checked}
+		// 			onChange={(e) => {
+		// 				e.stopPropagation();
+		// 				onChange();
+		// 			}}
+		// 			onClick={(e) => {
+		// 				e.stopPropagation();
+		// 			}}
+		// 			className="checkbox-warning checkbox"
+		// 		/>
+		// 	</label>
+		// </div>
+		<div className="flex" onClick={(e) => e.stopPropagation()}>
+			<input
+				// ref={ref}
+				type="checkbox"
+				id={bookmarkId}
+				className="peer hidden"
+				// value={value}
+				checked={checked}
+				onChange={(e) => {
+					onChange();
+				}}
+			/>
+			<label
+				htmlFor={bookmarkId}
+				className="cursor-pointer select-none p-1 font-bold transition-colors duration-200 ease-in-out "
+			>
+				<Image
+					src={`/icons/bookmark-${checked ? 'checked' : 'unchecked'}.svg`}
+					alt={`search`}
+					width={11.67}
+					height={15}
 				/>
 			</label>
 		</div>

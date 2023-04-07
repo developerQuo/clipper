@@ -21,10 +21,10 @@ export default function Content() {
 						count: 'exact',
 					},
 				)
-				.eq('file_type', 'pdf')
 				.eq('vector_upload', true)
 				.eq('bookmark.user_id', userId)
-				.not('id', 'in', '(23, 24, 25, 26, 27, 28)'); // test pdf
+				.not('id', 'in', '(23, 24, 25, 26, 27, 28)') // test pdf
+				.order('published_at', { ascending: false });
 			const content = {
 				...result,
 				data: data?.map(({ content_source, bookmark, ...row }) => ({
@@ -47,38 +47,19 @@ export default function Content() {
 		}
 	}, [userId]);
 
-	const [keyword, setKeyword] = useState('');
-	const [timeFilter, setTimeFilter] = useState('1_week');
 	const [offset, setOffset] = useState(0);
 	const [cards, setCards] = useState([]);
-
-	const handleSearch = (searchTerm: string) => {
-		setKeyword(searchTerm);
-	};
-
-	const handleTimeFilterChange = (filter: string) => {
-		setTimeFilter(filter);
-	};
 
 	const handleLoadMore = () => {
 		setOffset(offset + 10);
 	};
 
 	return (
-		<div className="space-y-8">
-			<h1 className="text-center text-3xl font-bold">Today</h1>
-			<div className="flex flex-col space-y-2">
-				<div className="flex justify-end">
-					<Filter
-						onSearch={handleSearch}
-						onTimeFilterChange={handleTimeFilterChange}
-					/>
-				</div>
-				<div className="grid grid-cols-2 gap-4 xl:grid-cols-3 2xl:grid-cols-4 3xl:grid-cols-5">
-					{query?.data?.map((content, index) => (
-						<Card key={index} {...content} />
-					))}
-				</div>
+		<div className="flex flex-col space-y-2">
+			<div className="grid grid-cols-1 gap-4 gap-y-10 sm:grid-cols-2 xl:grid-cols-3">
+				{query?.data?.map((content, index) => (
+					<Card key={index} {...content} />
+				))}
 			</div>
 		</div>
 	);

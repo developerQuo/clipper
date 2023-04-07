@@ -1,8 +1,9 @@
 import { useContext } from 'react';
 import NotificationContext from '../../store/notification-context';
 import Notification from '../ui/Notification';
-import Header from './Header';
 import SideNavigation from './navigation/Side';
+import Link from 'next/link';
+import Image from 'next/image';
 
 function Layout({ children }: any) {
 	const notificationCtx = useContext(NotificationContext);
@@ -11,15 +12,29 @@ function Layout({ children }: any) {
 
 	return (
 		<div className="relative flex h-full min-h-screen min-w-[360px] flex-col">
-			<Header />
 			<div className="drawer-mobile drawer flex-1">
 				<input id="menu-drawer" type="checkbox" className="drawer-toggle" />
-				<div className="drawer-content">
-					<main className="px-auto mt-[100px] pb-40 sm:px-20">{children}</main>
+				<div className="drawer-content bg-[#F1F3F9]">
+					<main className="h-full">{children}</main>
 				</div>
-				<div className="drawer-side border-r">
+				<div className="drawer-side w-52 border-r">
 					<label htmlFor="menu-drawer" className="drawer-overlay"></label>
-					<SideNavigation />
+					<div className="flex h-full flex-col px-10">
+						<div className="my-12">
+							<Link
+								href="/"
+								className="flex items-baseline gap-x-3 text-2xl font-bold"
+							>
+								<Image
+									src="/images/logo/clipper_logo.png"
+									alt="Logo"
+									width={102}
+									height={32}
+								/>
+							</Link>
+						</div>
+						<SideNavigation />
+					</div>
 				</div>
 			</div>
 			{activeNotification && <Notification {...activeNotification} />}

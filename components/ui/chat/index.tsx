@@ -219,11 +219,11 @@ export default function ChatDoc({ contentId, source }: InputProps) {
 
 	return (
 		<>
-			<main className="flex w-full flex-1 flex-col items-center justify-between bg-white p-2">
+			<main className="flex w-full flex-1 flex-col items-center justify-between bg-white px-20 py-12">
 				<div className="flex h-[65vh] w-full items-center justify-center rounded-lg border">
 					<div
 						ref={messageListRef}
-						className="h-full w-full overflow-y-scroll rounded-lg"
+						className="h-full w-full overflow-y-auto rounded-lg"
 					>
 						{chatMessages.map((message, index) => {
 							let icon;
@@ -330,7 +330,7 @@ export default function ChatDoc({ contentId, source }: InputProps) {
 								placeholder={
 									loading
 										? 'Waiting for response...'
-										: 'What is this legal case about?'
+										: '더 궁금한 것을 Clipper에게 물어보세요.'
 								}
 								value={query}
 								onChange={(e) => setQuery(e.target.value)}
