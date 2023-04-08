@@ -2,8 +2,6 @@ import { Content } from '@/store/content';
 import moment from 'moment';
 import Link from 'next/link';
 import Bookmark from '../bookmark/button';
-import { useRouter } from 'next/router';
-import { randomColor } from '@/utils/randomColor';
 
 const Tag = ({ tag }: { tag: string }) => {
 	return <div className="badge-outline badge">{tag}</div>;
@@ -26,7 +24,6 @@ const Card = ({
 	published_at,
 	...style
 }: InputProps) => {
-	const router = useRouter();
 	const publishedAt = moment(published_at).format('YYYY-MM-DD');
 	return (
 		<Link href={`/clip/${id}`}>

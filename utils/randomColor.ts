@@ -19,7 +19,7 @@ export const randomColor = (): string[] => {
 };
 
 export function getColor(index: number) {
-	const colorIndex = index % 13;
+	const colorIndex = index % 5;
 	return colorIndex > 3 ? color[colorIndex % color.length] : color[colorIndex];
 }
 
