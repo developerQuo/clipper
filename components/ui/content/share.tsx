@@ -1,5 +1,6 @@
 import { SelectedContent, SelectedContentState } from '@/store/content';
 import { supabase } from '@/utils/supabase-client';
+import Image from 'next/image';
 import { useMemo } from 'react';
 import {
 	EmailIcon,
@@ -9,7 +10,9 @@ import {
 } from 'react-share';
 import { useRecoilValue } from 'recoil';
 
-export default function Share() {
+type InputProps = { disabled?: boolean };
+
+export default function Share({ disabled }: InputProps) {
 	const { file_path, title } =
 		useRecoilValue<SelectedContent>(SelectedContentState) || {};
 
@@ -23,7 +26,18 @@ export default function Share() {
 	}, [file_path]);
 	return (
 		<>
-			<FacebookShareButton
+			<label
+				className="cursor-pointer select-none p-1 font-bold transition-colors duration-200 ease-in-out "
+				{...{ disabled }}
+			>
+				<Image
+					src={`/icons/share.svg`}
+					alt={`share`}
+					width={13.33}
+					height={18.33}
+				/>
+			</label>
+			{/* <FacebookShareButton
 				url={fileUrl}
 				quote={title}
 				className="Demo__some-network__share-button"
@@ -37,7 +51,7 @@ export default function Share() {
 				className="Demo__some-network__share-button"
 			>
 				<EmailIcon size={32} round />
-			</EmailShareButton>
+			</EmailShareButton> */}
 		</>
 	);
 }

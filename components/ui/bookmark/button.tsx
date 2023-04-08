@@ -3,9 +3,9 @@ import NotificationContext from '@/store/notification-context';
 import Image from 'next/image';
 import { useContext, useState } from 'react';
 
-type InputProps = Pick<Content, 'id' | 'bookmark'>;
+type InputProps = Pick<Content, 'id' | 'bookmark'> & { disabled?: boolean };
 
-export default function Bookmark({ id, bookmark }: InputProps) {
+export default function Bookmark({ id, bookmark, disabled }: InputProps) {
 	const [checked, check] = useState(bookmark);
 	const notificationCtx = useContext(NotificationContext);
 	const onChange = () => {
@@ -69,10 +69,12 @@ export default function Bookmark({ id, bookmark }: InputProps) {
 				onChange={(e) => {
 					onChange();
 				}}
+				{...{ disabled }}
 			/>
 			<label
 				htmlFor={bookmarkId}
 				className="cursor-pointer select-none p-1 font-bold transition-colors duration-200 ease-in-out "
+				{...{ disabled }}
 			>
 				<Image
 					src={`/icons/bookmark-${checked ? 'checked' : 'unchecked'}.svg`}

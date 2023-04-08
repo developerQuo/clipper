@@ -49,7 +49,7 @@ export default function Clip({ content }: InputProps) {
 								/>
 							</a>
 						</Link>
-						{/* <Share /> */}
+						<Share />
 					</div>
 				</div>
 				<div className="w-[110px]">
