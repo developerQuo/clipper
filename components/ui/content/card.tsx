@@ -50,15 +50,15 @@ const Card = ({
 							<span className="text-text-secondary">{publishedAt}</span>
 						</p>
 						<div className="flex items-center justify-between pt-10">
-							<div>
+							<div className="flex-1 space-x-2">
 								{/* TODO: random color*/}
-								{tags?.map((tag, index) => (
+								{tags?.slice(0, 2).map((tag, index) => (
 									<div key={index} className="badge-secondary badge">
 										{tag}
 									</div>
 								))}
 							</div>
-							<div className="flex">
+							<div className="ml-4 flex w-4">
 								<Bookmark id={id} bookmark={bookmark} />
 								{bookmarks}
 							</div>

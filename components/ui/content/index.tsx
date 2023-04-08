@@ -67,20 +67,22 @@ export default function Content() {
 	return (
 		<div className="flex flex-col space-y-2">
 			<div className="grid grid-cols-1 gap-4 gap-y-10 sm:grid-cols-2 xl:grid-cols-3 3xl:grid-cols-4">
-				{query?.data?.map((content, index) => {
+				{query?.data?.map(({ tags, ...content }, index) => {
 					const [background, color] =
 						router.pathname === '/trend' ? getColor(index) : [];
+					const tagsValue = router.pathname === '/trend' ? [] : tags;
 					return (
 						<Card
 							key={index}
 							background={background}
 							color={color}
+							tags={tagsValue}
 							{...content}
 						/>
 					);
 				})}
 			</div>
-			<button className="p-12" onClick={handleLoadMore}>
+			<button className="p-12 text-text-secondary" onClick={handleLoadMore}>
 				Load More
 			</button>
 		</div>

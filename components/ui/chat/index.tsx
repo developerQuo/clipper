@@ -51,7 +51,6 @@ export default function ChatDoc({
 }: InputProps) {
 	const [query, setQuery] = useState<string>('');
 	const [loading, setLoading] = useState<boolean>(false);
-	const [sourceDocs, setSourceDocs] = useState<Document[]>([]);
 	const [messageState, setMessageState] =
 		useState<MessageState>(defaultMessageState);
 
@@ -259,7 +258,11 @@ export default function ChatDoc({
 							<button
 								key={`faq-${index}`}
 								className="btn-outline btn-sm btn w-fit rounded-3xl px-4 text-xs font-medium"
-								onClick={() => {}}
+								onClick={(e) => {
+									const val = (e.target as any).textContent;
+									setQuery(val);
+									handleSubmit(e);
+								}}
 							>
 								{q}
 							</button>
