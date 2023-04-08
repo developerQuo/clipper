@@ -12,8 +12,6 @@ type InputProps = {
 // 개인화 설정 x -> 산업, 직무, 관심사 선택
 // 개인화 설정 o -> 홈
 export default function SignIn({ guard }: InputProps) {
-	console.log(guard);
-	console.log(guard.props.session.user);
 	const loginRequired = !guard?.props?.session;
 	return (
 		<div className="relative flex h-full min-h-screen min-w-[360px] flex-col">
@@ -25,7 +23,7 @@ export default function SignIn({ guard }: InputProps) {
 export const getServerSideProps: GetServerSideProps = async (context) => {
 	const guard = (await serverSideAuthGuard(context)) as any;
 	// 로그인 o && 개인화 설정 o -> redirect home
-	if (guard.props.session) {
+	if (guard.props?.session) {
 		const { data } = await supabase
 			.from('personalization')
 			.select('id')
