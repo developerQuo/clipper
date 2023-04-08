@@ -58,40 +58,41 @@ export default function ChatDoc({
 	const { data: session } = useSession();
 	const { id: userId } = session?.user ?? {};
 
-	const fetchData = useCallback(async () => {
-		const { data, error } = await supabase
-			.from('chat_history')
-			.select('user_history,bot_history')
-			.eq('content_id', contentId)
-			.eq('user_id', userId);
+	useEffect(() => {
+		const fetch = async () => {
+			const { data, error } = await supabase
+				.from('chat_history')
+				.select('user_history,bot_history')
+				.eq('content_id', contentId)
+				.eq('user_id', userId);
 
-		if (!error && data && data.length > 0) {
-			setMessageState(({ history, messages, ...state }) => {
-				const { user_history, bot_history } = data[0];
-				const historyOrdering = bot_history.map(
-					(text: string, index: number) => [user_history[index], text],
-				);
-				return {
-					...defaultMessageState,
-					history: historyOrdering,
-					messages: [
-						...defaultMessageState.messages,
-						...historyOrdering.flat().map((message: string, index: number) => ({
-							type: index % 2 === 0 ? 'userMessage' : 'apiMessage',
-							message,
-						})),
-					],
-				};
-			});
-			setLoading(false);
+			if (!error && data && data.length > 0) {
+				setMessageState(({ history, messages, ...state }) => {
+					const { user_history, bot_history } = data[0];
+					const historyOrdering = bot_history.map(
+						(text: string, index: number) => [user_history[index], text],
+					);
+					return {
+						...defaultMessageState,
+						history: historyOrdering,
+						messages: [
+							...defaultMessageState.messages,
+							...historyOrdering
+								.flat()
+								.map((message: string, index: number) => ({
+									type: index % 2 === 0 ? 'userMessage' : 'apiMessage',
+									message,
+								})),
+						],
+					};
+				});
+				setLoading(false);
+			}
+		};
+		if (userId && contentId) {
+			fetch();
 		}
 	}, [contentId, userId]);
-
-	useEffect(() => {
-		if (userId && contentId) {
-			fetchData();
-		}
-	}, [contentId, fetchData, userId]);
 
 	const { messages, pending, history, pendingSourceDocs } = messageState;
 
@@ -180,15 +181,11 @@ export default function ChatDoc({
 				// 	}
 				// },
 			}).then(async (response: any) => {
-				console.log('finished');
 				if (response.ok) {
 					const { data } = await response.json();
-					console.log(data);
-
 					setMessageState((state) => {
-						console.log('state', state);
 						return {
-							history: [...state.history, [question, state.pending ?? '']],
+							history: [...state.history, [question, data ?? '']],
 							messages: [
 								...state.messages,
 								{
@@ -221,9 +218,7 @@ export default function ChatDoc({
 		}
 	};
 
-	console.log(messages);
 	const chatMessages = useMemo(() => {
-		console.log('chatmessage');
 		return [
 			...messages,
 			...(pending
@@ -231,12 +226,11 @@ export default function ChatDoc({
 						{
 							type: 'apiMessage',
 							message: pending,
-							sourceDocs: pendingSourceDocs,
 						},
 				  ]
 				: []),
 		];
-	}, [messages, pending, pendingSourceDocs]);
+	}, [messages, pending]);
 
 	// 채팅 기록 초기화
 	const resetChatHistory = async () => {
@@ -252,50 +246,52 @@ export default function ChatDoc({
 	};
 
 	return (
-		<>
-			<main className="flex w-full flex-1 flex-col items-center justify-between bg-white px-20 pb-4 pt-12">
-				<div className="flex h-[75vh] w-full items-center justify-center rounded-lg">
-					<div
-						ref={messageListRef}
-						className="h-full w-full overflow-y-auto rounded-lg"
-					>
-						<div className="text-sm">{summary}</div>
-						<div className="mt-4 space-y-2 text-sm">
-							<span>이런 것이 궁금할 수 있어요.</span>
-							{faq?.map((q, index) => (
-								<button
-									key={`faq-${index}`}
-									className="btn-outline btn"
-									onClick={() => {}}
+		<main className="flex w-full flex-1 flex-col items-center justify-between bg-white px-20 pb-4 pt-12">
+			<div className="flex h-[75vh] w-full items-center justify-center rounded-lg">
+				<div
+					ref={messageListRef}
+					className="h-full w-full overflow-y-auto rounded-lg"
+				>
+					<div className="text-sm">{summary}</div>
+					<div className="mb-8 mt-4 flex flex-col space-y-2 text-sm">
+						<span>이런 내용이 담겨져 있어요.</span>
+						{faq?.map((q, index) => (
+							<button
+								key={`faq-${index}`}
+								className="btn-outline btn-sm btn w-fit rounded-3xl px-4 text-xs font-medium"
+								onClick={() => {}}
+							>
+								{q}
+							</button>
+						))}
+					</div>
+					{chatMessages.map((message, index) => {
+						let icon;
+						let className;
+						if (message.type === 'apiMessage') {
+							className = 'chat chat-start';
+						} else {
+							// The latest message sent by the user will be animated while waiting for a response
+							className = 'chat chat-end';
+							// loading && index === chatMessages.length - 1
+							// 	? styles.usermessagewaiting
+							// 	: styles.usermessage;
+						}
+						return (
+							<>
+								<div
+									key={`message-${message.type}-${index}`}
+									className={className}
 								>
-									{q}
-								</button>
-							))}
-						</div>
-						{chatMessages.map((message, index) => {
-							let icon;
-							let className;
-							if (message.type === 'apiMessage') {
-								className = 'chat chat-start';
-							} else {
-								// The latest message sent by the user will be animated while waiting for a response
-								className = 'chat chat-end';
-								// loading && index === chatMessages.length - 1
-								// 	? styles.usermessagewaiting
-								// 	: styles.usermessage;
-							}
-							return (
-								<>
-									<div key={`message-${index}`} className={className}>
-										<div className="chat-bubble">
-											<div className={styles.markdownanswer}>
-												<ReactMarkdown linkTarget="_blank">
-													{message.message}
-												</ReactMarkdown>
-											</div>
+									<div className="chat-bubble">
+										<div className={styles.markdownanswer}>
+											<ReactMarkdown linkTarget="_blank">
+												{message.message}
+											</ReactMarkdown>
 										</div>
 									</div>
-									{/* {message.sourceDocs && (
+								</div>
+								{/* {message.sourceDocs && (
 										<div className="p-5">
 											<Accordion type="single" collapsible className="flex-col">
 												{message.sourceDocs.map((doc, index) => (
@@ -318,10 +314,10 @@ export default function ChatDoc({
 											</Accordion>
 										</div>
 									)} */}
-								</>
-							);
-						})}
-						{/* {sourceDocs.length > 0 && (
+							</>
+						);
+					})}
+					{/* {sourceDocs.length > 0 && (
 							<div className="p-5">
 								<Accordion type="single" collapsible className="flex-col">
 									{sourceDocs.map((doc, index) => (
@@ -341,59 +337,55 @@ export default function ChatDoc({
 								</Accordion>
 							</div>
 						)} */}
-					</div>
 				</div>
-				<div className="relative flex w-full flex-col items-center justify-center py-8">
-					<div className="relative w-full flex-1 justify-center">
-						<form onSubmit={handleSubmit}>
-							<textarea
-								disabled={loading}
-								onKeyDown={handleEnter}
-								ref={textAreaRef}
-								autoFocus={false}
-								rows={1}
-								maxLength={1024}
-								id="userInput"
-								name="userInput"
-								placeholder={
-									loading
-										? 'Waiting for response...'
-										: '더 궁금한 것을 Clipper에게 물어보세요.'
-								}
-								value={query}
-								onChange={(e) => setQuery(e.target.value)}
-								className="textarea-bordered textarea relative w-full resize-none rounded-3xl py-3 text-black"
-							/>
-							<button
-								type="submit"
-								disabled={loading}
-								className={styles.generatebutton}
-							>
-								{loading ? (
-									<div className={styles.loadingwheel}>
-										<LoadingDots color="#000" />
-									</div>
-								) : (
-									// Send icon SVG in input field
-									<svg
-										viewBox="0 0 20 20"
-										className={styles.svgicon}
-										xmlns="http://www.w3.org/2000/svg"
-									>
-										<path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"></path>
-									</svg>
-								)}
-							</button>
-						</form>
-					</div>
+			</div>
+			<div className="relative flex w-full flex-col items-center justify-center py-8">
+				<div className="relative w-full flex-1 justify-center">
+					<form onSubmit={handleSubmit}>
+						<textarea
+							disabled={loading}
+							onKeyDown={handleEnter}
+							ref={textAreaRef}
+							autoFocus={false}
+							rows={1}
+							maxLength={1024}
+							id="userInput"
+							name="userInput"
+							placeholder={
+								loading
+									? 'Waiting for response...'
+									: '더 궁금한 것을 Clipper에게 물어보세요.'
+							}
+							value={query}
+							onChange={(e) => setQuery(e.target.value)}
+							className="textarea-bordered textarea relative w-full resize-none rounded-3xl py-3 text-black"
+						/>
+						<button
+							type="submit"
+							disabled={loading}
+							className={styles.generatebutton}
+						>
+							{loading ? (
+								<div className={styles.loadingwheel}>
+									<LoadingDots color="#000" />
+								</div>
+							) : (
+								// Send icon SVG in input field
+								<svg
+									viewBox="0 0 20 20"
+									className={styles.svgicon}
+									xmlns="http://www.w3.org/2000/svg"
+								>
+									<path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"></path>
+								</svg>
+							)}
+						</button>
+					</form>
 				</div>
-				<button
-					className="btn-error btn rounded-3xl"
-					onClick={resetChatHistory}
-				>
-					채팅 기록 삭제
-				</button>
-			</main>
-		</>
+			</div>
+			<button className="btn-error btn rounded-3xl" onClick={resetChatHistory}>
+				채팅 기록 삭제
+			</button>
+		</main>
 	);
 }

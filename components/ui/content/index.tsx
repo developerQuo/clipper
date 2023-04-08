@@ -22,7 +22,7 @@ export default function Content() {
 		const { data, ...result } = await supabase
 			.from('content')
 			.select(
-				'id,title,summary,published_at,file_path,views,content_source(media(name)),bookmark(user_id)',
+				'id,title,summary,published_at,file_path,views,content_source(media(name)),bookmark(user_id),faq,tags',
 				{
 					count: 'exact',
 				},
@@ -44,7 +44,7 @@ export default function Content() {
 					(bookmark as any).length && (bookmark as any)[0].user_id === userId,
 				),
 			})) as ContentType[];
-			console.log(data);
+			// console.log(data);
 			setQuery({
 				...result,
 				data: [...(query?.data ? query.data : []), ...contentData],

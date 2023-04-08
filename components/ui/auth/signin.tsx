@@ -32,7 +32,7 @@ const Login = ({}: InputProps) => {
 						/>
 						{/* <h1 className="text-5xl font-bold">Clipper</h1> */}
 						<p className="mt-12 text-text-secondary">
-							구글 로그인으로 쉽고 편하게
+							AI Report Assistant for Business & Research
 						</p>
 						<div key={provider?.name} className="mt-32">
 							<button

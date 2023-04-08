@@ -46,7 +46,7 @@ function Navigation() {
 			<div className="justify-start">
 				<ul className="menu space-y-10 text-base-content">
 					<MenuItem
-						name="Live Chat"
+						name="Live Clip"
 						path="/"
 						icon={{
 							name: 'live-clip',

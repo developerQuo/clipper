@@ -97,6 +97,15 @@ export default async function handler(
 		// };
 		// let response = await chain.call(chainCall);
 
+		const [userHistory, botHistory] = history.reduce(
+			(acc: [string[], string[]], [userMessage, botMessage]) => {
+				acc[0].push(userMessage);
+				acc[1].push(botMessage);
+				return acc;
+			},
+			[[], []],
+		);
+
 		const chat = await openai.createChatCompletion({
 			temperature: 0.3,
 			model: 'gpt-4',
@@ -144,15 +153,6 @@ export default async function handler(
 		// }
 
 		// sendData(JSON.stringify({ sourceDocs: response.sourceDocuments }));
-
-		const [userHistory, botHistory] = history.reduce(
-			(acc: [string[], string[]], [userMessage, botMessage]) => {
-				acc[0].push(userMessage);
-				acc[1].push(botMessage);
-				return acc;
-			},
-			[[], []],
-		);
 
 		await supabase
 			.from('chat_history')

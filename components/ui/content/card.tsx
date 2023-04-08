@@ -9,7 +9,14 @@ const Tag = ({ tag }: { tag: string }) => {
 
 type InputProps = Pick<
 	Content,
-	'id' | 'title' | 'media' | 'tags' | 'bookmark' | 'bookmarks' | 'published_at'
+	| 'id'
+	| 'title'
+	| 'media'
+	| 'tags'
+	| 'bookmark'
+	| 'bookmarks'
+	| 'published_at'
+	| 'tags'
 > & {
 	background?: string;
 	color?: string;

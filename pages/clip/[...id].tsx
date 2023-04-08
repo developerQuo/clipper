@@ -89,7 +89,7 @@ export const getServerSideProps: GetServerSideProps<InputProps> = async (
 	const { data } = await supabase
 		.from('content')
 		.select(
-			'id,title,summary,published_at,file_path,views,content_source(media(name)),bookmark(user_id)',
+			'id,title,summary,published_at,file_path,views,content_source(media(name)),bookmark(user_id),faq,tags',
 		)
 		.eq('id', id)
 		.eq('bookmark.user_id', userId);
