@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect, useMemo } from 'react';
+import { useRef, useState, useEffect, useMemo, useCallback } from 'react';
 import styles from '@/styles/Home.module.css';
 import { Message } from '@/types/chat';
 import { fetchEventSource } from '@microsoft/fetch-event-source';
@@ -57,42 +57,41 @@ export default function ChatDoc({
 
 	const { data: session } = useSession();
 	const { id: userId } = session?.user ?? {};
-	useEffect(() => {
-		const fetch = async () => {
-			const { data, error } = await supabase
-				.from('chat_history')
-				.select('user_history,bot_history')
-				.eq('content_id', contentId)
-				.eq('user_id', userId);
 
-			if (!error && data && data.length > 0) {
-				setMessageState(({ history, messages, ...state }) => {
-					const { user_history, bot_history } = data[0];
-					const historyOrdering = bot_history.map(
-						(text: string, index: number) => [user_history[index], text],
-					);
-					return {
-						...defaultMessageState,
-						history: historyOrdering,
-						messages: [
-							...defaultMessageState.messages,
-							...historyOrdering
-								.flat()
-								.map((message: string, index: number) => ({
-									type: index % 2 === 0 ? 'userMessage' : 'apiMessage',
-									message,
-								})),
-						],
-					};
-				});
-				setLoading(false);
-			}
-		};
+	const fetchData = useCallback(async () => {
+		const { data, error } = await supabase
+			.from('chat_history')
+			.select('user_history,bot_history')
+			.eq('content_id', contentId)
+			.eq('user_id', userId);
 
-		if (userId && contentId) {
-			fetch();
+		if (!error && data && data.length > 0) {
+			setMessageState(({ history, messages, ...state }) => {
+				const { user_history, bot_history } = data[0];
+				const historyOrdering = bot_history.map(
+					(text: string, index: number) => [user_history[index], text],
+				);
+				return {
+					...defaultMessageState,
+					history: historyOrdering,
+					messages: [
+						...defaultMessageState.messages,
+						...historyOrdering.flat().map((message: string, index: number) => ({
+							type: index % 2 === 0 ? 'userMessage' : 'apiMessage',
+							message,
+						})),
+					],
+				};
+			});
+			setLoading(false);
 		}
 	}, [contentId, userId]);
+
+	useEffect(() => {
+		if (userId && contentId) {
+			fetchData();
+		}
+	}, [contentId, fetchData, userId]);
 
 	const { messages, pending, history, pendingSourceDocs } = messageState;
 
@@ -130,10 +129,10 @@ export default function ChatDoc({
 		setQuery('');
 		setMessageState((state) => ({ ...state, pending: '' }));
 
-		const ctrl = new AbortController();
+		// const ctrl = new AbortController();
 
 		try {
-			fetchEventSource('/api/chat', {
+			fetch('/api/chat', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -144,42 +143,68 @@ export default function ChatDoc({
 					contentId,
 					source,
 				}),
-				signal: ctrl.signal,
-				onmessage: (event) => {
-					if (event.data === '[DONE]') {
-						setMessageState((state) => {
-							console.log('state', state);
-							return {
-								history: [...state.history, [question, state.pending ?? '']],
-								messages: [
-									...state.messages,
-									{
-										type: 'apiMessage',
-										message: state.pending ?? '',
-										sourceDocs: state.pendingSourceDocs,
-									},
-								],
-								pending: undefined,
-								pendingSourceDocs: undefined,
-							};
-						});
-						setLoading(false);
-						ctrl.abort();
-					} else {
-						const data = JSON.parse(event.data);
-						if (data.sourceDocs) {
-							setMessageState((state) => ({
-								...state,
-								pendingSourceDocs: data.sourceDocs,
-							}));
-						} else {
-							setMessageState((state) => ({
-								...state,
-								pending: (state.pending ?? '') + data.data,
-							}));
-						}
-					}
-				},
+				// signal: ctrl.signal,
+				// onmessage: (event) => {
+				// 	if (event.data === '[DONE]') {
+				// 		setMessageState((state) => {
+				// 			console.log('state', state);
+				// 			return {
+				// 				history: [...state.history, [question, state.pending ?? '']],
+				// 				messages: [
+				// 					...state.messages,
+				// 					{
+				// 						type: 'apiMessage',
+				// 						message: state.pending ?? '',
+				// 						sourceDocs: state.pendingSourceDocs,
+				// 					},
+				// 				],
+				// 				pending: undefined,
+				// 				pendingSourceDocs: undefined,
+				// 			};
+				// 		});
+				// 		setLoading(false);
+				// 		ctrl.abort();
+				// 	} else {
+				// 		const data = JSON.parse(event.data);
+				// 		if (data.sourceDocs) {
+				// 			setMessageState((state) => ({
+				// 				...state,
+				// 				pendingSourceDocs: data.sourceDocs,
+				// 			}));
+				// 		} else {
+				// 			setMessageState((state) => ({
+				// 				...state,
+				// 				pending: (state.pending ?? '') + data.data,
+				// 			}));
+				// 		}
+				// 	}
+				// },
+			}).then(async (response: any) => {
+				console.log('finished');
+				if (response.ok) {
+					const { data } = await response.json();
+					console.log(data);
+
+					setMessageState((state) => {
+						console.log('state', state);
+						return {
+							history: [...state.history, [question, state.pending ?? '']],
+							messages: [
+								...state.messages,
+								{
+									type: 'apiMessage',
+									message: data ?? '',
+								},
+							],
+							pending: undefined,
+							pendingSourceDocs: undefined,
+						};
+					});
+					setLoading(false);
+					// ctrl.abort();
+				} else {
+					// throw new Error(response.statusText);
+				}
 			});
 		} catch (error) {
 			setLoading(false);
@@ -196,7 +221,9 @@ export default function ChatDoc({
 		}
 	};
 
+	console.log(messages);
 	const chatMessages = useMemo(() => {
+		console.log('chatmessage');
 		return [
 			...messages,
 			...(pending
@@ -237,7 +264,7 @@ export default function ChatDoc({
 							<span>이런 것이 궁금할 수 있어요.</span>
 							{faq?.map((q, index) => (
 								<button
-									key={index}
+									key={`faq-${index}`}
 									className="btn-outline btn"
 									onClick={() => {}}
 								>
@@ -259,7 +286,7 @@ export default function ChatDoc({
 							}
 							return (
 								<>
-									<div key={index} className={className}>
+									<div key={`message-${index}`} className={className}>
 										<div className="chat-bubble">
 											<div className={styles.markdownanswer}>
 												<ReactMarkdown linkTarget="_blank">
@@ -268,7 +295,7 @@ export default function ChatDoc({
 											</div>
 										</div>
 									</div>
-									{message.sourceDocs && (
+									{/* {message.sourceDocs && (
 										<div className="p-5">
 											<Accordion type="single" collapsible className="flex-col">
 												{message.sourceDocs.map((doc, index) => (
@@ -290,11 +317,11 @@ export default function ChatDoc({
 												))}
 											</Accordion>
 										</div>
-									)}
+									)} */}
 								</>
 							);
 						})}
-						{sourceDocs.length > 0 && (
+						{/* {sourceDocs.length > 0 && (
 							<div className="p-5">
 								<Accordion type="single" collapsible className="flex-col">
 									{sourceDocs.map((doc, index) => (
@@ -313,11 +340,11 @@ export default function ChatDoc({
 									))}
 								</Accordion>
 							</div>
-						)}
+						)} */}
 					</div>
 				</div>
 				<div className="relative flex w-full flex-col items-center justify-center py-8">
-					<div className="relative w-full flex-1">
+					<div className="relative w-full flex-1 justify-center">
 						<form onSubmit={handleSubmit}>
 							<textarea
 								disabled={loading}

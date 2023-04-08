@@ -29,6 +29,7 @@ export default function Content() {
 			)
 			.eq('vector_upload', true)
 			.eq('bookmark.user_id', userId)
+			.not('content', 'is', 'null')
 			.not('id', 'in', '(23, 24, 25, 26, 27, 28)') // test pdf
 			.range(rangePage, rangePage - 1 + pageLength)
 			.order('published_at', { ascending: false });

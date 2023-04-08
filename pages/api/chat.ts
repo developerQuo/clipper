@@ -7,6 +7,13 @@ import { PINECONE_INDEX_NAME, PINECONE_NAME_SPACE } from '@/config/pinecone';
 import { getSession } from 'next-auth/react';
 import { supabase } from '@/utils/supabase-client';
 import { ChatInput } from '@/types/chat';
+import { LLMChain, PromptTemplate } from 'langchain';
+import { OpenAIChat } from 'langchain/llms';
+import { CONDENSE_PROMPT as DEFAULT_CONDENSE_PROMPT } from '@/config/prompt';
+import { openai } from '@/utils/openai-client';
+import { ChatCompletionRequestMessageRoleEnum } from 'openai';
+
+const CONDENSE_PROMPT = PromptTemplate.fromTemplate(DEFAULT_CONDENSE_PROMPT);
 
 export default async function handler(
 	req: NextApiRequest,
@@ -32,66 +39,111 @@ export default async function handler(
 	// OpenAI recommends replacing newlines with spaces for best results
 	const sanitizedQuestion = question.trim().replaceAll('\n', ' ');
 
-	const index = pinecone.Index(PINECONE_INDEX_NAME);
-	console.log('source', source);
+	// const questionGenerator = new LLMChain({
+	// 	llm: new OpenAIChat({
+	// 		temperature: 0,
+	// 		modelName: 'gpt-4',
+	// 	}),
+	// 	prompt: CONDENSE_PROMPT,
+	// });
+	// const standaloneQuestion = await questionGenerator.call({
+	// 	question: sanitizedQuestion,
+	// 	chat_history:
+	// 		history.map((chat: [string, string]) => [
+	// 			`me: ${chat[0]}\n`,
+	// 			`someone: ${chat[1]}\n`,
+	// 		]) || [],
+	// });
+	// const index = pinecone.Index(PINECONE_INDEX_NAME);
+	// console.log('source', source);
 
-	/* create vectorstore*/
-	const vectorStore = await PineconeStore.fromExistingIndex(
-		new OpenAIEmbeddings({}),
-		{
-			pineconeIndex: index,
-			textKey: 'text',
-			namespace: PINECONE_NAME_SPACE,
-			filter: { source: { $eq: source } },
-		},
-	);
+	// /* create vectorstore*/
+	// const vectorStore = await PineconeStore.fromExistingIndex(
+	// 	new OpenAIEmbeddings({}),
+	// 	{
+	// 		pineconeIndex: index,
+	// 		textKey: 'text',
+	// 		namespace: PINECONE_NAME_SPACE,
+	// 		filter: { source: { $eq: source } },
+	// 	},
+	// );
 
-	res.writeHead(200, {
-		'Content-Type': 'text/event-stream',
-		'Cache-Control': 'no-cache, no-transform',
-		Connection: 'keep-alive',
-	});
+	// res.writeHead(200, {
+	// 	'Content-Type': 'text/event-stream',
+	// 	'Cache-Control': 'no-cache, no-transform',
+	// 	Connection: 'keep-alive',
+	// });
 
 	const sendData = (data: string) => {
 		res.write(`data: ${data}\n\n`);
 	};
 
-	sendData(JSON.stringify({ data: '' }));
+	// sendData(JSON.stringify({ data: '' }));
 
 	//create chain
-	const chain = makeChain(vectorStore, (token: string) => {
-		sendData(JSON.stringify({ data: token }));
-	});
+	// const chain = makeChain((token: string) => {
+	// 	sendData(JSON.stringify({ data: token }));
+	// });
+	const { data } = await supabase
+		.from('content')
+		.select('content')
+		.eq('id', contentId)
+		.single();
 	try {
 		//Ask a question
-		const chainCall = {
-			question: sanitizedQuestion,
-			chat_history:
-				history.map((chat: [string, string]) => [
-					`me: ${chat[0]}\n`,
-					`someone: ${chat[1]}\n`,
-				]) || [],
-		};
-		let response = await chain.call(chainCall);
+		// const chainCall = {
+		// 	question: standaloneQuestion,
+		// 	context: data?.content,
+		// };
+		// let response = await chain.call(chainCall);
 
-		if (response.text.includes('no data')) {
-			const vectorStoreAllDocs = await PineconeStore.fromExistingIndex(
-				new OpenAIEmbeddings({}),
+		const chat = await openai.createChatCompletion({
+			temperature: 0.3,
+			model: 'gpt-4',
+			messages: [
 				{
-					pineconeIndex: index,
-					textKey: 'text',
-					namespace: PINECONE_NAME_SPACE,
+					role: ChatCompletionRequestMessageRoleEnum.System,
+					content: `
+			I give you my question and the document.
+			Don't make up hyperlinks.
+			Please reply in language used in the question.
+			
+			Question: ${sanitizedQuestion}
+			Document: ${data?.content}
+			`,
 				},
-			);
-			const chainAllDocs = makeChain(vectorStoreAllDocs, (token: string) => {
-				sendData(JSON.stringify({ data: token }));
-			});
+				...(history.flat().map((chat: string, index) => ({
+					role:
+						index % 2 == 0
+							? ChatCompletionRequestMessageRoleEnum.User
+							: ChatCompletionRequestMessageRoleEnum.Assistant,
+					content: chat,
+				})) || []),
+				{
+					role: ChatCompletionRequestMessageRoleEnum.User,
+					content: sanitizedQuestion,
+				},
+			],
+		});
+		const response = chat.data.choices[0].message?.content;
+		// console.log((response as any)?.data?.error);
+		// if (response.text.includes('no data')) {
+		// 	const vectorStoreAllDocs = await PineconeStore.fromExistingIndex(
+		// 		new OpenAIEmbeddings({}),
+		// 		{
+		// 			pineconeIndex: index,
+		// 			textKey: 'text',
+		// 			namespace: PINECONE_NAME_SPACE,
+		// 		},
+		// 	);
+		// 	const chainAllDocs = makeChain(vectorStoreAllDocs, (token: string) => {
+		// 		sendData(JSON.stringify({ data: token }));
+		// 	});
+		// 	sendData(JSON.stringify({ data: '\n\n' }));
+		// 	response = await chainAllDocs.call(chainCall);
+		// }
 
-			sendData(JSON.stringify({ data: '\n\n' }));
-			response = await chainAllDocs.call(chainCall);
-		}
-
-		sendData(JSON.stringify({ sourceDocs: response.sourceDocuments }));
+		// sendData(JSON.stringify({ sourceDocs: response.sourceDocuments }));
 
 		const [userHistory, botHistory] = history.reduce(
 			(acc: [string[], string[]], [userMessage, botMessage]) => {
@@ -108,14 +160,16 @@ export default async function handler(
 				user_id: userId,
 				content_id: contentId,
 				user_history: [...userHistory, sanitizedQuestion],
-				bot_history: [...botHistory, response.text],
+				bot_history: [...botHistory, response],
 			})
 			.eq('user_id', userId)
 			.eq('content_id', contentId);
+
+		res.status(200).json({ data: response });
 	} catch (error) {
 		console.log('error', error);
 	} finally {
-		sendData('[DONE]');
-		res.end();
+		// sendData('[DONE]');
+		// res.end();
 	}
 }
