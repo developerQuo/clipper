@@ -11,6 +11,7 @@ export type Content = {
 	bookmark: boolean; // 유저 북마크 여부
 	tags: string[];
 	bookmarks: number; // 전체 유저 북마크 수
+	faq: string[];
 };
 
 export type SelectedContent = Content | undefined;

@@ -16,7 +16,10 @@ export default function Plan() {
 				오늘 신청하면 10일 무료 체험!
 			</span>
 			<div className="mt-20">
-				<button className="btn w-60 rounded-3xl">체험하기</button>
+				<button className="btn w-60 rounded-3xl" disabled>
+					준비 중...
+				</button>
+				{/* <button className="btn w-60 rounded-3xl">체험하기</button> */}
 			</div>
 		</div>
 	);

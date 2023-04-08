@@ -64,7 +64,12 @@ export default function Clip({ content }: InputProps) {
 				</div>
 			</div>
 			<div className="h-full w-full bg-white py-12">
-				<ChatDoc contentId={id} source={source} />
+				<ChatDoc
+					contentId={id}
+					source={source}
+					summary={content.summary}
+					faq={content.faq}
+				/>
 			</div>
 		</div>
 	);

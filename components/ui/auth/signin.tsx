@@ -1,19 +1,15 @@
 import { getProviders, signIn } from 'next-auth/react';
+import Image from 'next/image';
 import { useEffect, useState } from 'react';
 
-type InputProps = {
-	loginRequired: boolean;
-};
+type InputProps = {};
 
 const get = async () => {
 	const provider = await getProviders();
 	return provider;
 };
 
-// login이 되있을 때, 이 페이지로 진입하면
-// 개인화 설정 x -> 산업, 직무, 관심사 선택
-// 개인화 설정 o -> 홈
-const Login = ({ loginRequired }: InputProps) => {
+const Login = ({}: InputProps) => {
 	const [provider, setProvider] = useState<any>();
 	useEffect(() => {
 		get().then((res) => {
@@ -23,13 +19,33 @@ const Login = ({ loginRequired }: InputProps) => {
 		});
 	}, [setProvider]);
 	return (
-		<div className="o">
-			<div key={provider?.name}>
-				<button className="btn rounded-lg" onClick={() => signIn(provider.id)}>
-					Sign in with {provider?.name}
-				</button>
+		<>
+			<div className="hero min-h-screen bg-base-100">
+				<div className="hero-content text-center">
+					<div className="max-w-lg ">
+						<Image
+							className="mx-auto"
+							src="/images/logo/clipper_logo.png"
+							alt="Logo"
+							width={306}
+							height={96}
+						/>
+						{/* <h1 className="text-5xl font-bold">Clipper</h1> */}
+						<p className="mt-12 text-text-secondary">
+							구글 로그인으로 쉽고 편하게
+						</p>
+						<div key={provider?.name} className="mt-32">
+							<button
+								className="btn w-96 rounded-3xl p-2 text-sm"
+								onClick={() => signIn(provider.id)}
+							>
+								구글 로그인
+							</button>
+						</div>
+					</div>
+				</div>
 			</div>
-		</div>
+		</>
 	);
 };
 

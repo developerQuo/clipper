@@ -28,7 +28,7 @@ type MessageState = {
 const defaultMessageState: MessageState = {
 	messages: [
 		{
-			message: 'Hi, what would you like to learn about this document?',
+			message: '다른 궁금한 점이 있으신가요?',
 			type: 'apiMessage',
 		},
 	],
@@ -39,9 +39,16 @@ const defaultMessageState: MessageState = {
 type InputProps = {
 	contentId: string;
 	source: string;
+	summary: string;
+	faq: string[];
 };
 
-export default function ChatDoc({ contentId, source }: InputProps) {
+export default function ChatDoc({
+	contentId,
+	source,
+	summary,
+	faq,
+}: InputProps) {
 	const [query, setQuery] = useState<string>('');
 	const [loading, setLoading] = useState<boolean>(false);
 	const [sourceDocs, setSourceDocs] = useState<Document[]>([]);
@@ -219,52 +226,46 @@ export default function ChatDoc({ contentId, source }: InputProps) {
 
 	return (
 		<>
-			<main className="flex w-full flex-1 flex-col items-center justify-between bg-white px-20 py-12">
-				<div className="flex h-[65vh] w-full items-center justify-center rounded-lg border">
+			<main className="flex w-full flex-1 flex-col items-center justify-between bg-white px-20 pb-4 pt-12">
+				<div className="flex h-[75vh] w-full items-center justify-center rounded-lg">
 					<div
 						ref={messageListRef}
 						className="h-full w-full overflow-y-auto rounded-lg"
 					>
+						<div className="text-sm">{summary}</div>
+						<div className="mt-4 space-y-2 text-sm">
+							<span>이런 것이 궁금할 수 있어요.</span>
+							{faq?.map((q, index) => (
+								<button
+									key={index}
+									className="btn-outline btn"
+									onClick={() => {}}
+								>
+									{q}
+								</button>
+							))}
+						</div>
 						{chatMessages.map((message, index) => {
 							let icon;
 							let className;
 							if (message.type === 'apiMessage') {
-								icon = (
-									<Image
-										src="/bot-image.png"
-										alt="AI"
-										width="40"
-										height="40"
-										className={styles.boticon}
-										priority
-									/>
-								);
-								className = styles.apimessage;
+								className = 'chat chat-start';
 							} else {
-								icon = (
-									<Image
-										src="/usericon.png"
-										alt="Me"
-										width="30"
-										height="30"
-										className={styles.usericon}
-										priority
-									/>
-								);
 								// The latest message sent by the user will be animated while waiting for a response
-								className =
-									loading && index === chatMessages.length - 1
-										? styles.usermessagewaiting
-										: styles.usermessage;
+								className = 'chat chat-end';
+								// loading && index === chatMessages.length - 1
+								// 	? styles.usermessagewaiting
+								// 	: styles.usermessage;
 							}
 							return (
 								<>
 									<div key={index} className={className}>
-										{icon}
-										<div className={styles.markdownanswer}>
-											<ReactMarkdown linkTarget="_blank">
-												{message.message}
-											</ReactMarkdown>
+										<div className="chat-bubble">
+											<div className={styles.markdownanswer}>
+												<ReactMarkdown linkTarget="_blank">
+													{message.message}
+												</ReactMarkdown>
+											</div>
 										</div>
 									</div>
 									{message.sourceDocs && (
@@ -324,7 +325,7 @@ export default function ChatDoc({ contentId, source }: InputProps) {
 								ref={textAreaRef}
 								autoFocus={false}
 								rows={1}
-								maxLength={512}
+								maxLength={1024}
 								id="userInput"
 								name="userInput"
 								placeholder={
@@ -334,7 +335,7 @@ export default function ChatDoc({ contentId, source }: InputProps) {
 								}
 								value={query}
 								onChange={(e) => setQuery(e.target.value)}
-								className="relative w-full resize-none rounded-lg border bg-white px-4 py-8 text-lg text-black outline-0"
+								className="textarea-bordered textarea relative w-full resize-none rounded-3xl py-3 text-black"
 							/>
 							<button
 								type="submit"
@@ -359,7 +360,10 @@ export default function ChatDoc({ contentId, source }: InputProps) {
 						</form>
 					</div>
 				</div>
-				<button className="btn-error btn" onClick={resetChatHistory}>
+				<button
+					className="btn-error btn rounded-3xl"
+					onClick={resetChatHistory}
+				>
 					채팅 기록 삭제
 				</button>
 			</main>

@@ -2,11 +2,20 @@ import { Content } from '@/store/content';
 import moment from 'moment';
 import Link from 'next/link';
 import Bookmark from '../bookmark/button';
+import { useRouter } from 'next/router';
+import { randomColor } from '@/utils/randomColor';
 
 const Tag = ({ tag }: { tag: string }) => {
 	return <div className="badge-outline badge">{tag}</div>;
 };
 
+type InputProps = Pick<
+	Content,
+	'id' | 'title' | 'media' | 'tags' | 'bookmark' | 'bookmarks' | 'published_at'
+> & {
+	background?: string;
+	color?: string;
+};
 const Card = ({
 	id,
 	title,
@@ -15,12 +24,21 @@ const Card = ({
 	bookmark,
 	bookmarks,
 	published_at,
-}: Content) => {
+	...style
+}: InputProps) => {
+	const router = useRouter();
 	const publishedAt = moment(published_at).format('YYYY-MM-DD');
 	return (
 		<Link href={`/clip/${id}`}>
-			<div className="card h-full cursor-default bg-base-100 shadow-xl">
-				<div className="card-body min-h-[12rem] p-6">
+			<div
+				className="card h-full cursor-default bg-base-100 shadow-xl"
+				{...(style
+					? {
+							style,
+					  }
+					: {})}
+			>
+				<div className="card-body min-h-[16rem] p-6">
 					<div className="relatives flex flex-1 flex-col justify-evenly">
 						<h2 className="link card-title text-lg">{title}</h2>
 						<p className="pt-4 text-default">

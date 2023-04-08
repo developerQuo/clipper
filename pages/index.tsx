@@ -28,7 +28,7 @@ export default function HomePage() {
 	};
 
 	return (
-		<div className="space-y-8 px-10 py-16">
+		<div className="space-y-12 px-10 py-16">
 			<div className="flex items-center justify-between">
 				<h1 className="text-xl font-bold">
 					안녕하세요. 오늘 발간된 보고서들을 선택하세요. 클리퍼가 보고서를 쉽게

@@ -1,17 +1,8 @@
 import { ChatInput } from '@/types/chat';
+import { openai } from '@/utils/openai-client';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { getSession } from 'next-auth/react';
-import {
-	Configuration,
-	OpenAIApi,
-	ChatCompletionRequestMessageRoleEnum,
-} from 'openai';
-import { Readable } from 'stream';
-
-const configuration = new Configuration({
-	apiKey: process.env.OPENAI_API_KEY,
-});
-const openai = new OpenAIApi(configuration);
+import { ChatCompletionRequestMessageRoleEnum } from 'openai';
 
 export default async function handler(
 	req: NextApiRequest,

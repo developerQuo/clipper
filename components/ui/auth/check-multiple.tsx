@@ -4,10 +4,12 @@ import CheckButton from './button';
 
 type InputProps = {
 	options: OptionType[];
+	checkedOptions?: string[];
+	maxChecked?: number;
 } & React.InputHTMLAttributes<HTMLInputElement>;
 
 function CheckMultiple(
-	{ options, ...props }: InputProps,
+	{ options, checkedOptions, maxChecked = 2, ...props }: InputProps,
 	ref: ForwardedRef<HTMLInputElement>,
 ) {
 	return (
@@ -18,6 +20,15 @@ function CheckMultiple(
 					ref={ref}
 					value={value}
 					label={label!}
+					onButtonClick={(e) => {
+						if (
+							checkedOptions &&
+							checkedOptions.length > maxChecked - 1 &&
+							!checkedOptions.includes(value as string)
+						) {
+							e.preventDefault();
+						}
+					}}
 					{...props}
 				/>
 			))}
