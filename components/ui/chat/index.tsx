@@ -103,15 +103,17 @@ export default function ChatDoc({
 	}, []);
 
 	//handle form submission
-	async function handleSubmit(e: any) {
+	async function handleSubmit(e: any, value?: string) {
 		e.preventDefault();
 
-		if (!query) {
+		const input = query || value;
+		console.log(input, query, value);
+		if (!input) {
 			alert('Please input a question');
 			return;
 		}
 
-		const question = query.trim();
+		const question = input.trim();
 
 		setMessageState((state) => ({
 			...state,
@@ -260,8 +262,7 @@ export default function ChatDoc({
 								className="btn-outline btn-sm btn w-fit rounded-3xl px-4 text-xs font-medium"
 								onClick={(e) => {
 									const val = (e.target as any).textContent;
-									setQuery(val);
-									handleSubmit(e);
+									handleSubmit(e, val);
 								}}
 							>
 								{q}
@@ -356,7 +357,7 @@ export default function ChatDoc({
 							name="userInput"
 							placeholder={
 								loading
-									? 'Waiting for response...'
+									? '잠시만 기다려주세요...'
 									: '더 궁금한 것을 Clipper에게 물어보세요.'
 							}
 							value={query}
