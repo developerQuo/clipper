@@ -5,6 +5,7 @@ import Card from './card';
 import { Content as ContentType, QueryType } from '@/types/content';
 import { useRouter } from 'next/router';
 import { getColor } from '@/utils/randomColor';
+import Loading from '../Loading';
 
 const pageLength = 12;
 
@@ -19,6 +20,17 @@ export default function Content() {
 	// TODO: infinite scrolling, last page error - range 범위 넘어가면 에러
 	const fetch = useCallback(async () => {
 		const rangePage = page * pageLength;
+		const { count = 0 } = await supabase
+			.from('content')
+			.select('*', {
+				count: 'exact',
+				head: true,
+			})
+			.not('content', 'is', 'null')
+			.eq('vector_upload', true);
+		// .eq('bookmark.user_id', userId);
+		// .not('id', 'in', '(23, 24, 25, 26, 27, 28)'); // test pdf
+		const rangeTo = rangePage - 1 + pageLength;
 		const { data, ...result } = await supabase
 			.from('content')
 			.select(
@@ -31,7 +43,7 @@ export default function Content() {
 			.eq('bookmark.user_id', userId)
 			.not('content', 'is', 'null')
 			.not('id', 'in', '(23, 24, 25, 26, 27, 28)') // test pdf
-			.range(rangePage, rangePage - 1 + pageLength)
+			.range(rangePage, count && rangeTo > count ? count : rangeTo)
 			.order('published_at', { ascending: false });
 		if (!result.error) {
 			const contentData = data?.map(({ content_source, bookmark, ...row }) => ({
@@ -48,6 +60,7 @@ export default function Content() {
 			setQuery({
 				...result,
 				data: [...(query?.data ? query.data : []), ...contentData],
+				count,
 			} as QueryType);
 		}
 		setIsLoading(false);
@@ -66,6 +79,7 @@ export default function Content() {
 	};
 	return (
 		<div className="flex flex-col space-y-2">
+			{isLoading && <Loading />}
 			<div className="grid grid-cols-1 gap-4 gap-y-10 sm:grid-cols-2 xl:grid-cols-3 3xl:grid-cols-4">
 				{query?.data?.map(({ tags, ...content }, index) => {
 					const [background, color] =
@@ -82,7 +96,11 @@ export default function Content() {
 					);
 				})}
 			</div>
-			<button className="p-12 text-text-secondary" onClick={handleLoadMore}>
+			<button
+				className="p-12 text-text-secondary"
+				onClick={handleLoadMore}
+				disabled={query?.count === query?.data?.length}
+			>
 				Load More
 			</button>
 		</div>

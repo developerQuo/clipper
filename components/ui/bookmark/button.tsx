@@ -79,8 +79,8 @@ export default function Bookmark({ id, bookmark, disabled }: InputProps) {
 				<Image
 					src={`/icons/bookmark-${checked ? 'checked' : 'unchecked'}.svg`}
 					alt={`search`}
-					width={11.67}
-					height={15}
+					width={16}
+					height={16}
 				/>
 			</label>
 		</div>

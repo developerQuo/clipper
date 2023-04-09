@@ -9,6 +9,7 @@ import ChatDoc from '@/components/ui/chat';
 import { Content } from '@/store/content';
 import moment from 'moment';
 import Image from 'next/image';
+import Tags from '@/components/ui/content/tags';
 
 type InputProps = { content: Content };
 
@@ -35,7 +36,9 @@ export default function Clip({ content }: InputProps) {
 							<span className="font-medium">{media}</span>{' '}
 							<span className="text-text-secondary">{publishedAt}</span>
 						</p>
-						<div>{tags}</div>
+						<div className="mt-8 flex flex-wrap gap-2">
+							<Tags tags={tags} />
+						</div>
 					</div>
 					<div className="mt-10 flex items-center space-x-5">
 						<Bookmark id={id} bookmark={bookmark} />

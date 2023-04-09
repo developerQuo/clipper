@@ -2,6 +2,8 @@ import { Content } from '@/store/content';
 import moment from 'moment';
 import Link from 'next/link';
 import Bookmark from '../bookmark/button';
+import { getColor } from '@/utils/randomColor';
+import Tags from './tags';
 
 const Tag = ({ tag }: { tag: string }) => {
 	return <div className="badge-outline badge">{tag}</div>;
@@ -50,26 +52,15 @@ const Card = ({
 							<span className="text-text-secondary">{publishedAt}</span>
 						</p>
 						<div className="flex items-center justify-between pt-10">
-							<div className="flex-1 space-x-2">
-								{/* TODO: random color*/}
-								{tags?.slice(0, 2).map((tag, index) => (
-									<div key={index} className="badge-secondary badge">
-										{tag}
-									</div>
-								))}
+							<div className="flex-1 space-x-2 space-y-2">
+								<Tags id={id} tags={tags?.slice(0, 2)} />
 							</div>
-							<div className="ml-4 flex w-4">
+							<div className="ml-4 flex">
 								<Bookmark id={id} bookmark={bookmark} />
 								{bookmarks}
 							</div>
 						</div>
 					</div>
-					{/* <div className="card-actions justify-end">
-						{tags?.map((tag, index) => (
-							<Tag key={index} tag={tag} />
-						))}
-						<div className="badge-primary badge">{bookmarks}</div>
-					</div> */}
 				</div>
 			</div>
 		</Link>

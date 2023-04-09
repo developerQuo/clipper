@@ -11,6 +11,7 @@ import { SelectedGeneratedContent } from '@/store/generated-content';
 import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
 import moment from 'moment';
 import Link from 'next/link';
+import Loading from '../Loading';
 
 export default function GeneratedContent() {
 	const { data: session } = useSession();
@@ -39,6 +40,7 @@ export default function GeneratedContent() {
 	console.log(content);
 	return (
 		<>
+			{loading && <Loading />}
 			<div className="p-5">
 				<Accordion type="single" collapsible className="w-3/5 flex-col">
 					{content?.map((doc, index) => (

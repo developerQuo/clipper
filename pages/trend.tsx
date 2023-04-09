@@ -2,8 +2,9 @@ import { GetServerSideProps } from 'next';
 import serverSideAuthGuard from '@/components/utils/serverSideAuthGuard';
 import dynamic from 'next/dynamic';
 import Tabs from '@/components/ui/Tabs';
+import Loading from '@/components/ui/Loading';
 
-const loading = () => <div>Loading...</div>;
+const loading = () => <Loading />;
 const WeeklyHot = dynamic(() => import('@/components/ui/content'), { loading });
 const MonthlyHot = dynamic(() => import('@/components/ui/content'), {
 	loading,
