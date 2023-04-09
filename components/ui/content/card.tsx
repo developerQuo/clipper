@@ -46,10 +46,12 @@ const Card = ({
 			>
 				<div className="card-body min-h-[16rem] p-6">
 					<div className="relatives flex flex-1 flex-col justify-evenly">
-						<h2 className="card-title text-lg">{title}</h2>
+						<h2 className="card-title cursor-pointer text-lg">{title}</h2>
 						<p className="pt-4 text-default">
-							<span className="font-medium">{media}</span>{' '}
-							<span className="text-text-secondary">{publishedAt}</span>
+							<span className="cursor-pointer font-medium">{media}</span>{' '}
+							<span className="cursor-pointer text-text-secondary">
+								{publishedAt}
+							</span>
 						</p>
 						<div className="flex items-center justify-between pt-10">
 							<div className="flex-1 space-x-2 space-y-2">

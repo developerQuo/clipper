@@ -255,7 +255,7 @@ export default function ChatDoc({
 				>
 					<div className="text-sm leading-6">{summary}</div>
 					<div className="mb-8 mt-6 flex flex-col space-y-2 text-sm">
-						<span>이런 내용이 담겨져 있어요. 클릭해서 선택하세요.</span>
+						<span>이런 내용이 담겨져 있어요. 클릭해서 확인하세요.</span>
 						{faq?.map((q, index) => (
 							<button
 								key={`faq-${index}`}
