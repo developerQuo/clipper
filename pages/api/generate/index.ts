@@ -36,14 +36,12 @@ export default async function handler(
 		// console.log(data);
 		if (data) {
 			const chat = await openai.createChatCompletion({
-				temperature: 0.7,
 				model: 'gpt-3.5-turbo',
 				messages: [
 					{
 						role: ChatCompletionRequestMessageRoleEnum.System,
 						content: `I give you documents.
-					I want to create a 1700 Korean characters new content that refer three documents.
-					${prompt}
+					I want to create a 1700 characters new content that refer below documents.
 					Choose 5 key topics and create 5 new contents that details.
 					Please reply in Korean.
 
@@ -52,6 +50,9 @@ export default async function handler(
 					${data[1].title} - ${data[1].content}
 					${data[2].title} - ${data[2].content}
 					${data[3].title} - ${data[3].content}
+
+					Prompt:
+					${prompt}
 
 					Answer in Markdown:`,
 					},

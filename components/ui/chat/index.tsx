@@ -387,7 +387,10 @@ export default function ChatDoc({
 					</form>
 				</div>
 			</div>
-			<button className="btn-error btn rounded-3xl" onClick={resetChatHistory}>
+			<button
+				className="btn-error btn rounded-3xl text-white"
+				onClick={resetChatHistory}
+			>
 				채팅 기록 삭제
 			</button>
 		</main>

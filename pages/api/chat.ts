@@ -107,8 +107,7 @@ export default async function handler(
 		);
 
 		const chat = await openai.createChatCompletion({
-			temperature: 0.3,
-			model: 'gpt-4',
+			model: 'gpt-3.5-turbo',
 			messages: [
 				{
 					role: ChatCompletionRequestMessageRoleEnum.System,
