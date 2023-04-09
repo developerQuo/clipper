@@ -46,7 +46,7 @@ const Card = ({
 			>
 				<div className="card-body min-h-[16rem] p-6">
 					<div className="relatives flex flex-1 flex-col justify-evenly">
-						<h2 className="link card-title text-lg">{title}</h2>
+						<h2 className="card-title text-lg">{title}</h2>
 						<p className="pt-4 text-default">
 							<span className="font-medium">{media}</span>{' '}
 							<span className="text-text-secondary">{publishedAt}</span>

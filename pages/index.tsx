@@ -29,10 +29,12 @@ export default function HomePage() {
 
 	return (
 		<div className="space-y-12 px-10 py-16">
-			<div className="flex items-center justify-between">
-				<h1 className="text-xl font-bold">
-					안녕하세요. 오늘 발간된 보고서들을 선택하세요. 클리퍼가 보고서를 쉽게
-					이해하게 도와드릴게요!
+			<div className="flex items-center justify-between px-2">
+				<h1 className="space-y-2 text-xl">
+					<p>안녕하세요. 오늘 발간된 보고서들을 선택하세요.</p>
+					<p className="font-bold">
+						클리퍼가 보고서를 쉽게 이해하게 도와드릴게요!
+					</p>
 				</h1>
 				<div className="flex justify-end">
 					<Filter

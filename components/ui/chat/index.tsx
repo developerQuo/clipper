@@ -247,15 +247,15 @@ export default function ChatDoc({
 	};
 
 	return (
-		<main className="flex w-full flex-1 flex-col items-center justify-between bg-white px-20 pb-4 pt-12">
+		<main className="flex w-full flex-1 flex-col items-center justify-between bg-white px-20 pb-4">
 			<div className="flex h-[75vh] w-full items-center justify-center rounded-lg">
 				<div
 					ref={messageListRef}
 					className="h-full w-full overflow-y-auto rounded-lg"
 				>
-					<div className="text-sm">{summary}</div>
-					<div className="mb-8 mt-4 flex flex-col space-y-2 text-sm">
-						<span>이런 내용이 담겨져 있어요.</span>
+					<div className="text-sm leading-6">{summary}</div>
+					<div className="mb-8 mt-6 flex flex-col space-y-2 text-sm">
+						<span>이런 내용이 담겨져 있어요. 클릭해서 선택하세요.</span>
 						{faq?.map((q, index) => (
 							<button
 								key={`faq-${index}`}

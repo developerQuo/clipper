@@ -90,15 +90,27 @@ function Navigation() {
 			</div>
 			{session && (
 				<div className="justify-end">
-					<div className="avatar">
-						<div className="w-10 rounded-full">
-							<Image
-								alt="profile-image"
-								src={session.user.image ?? ''}
-								width={36}
-								height={36}
-							/>
-						</div>
+					<div className="dropdown-top dropdown">
+						<label tabIndex={0} className="m-1 cursor-pointer">
+							<div className="avatar">
+								<div className="w-10 rounded-full">
+									<Image
+										alt="profile-image"
+										src={session.user.image ?? ''}
+										width={36}
+										height={36}
+									/>
+								</div>
+							</div>
+						</label>
+						<ul
+							tabIndex={0}
+							className="dropdown-content menu rounded-box w-52 bg-base-100 p-2 shadow"
+						>
+							<li>
+								<Link href="/api/auth/signout">로그아웃</Link>
+							</li>
+						</ul>
 					</div>
 				</div>
 			)}

@@ -188,8 +188,8 @@ export default function ChatDoc({ content }: InputProps) {
 	}, [messages, pending]);
 
 	return (
-		<main className="flex w-full flex-1 flex-col items-center justify-between bg-white px-20 pb-4 pt-12">
-			<div className="flex h-[75vh] w-full items-center justify-center rounded-lg">
+		<main className="flex w-full flex-1 flex-col items-center justify-between bg-white px-20 pb-4">
+			<div className="flex h-[85vh] w-full items-center justify-center rounded-lg">
 				<div
 					ref={messageListRef}
 					className="h-full w-full overflow-y-auto rounded-lg"

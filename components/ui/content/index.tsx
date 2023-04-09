@@ -27,7 +27,7 @@ export default function Content() {
 				head: true,
 			})
 			.not('content', 'is', 'null')
-			.eq('vector_upload', true);
+			.eq('file_type', 'pdf');
 		// .eq('bookmark.user_id', userId);
 		// .not('id', 'in', '(23, 24, 25, 26, 27, 28)'); // test pdf
 		const rangeTo = rangePage - 1 + pageLength;
@@ -39,7 +39,7 @@ export default function Content() {
 					count: 'exact',
 				},
 			)
-			.eq('vector_upload', true)
+			.eq('file_type', 'pdf')
 			.eq('bookmark.user_id', userId)
 			.not('content', 'is', 'null')
 			.not('id', 'in', '(23, 24, 25, 26, 27, 28)') // test pdf

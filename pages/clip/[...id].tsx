@@ -29,11 +29,9 @@ export default function Clip({ content }: InputProps) {
 			<div className="flex flex-col justify-between px-8 py-12">
 				<div className="w-[340px]">
 					<div className="flex flex-col">
-						<div className="text-lg font-semibold">
-							{title} ({publishedAt})
-						</div>
-						<p className="pt-4 text-default">
-							<span className="font-medium">{media}</span>{' '}
+						<div className="text-lg font-semibold">{title}</div>
+						<p className="space-x-3 pt-4 text-default">
+							<span className="font-medium">{media}</span>
 							<span className="text-text-secondary">{publishedAt}</span>
 						</p>
 						<div className="mt-8 flex flex-wrap gap-2">
