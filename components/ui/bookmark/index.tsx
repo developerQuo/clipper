@@ -26,8 +26,13 @@ export default function Bookmark() {
 				.not('content', 'is', 'null');
 			// .not('id', 'in', '(23, 24, 25, 26, 27, 28)'); // test pdf
 
-			const bookmarkData = data?.map(
-				({ content_source, bookmark, ...row }) => ({
+			const bookmarkData = data
+				?.filter(({ bookmark }) =>
+					Boolean(
+						(bookmark as any).length && (bookmark as any)[0].user_id === userId,
+					),
+				)
+				.map(({ content_source, bookmark, ...row }) => ({
 					...row,
 					media:
 						content_source && (content_source as any).length
@@ -36,8 +41,7 @@ export default function Bookmark() {
 					bookmark: Boolean(
 						(bookmark as any).length && (bookmark as any)[0].user_id === userId,
 					),
-				}),
-			) as any;
+				})) as any;
 			setQuery({
 				...result,
 				data: bookmarkData,

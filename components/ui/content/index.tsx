@@ -41,7 +41,7 @@ export default function Content() {
 				},
 			)
 			.eq('file_type', 'pdf')
-			.eq('bookmark.user_id', userId)
+			.eq('bookmark.user_id', [userId])
 			.not('content', 'is', 'null')
 			.not('id', 'in', '(23, 24, 25, 26, 27, 28)') // test pdf
 			.range(rangePage, count && rangeTo > count ? count : rangeTo)
