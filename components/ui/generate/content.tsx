@@ -30,8 +30,8 @@ export default function GeneratedContent() {
 				.order('id', { ascending: false });
 			if (!error && data && data.length > 0) {
 				setContent(data as SelectedGeneratedContent[]);
-				setLoading(false);
 			}
+			setLoading(false);
 		};
 		if (userId) {
 			fetch();

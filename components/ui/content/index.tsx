@@ -9,6 +9,7 @@ import Loading from '../Loading';
 
 const pageLength = 12;
 
+// TODO: load more, load시 같은 거 한번 더 긁어옴
 export default function Content() {
 	const router = useRouter();
 	const { data: session } = useSession();
@@ -99,7 +100,7 @@ export default function Content() {
 			<button
 				className="p-12 text-text-secondary"
 				onClick={handleLoadMore}
-				disabled={query?.count === query?.data?.length}
+				// disabled={query?.count === query?.data?.length}
 			>
 				Load More
 			</button>

@@ -13,14 +13,13 @@ export type IForm = {
 	prompt: string;
 };
 
-// TODO: loading
 export default function Generate() {
 	const [loading, setLoading] = useState(false);
 	const setGeneratedContent = useSetRecoilState<SelectedGeneratedContent>(
 		SelectedGeneratedContentState,
 	);
 	const router = useRouter();
-	const { register, handleSubmit } = useForm<IForm>();
+	const { register, handleSubmit, watch } = useForm<IForm>();
 	const onGenerate = async ({ prompt }: IForm) => {
 		setLoading(true);
 		await fetch('/api/generate', {
@@ -43,6 +42,7 @@ export default function Generate() {
 				new Error(err);
 			});
 	};
+	const watchPrompt = watch('prompt');
 	return (
 		<div className="flex flex-col items-center justify-between space-y-12 px-10 py-32">
 			<div className="text-center text-xl font-semibold">
@@ -60,9 +60,12 @@ export default function Generate() {
 					className="textarea-bordered textarea relative w-full resize-none rounded-lg bg-white px-7 py-5 text-black outline-0"
 					placeholder="eg. 나는 HR 관련된 B2B SaaS 사업을 하고 있는데, 올해 고객사 수를 2배 증가시키고 싶어. 
 유료와 무료 활동 모두 고려한 적절한 마케팅 실행 전략을 5가지 제안해줘."
-					{...register('prompt')}
+					{...register('prompt', { required: true })}
 				/>
-				<button className={`btn rounded-3xl ${loading ? 'loading' : ''}`}>
+				<button
+					className={`btn rounded-3xl ${loading ? 'loading' : ''}`}
+					disabled={!watchPrompt}
+				>
 					Generate
 				</button>
 			</form>
