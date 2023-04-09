@@ -19,7 +19,7 @@ function Layout({ children }: any) {
 				</div>
 				<div className="drawer-side w-52 border-r">
 					<label htmlFor="menu-drawer" className="drawer-overlay"></label>
-					<div className="flex h-full flex-col px-10">
+					<div className="fixed flex h-full flex-col px-10">
 						<div className="my-12">
 							<Link
 								href="/"
