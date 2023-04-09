@@ -4,6 +4,7 @@ import Notification from '../ui/Notification';
 import SideNavigation from './navigation/Side';
 import Link from 'next/link';
 import Image from 'next/image';
+import SizeInfo from '../ui/size-info';
 
 function Layout({ children }: any) {
 	const notificationCtx = useContext(NotificationContext);
@@ -15,7 +16,10 @@ function Layout({ children }: any) {
 			<div className="drawer-mobile drawer flex-1">
 				<input id="menu-drawer" type="checkbox" className="drawer-toggle" />
 				<div className="drawer-content bg-[#F1F3F9]">
-					<main className="h-full">{children}</main>
+					<div className="h-full md:hidden">
+						<SizeInfo />
+					</div>
+					<main className="hidden h-full md:block">{children}</main>
 				</div>
 				<div className="drawer-side w-52 border-r">
 					<label htmlFor="menu-drawer" className="drawer-overlay"></label>
