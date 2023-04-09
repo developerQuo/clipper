@@ -33,23 +33,24 @@ export default async function handler(
 		.is('file_type', 'null')
 		.not('content', 'is', 'null');
 	try {
-		// console.log(data);
-		if (data) {
+		const content = data?.filter((d) => d.content);
+		if (content) {
+			const len = content.length;
+			const documents = content
+				.map(({ title, content }) => `${title} - ${content}`)
+				.join('\n\n');
 			const chat = await openai.createChatCompletion({
 				model: 'gpt-3.5-turbo',
 				messages: [
 					{
 						role: ChatCompletionRequestMessageRoleEnum.System,
-						content: `I give you documents.
-					I want to create a 1700 characters new content that refer below documents.
+						content: `I give you ${len} documents.
+					I want to create a 1700 characters new content that combines ${len} documents.
 					Choose 5 key topics and create 5 new contents that details.
 					Please reply in Korean.
 
 					Documents:
-					${data[0].title} - ${data[0].content}
-					${data[1].title} - ${data[1].content}
-					${data[2].title} - ${data[2].content}
-					${data[3].title} - ${data[3].content}
+					${documents}
 
 					Prompt:
 					${prompt}
