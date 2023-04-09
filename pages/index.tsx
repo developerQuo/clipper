@@ -51,6 +51,7 @@ export default function HomePage() {
 export const getServerSideProps: GetServerSideProps = async (context) => {
 	const guard = (await serverSideAuthGuard(context)) as any;
 	if (guard.hasOwnProperty('redirect')) return guard;
+
 	return {
 		props: {},
 	};

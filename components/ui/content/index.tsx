@@ -1,86 +1,88 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { supabase } from '@/utils/supabase-client';
 import { useSession } from 'next-auth/react';
 import Card from './card';
 import { Content as ContentType, QueryType } from '@/types/content';
 import { useRouter } from 'next/router';
 import { getColor } from '@/utils/randomColor';
+import InfiniteScroll from 'react-infinite-scroll-component';
 import Loading from '../Loading';
 
-const pageLength = 12;
+const limit = 11;
 
-// TODO: load more, load시 같은 거 한번 더 긁어옴
 export default function Content() {
 	const router = useRouter();
 	const { data: session } = useSession();
 	const { id: userId } = session?.user ?? {};
-	const [isLoading, setIsLoading] = useState(true);
 	const [query, setQuery] = useState<QueryType>();
-	const [page, setPage] = useState(0);
-
-	// TODO: infinite scrolling, last page error - range 범위 넘어가면 에러
-	const fetch = useCallback(async () => {
-		const rangePage = page * pageLength;
-		const { count = 0 } = await supabase
-			.from('content')
-			.select('*', {
-				count: 'exact',
-				head: true,
-			})
-			.not('content', 'is', 'null')
-			.eq('file_type', 'pdf');
-		// .eq('bookmark.user_id', userId);
-		// .not('id', 'in', '(23, 24, 25, 26, 27, 28)'); // test pdf
-		const rangeTo = rangePage - 1 + pageLength;
-		const { data, ...result } = await supabase
-			.from('content')
-			.select(
-				'id,title,summary,published_at,file_path,views,content_source(media(name)),bookmark(user_id),faq,tags',
-				{
-					count: 'exact',
-				},
-			)
-			.eq('file_type', 'pdf')
-			.eq('bookmark.user_id', [userId])
-			.not('content', 'is', 'null')
-			.not('id', 'in', '(23, 24, 25, 26, 27, 28)') // test pdf
-			.range(rangePage, count && rangeTo > count ? count : rangeTo)
-			.order('published_at', { ascending: false });
-		if (!result.error) {
-			const contentData = data?.map(({ content_source, bookmark, ...row }) => ({
-				...row,
-				media:
-					content_source && (content_source as any).length
-						? (content_source as any[])[0].media.name
-						: null,
-				bookmark: Boolean(
-					(bookmark as any).length && (bookmark as any)[0].user_id === userId,
-				),
-			})) as ContentType[];
-			// console.log(data);
-			setQuery({
-				...result,
-				data: [...(query?.data ? query.data : []), ...contentData],
-				count,
-			} as QueryType);
-		}
-		setIsLoading(false);
-	}, [page, query?.data, userId]);
+	const [page, setPage] = useState(1);
+	const [hasMore, setHasMore] = useState(true);
+	const [loading, setLoading] = useState(false);
 
 	useEffect(() => {
-		if (userId && !query) {
+		const fetch = async () => {
+			const { data, ...result } = await supabase
+				.from('content')
+				.select(
+					'id,title,summary,published_at,file_path,views,content_source(media(name)),bookmark(user_id),faq,tags',
+					{
+						count: 'exact',
+					},
+				)
+				.eq('file_type', 'pdf')
+				.not('content', 'is', 'null')
+				.range((page - 1) * limit, page * limit - 1)
+				.order('published_at', { ascending: false });
+			if (!result.error) {
+				const contentData = data?.map(
+					({ content_source, bookmark, ...row }) => ({
+						...row,
+						media:
+							content_source && (content_source as any).length
+								? (content_source as any[])[0].media.name
+								: null,
+						bookmark: Boolean(
+							(bookmark as any).length &&
+								(bookmark as any)[0].user_id === userId,
+						),
+					}),
+				) as ContentType[];
+
+				if (contentData.length === 0) {
+					setHasMore(false);
+				} else {
+					setQuery((prev) => {
+						if (prev?.data && prev.data[0].id === contentData[0].id) {
+							return prev;
+						}
+						return {
+							...result,
+							data: [...(prev?.data || []), ...contentData],
+						} as QueryType;
+					});
+				}
+				setLoading(false);
+			}
+		};
+		if (userId) {
 			console.log('fetched');
+			setLoading(true);
 			fetch();
 		}
-	}, [fetch, query, userId]);
+	}, [page, userId]);
 
-	const handleLoadMore = () => {
-		setPage(page + 1);
-		fetch();
-	};
 	return (
-		<div className="flex flex-col space-y-2">
-			{isLoading && <Loading />}
+		<InfiniteScroll
+			dataLength={query?.data?.length ?? 0}
+			next={() => setPage((prevPage) => prevPage + 1)}
+			hasMore={hasMore}
+			loader={loading && <Loading />}
+			endMessage={
+				<p className="mt-4 text-center text-text-secondary">
+					<b>End of Reports</b>
+				</p>
+			}
+		>
 			<div className="grid grid-cols-1 gap-4 gap-y-10 sm:grid-cols-2 xl:grid-cols-3 3xl:grid-cols-4">
 				{query?.data?.map(({ tags, ...content }, index) => {
 					const [background, color] =
@@ -97,13 +99,6 @@ export default function Content() {
 					);
 				})}
 			</div>
-			<button
-				className="p-12 text-text-secondary"
-				onClick={handleLoadMore}
-				// disabled={query?.count === query?.data?.length}
-			>
-				Load More
-			</button>
-		</div>
+		</InfiniteScroll>
 	);
 }

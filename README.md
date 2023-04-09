@@ -51,28 +51,8 @@
 
 
 
-## 추가될 프롬프트
-유저 키워드 생성 프롬프트 20개 뽑기
-(IT소프트웨어, 금융, 교육) 산업에 종사하는 (사업전략, 개발) 직무의 사람이 관심을 가질 만한 키워드를 리스트 형태로 알려줘.(관심사)
-
-모바일 로그인 확인
-
-챗 초기 출력 내용 프롬프트
-```
-요약
-Please summarize the document into 500~550 characters.
-Please reply in korean.
-```
-
-```
-자주하는 질문
-Please extract 5 key topics from the document in list type.
-Please reply in korean.
-```
-
-```
-키워드
-Please extract keyword.
-Please reply in korean.
-```
-
+## TODO
+- 북마크 페이지에서 북마크 해제시 없어지도록
+- 사이드바 fixed로 사용자 따라 다니게
+- 보고서 추가, 자동화
+- CSS(로그아웃, 버튼 로딩시 클릭 비활성화 - 온보딩, 보고서 생성)
