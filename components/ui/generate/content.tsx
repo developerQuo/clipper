@@ -12,13 +12,19 @@ import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
 import moment from 'moment';
 import Link from 'next/link';
 import Loading from '../Loading';
+import InfiniteScroll from 'react-infinite-scroll-component';
 
+const limit = 2;
+
+// TODO: 무한 스크롤 테스트
 export default function GeneratedContent() {
 	const { data: session } = useSession();
 	const { id: userId } = session?.user ?? {};
 
 	const [content, setContent] = useState<SelectedGeneratedContent[]>();
 	const [loading, setLoading] = useState<boolean>(false);
+	const [page, setPage] = useState(1);
+	const [hasMore, setHasMore] = useState(true);
 
 	useEffect(() => {
 		const fetch = async () => {
@@ -27,20 +33,40 @@ export default function GeneratedContent() {
 				.from('generated_content')
 				.select('*')
 				.eq('user_id', userId)
+				.range((page - 1) * limit, page * limit - 1)
 				.order('id', { ascending: false });
 			if (!error && data && data.length > 0) {
 				setContent(data as SelectedGeneratedContent[]);
+			}
+			if (data?.length === 0) {
+				setHasMore(false);
+			} else if (data) {
+				setContent((prev) => {
+					if (prev && prev[0]!.id === data[0].id) {
+						return prev;
+					}
+					return [...(prev || []), ...data];
+				});
 			}
 			setLoading(false);
 		};
 		if (userId) {
 			fetch();
 		}
-	}, [userId]);
+	}, [page, userId]);
 	console.log(content);
 	return (
-		<>
-			{loading && <Loading />}
+		<InfiniteScroll
+			dataLength={content?.length ?? 0}
+			next={() => setPage((prevPage) => prevPage + 1)}
+			hasMore={hasMore}
+			loader={loading && <Loading />}
+			endMessage={
+				<p className="mt-4 text-center text-text-secondary">
+					<b>End of Reports</b>
+				</p>
+			}
+		>
 			<div className="p-5">
 				<Accordion type="single" collapsible className="w-3/5 flex-col">
 					{content?.map((doc, index) => (
@@ -71,6 +97,6 @@ export default function GeneratedContent() {
 					))}
 				</Accordion>
 			</div>
-		</>
+		</InfiniteScroll>
 	);
 }
