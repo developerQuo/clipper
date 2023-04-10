@@ -48,7 +48,7 @@ export default function Content() {
 					}),
 				) as ContentType[];
 
-				if (contentData.length === 0) {
+				if (contentData.length !== limit) {
 					setHasMore(false);
 				} else {
 					setQuery((prev) => {
