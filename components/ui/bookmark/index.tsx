@@ -40,7 +40,8 @@ export default function Bookmark() {
 				)
 				.in('id', [contentIds])
 				.not('content', 'is', 'null')
-				.range((page - 1) * limit, page * limit - 1);
+				.range((page - 1) * limit, page * limit - 1)
+				.order('published_at', { ascending: false });
 
 			const bookmarkData = data
 				?.filter(({ bookmark }) =>
