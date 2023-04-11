@@ -8,7 +8,7 @@ import { getColor } from '@/utils/randomColor';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import Loading from '../Loading';
 
-const limit = 11;
+const limit = 12;
 
 export default function Content() {
 	const router = useRouter();
@@ -43,7 +43,9 @@ export default function Content() {
 								: null,
 						bookmark: Boolean(
 							(bookmark as any).length &&
-								(bookmark as any)[0].user_id === userId,
+								(bookmark as { user_id: string }[]).find(
+									({ user_id }) => user_id === userId,
+								),
 						),
 					}),
 				) as ContentType[];

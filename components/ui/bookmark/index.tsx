@@ -6,7 +6,7 @@ import { QueryType } from '@/types/content';
 import Loading from '../Loading';
 import InfiniteScroll from 'react-infinite-scroll-component';
 
-const limit = 11;
+const limit = 12;
 
 export default function Bookmark() {
 	const { data: session } = useSession();
@@ -39,12 +39,15 @@ export default function Bookmark() {
 					},
 				)
 				.in('id', [contentIds])
+				.not('content', 'is', 'null')
 				.range((page - 1) * limit, page * limit - 1);
 
 			const bookmarkData = data
 				?.filter(({ bookmark }) =>
 					Boolean(
-						(bookmark as any).length && (bookmark as any)[0].user_id === userId,
+						(bookmark as { user_id: string }[]).find(
+							({ user_id }) => user_id === userId,
+						),
 					),
 				)
 				.map(({ content_source, bookmark, ...row }) => ({
@@ -54,7 +57,9 @@ export default function Bookmark() {
 							? (content_source as any[])[0].media.name
 							: null,
 					bookmark: Boolean(
-						(bookmark as any).length && (bookmark as any)[0].user_id === userId,
+						(bookmark as { user_id: string }[]).find(
+							({ user_id }) => user_id === userId,
+						),
 					),
 				})) as any;
 			if (bookmarkData?.length === 0) {
