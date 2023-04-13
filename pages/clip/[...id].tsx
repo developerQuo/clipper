@@ -4,7 +4,7 @@ import serverSideAuthGuard from '@/components/utils/serverSideAuthGuard';
 import { supabase } from '@/utils/supabase-client';
 import Bookmark from '@/components/ui/bookmark/button';
 import Link from 'next/link';
-import Share from '@/components/ui/content/share';
+import Share from '@/components/ui/share';
 import ChatDoc from '@/components/ui/chat';
 import { Content } from '@/store/content';
 import moment from 'moment';
@@ -14,7 +14,8 @@ import Tags from '@/components/ui/content/tags';
 type InputProps = { content: Content };
 
 export default function Clip({ content }: InputProps) {
-	const { id, title, file_path, published_at, media, tags, bookmark } = content;
+	const { id, title, file_path, published_at, media, tags, bookmark, summary } =
+		content;
 	const publishedAt = moment(published_at).format('YYYY-MM-DD');
 	const fileUrl = useMemo(() => {
 		if (file_path) {
@@ -38,7 +39,7 @@ export default function Clip({ content }: InputProps) {
 							<Tags tags={tags} />
 						</div>
 					</div>
-					<div className="mt-10 flex items-center space-x-5">
+					<div className="mt-10 flex items-center space-x-6">
 						<Bookmark id={id} bookmark={bookmark} />
 						<Link href={fileUrl ?? '#'} legacyBehavior>
 							<a target="_blank" className="p-1">
@@ -50,7 +51,7 @@ export default function Clip({ content }: InputProps) {
 								/>
 							</a>
 						</Link>
-						<Share />
+						<Share title={title} description={summary} />
 					</div>
 				</div>
 				<div className="w-[110px]">

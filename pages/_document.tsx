@@ -5,7 +5,6 @@ class Document extends NextDocument {
 		return (
 			<Html lang="ko">
 				<Head>
-					{' '}
 					<link rel="shortcut icon" href="/images/logo/clipper_c.svg" />
 				</Head>
 				<body className="font-custom">

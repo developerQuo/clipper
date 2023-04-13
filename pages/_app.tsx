@@ -4,9 +4,18 @@ import { NotificationContextProvider } from '../store/notification-context';
 import Layout from '../components/layout/Layout';
 import { RecoilRoot } from 'recoil';
 import { SessionProvider } from 'next-auth/react';
+import Script from 'next/script';
+import { useEffect } from 'react';
 
 export default function App({ Component, pageProps, router }: AppProps) {
 	const isLogin = router.pathname === '/auth/signin';
+	// useEffect(() => {
+	// 	const script = document.createElement('script');
+	// 	script.src = 'https://developers.kakao.com/sdk/js/kakao.js';
+	// 	script.async = true;
+	// 	document.head.appendChild(script);
+	// 	console.log(script);
+	// }, []);
 	return (
 		<>
 			{/* <Script
@@ -22,6 +31,15 @@ export default function App({ Component, pageProps, router }: AppProps) {
 					gtag('config', '${process.env.GA_TRACKING_ID}');
 				`}
 			</Script> */}
+			<Script
+				async
+				src="https://developers.kakao.com/sdk/js/kakao.js"
+				onLoad={() => {
+					const { Kakao } = window as any;
+					Kakao.init(process.env.KAKAO_APP_KEY);
+					Kakao.isInitialized();
+				}}
+			/>
 			<RecoilRoot>
 				<SessionProvider session={pageProps.session}>
 					<NotificationContextProvider>

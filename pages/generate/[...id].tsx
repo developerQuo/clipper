@@ -4,7 +4,7 @@ import serverSideAuthGuard from '@/components/utils/serverSideAuthGuard';
 import { supabase } from '@/utils/supabase-client';
 import Bookmark from '@/components/ui/bookmark/button';
 import Link from 'next/link';
-import Share from '@/components/ui/content/share';
+import Share from '@/components/ui/share';
 import ChatDoc from '@/components/ui/generate/chat';
 import { Content } from '@/store/content';
 import moment from 'moment';
@@ -66,7 +66,7 @@ export default function Clip({ content: existContent }: InputProps) {
 					<div className="mt-10 flex items-center justify-between space-x-5">
 						<div className="flex items-center space-x-4">
 							{id && <Bookmark id={id} bookmark={bookmark ?? false} disabled />}
-							<Share />
+							<Share title={title ?? ''} description={''} />{' '}
 						</div>
 						<div className="space-x-2">
 							<button
