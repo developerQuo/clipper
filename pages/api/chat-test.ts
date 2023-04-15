@@ -58,28 +58,8 @@ export default async function handler(
 		},
 	);
 
-	res.writeHead(200, {
-		'Content-Type': 'text/event-stream',
-		'Cache-Control': 'no-cache, no-transform',
-		Connection: 'keep-alive',
-	});
-
-	const sendData = (data: string) => {
-		res.write(`data: ${data}\n\n`);
-	};
-
-	sendData(JSON.stringify({ data: '' }));
-
 	//create chain
-	const chain = makeChain(
-		vectorStore,
-		condensePrompt,
-		qaPrompt,
-		chatOptions,
-		(token: string) => {
-			sendData(JSON.stringify({ data: token }));
-		},
-	);
+	const chain = makeChain(vectorStore, condensePrompt, qaPrompt, chatOptions);
 
 	try {
 		//Ask a question
@@ -92,8 +72,7 @@ export default async function handler(
 				]) || [],
 		});
 
-		// console.log('response', response);
-		sendData(JSON.stringify({ sourceDocs: response.sourceDocuments }));
+		console.log('response', response);
 
 		await supabase
 			.from('chat_history')
@@ -111,10 +90,10 @@ export default async function handler(
 			})
 			.eq('user_id', userId)
 			.eq('content_id', contentId);
-	} catch (error) {
+
+		res.status(200).json(response);
+	} catch (error: any) {
 		console.log('error', error);
-	} finally {
-		sendData('[DONE]');
-		res.end();
+		res.status(500).json({ error: error.message || 'Something went wrong' });
 	}
 }

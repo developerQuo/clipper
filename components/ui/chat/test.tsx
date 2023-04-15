@@ -52,6 +52,7 @@ export default function ChatDoc({
 	const [query, setQuery] = useState<string>('');
 	const [loading, setLoading] = useState<boolean>(false);
 	const [sourceDocs, setSourceDocs] = useState<Document[]>([]);
+	const [error, setError] = useState<string | null>(null);
 	const [messageState, setMessageState] =
 		useState<MessageState>(defaultMessageState);
 
@@ -123,17 +124,13 @@ export default function ChatDoc({
 					message: question,
 				},
 			],
-			pending: undefined,
 		}));
 
 		setLoading(true);
 		setQuery('');
-		setMessageState((state) => ({ ...state, pending: '' }));
-
-		const ctrl = new AbortController();
 
 		try {
-			fetchEventSource('/api/chat-test', {
+			const response = await fetch('/api/chat-test', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -147,46 +144,72 @@ export default function ChatDoc({
 					source: `${selectedContent?.title}`,
 					chatOptions,
 				}),
-				signal: ctrl.signal,
-				onmessage: (event) => {
-					if (event.data === '[DONE]') {
-						setMessageState((state) => {
-							console.log('state', state);
-							return {
-								history: [...state.history, [question, state.pending ?? '']],
-								messages: [
-									...state.messages,
-									{
-										type: 'apiMessage',
-										message: state.pending ?? '',
-										sourceDocs: state.pendingSourceDocs,
-									},
-								],
-								pending: undefined,
-								pendingSourceDocs: undefined,
-							};
-						});
-						setLoading(false);
-						ctrl.abort();
-					} else {
-						const data = JSON.parse(event.data);
-						if (data.sourceDocs) {
-							setMessageState((state) => ({
-								...state,
-								pendingSourceDocs: data.sourceDocs,
-							}));
-						} else {
-							setMessageState((state) => ({
-								...state,
-								pending: (state.pending ?? '') + data.data,
-							}));
-						}
-					}
-				},
+				// onmessage: (event) => {
+				// 	if (event.data === '[DONE]') {
+				// 		setMessageState((state) => {
+				// 			console.log('state', state);
+				// 			return {
+				// 				history: [...state.history, [question, state.pending ?? '']],
+				// 				messages: [
+				// 					...state.messages,
+				// 					{
+				// 						type: 'apiMessage',
+				// 						message: state.pending ?? '',
+				// 						sourceDocs: state.pendingSourceDocs,
+				// 					},
+				// 				],
+				// 				pending: undefined,
+				// 				pendingSourceDocs: undefined,
+				// 			};
+				// 		});
+				// 		setLoading(false);
+				// 		ctrl.abort();
+				// 	} else {
+				// 		const data = JSON.parse(event.data);
+				// 		if (data.sourceDocs) {
+				// 			setMessageState((state) => ({
+				// 				...state,
+				// 				pendingSourceDocs: data.sourceDocs,
+				// 			}));
+				// 		} else {
+				// 			setMessageState((state) => ({
+				// 				...state,
+				// 				pending: (state.pending ?? '') + data.data,
+				// 			}));
+				// 		}
+				// 	}
+				// },
 			});
+
+			const data = await response.json();
+
+			if (data.error) {
+				setError(data.error);
+			} else {
+				setMessageState((state) => ({
+					...state,
+					messages: [
+						...state.messages,
+						{
+							type: 'apiMessage',
+							message: data.text,
+							sourceDocs: data.sourceDocuments,
+						},
+					],
+					history: [...state.history, [question, data.text]],
+				}));
+			}
+			console.log('messageState', messageState);
+
+			setLoading(false);
+
+			//scroll to bottom
+			messageListRef.current?.scrollTo(0, messageListRef.current.scrollHeight);
+			console.log('data', data);
 		} catch (error) {
 			setLoading(false);
-			alert(error);
+			setError('An error occurred while fetching the data. Please try again.');
+			console.log('error', error);
 		}
 	}
 
@@ -365,6 +388,11 @@ export default function ChatDoc({
 						</form>
 					</div>
 				</div>
+				{error && (
+					<div className="rounded-md border border-red-400 p-4">
+						<p className="text-red-500">{error}</p>
+					</div>
+				)}
 				<button className="btn-error btn" onClick={resetChatHistory}>
 					채팅 기록 삭제
 				</button>
