@@ -76,6 +76,16 @@ export default function Generate() {
 export const getServerSideProps: GetServerSideProps = async (context) => {
 	const guard = (await serverSideAuthGuard(context)) as any;
 	if (guard.hasOwnProperty('redirect')) return guard;
+
+	// block access to generate page
+	return {
+		redirect: {
+			destination: '/',
+			// destination: '/api/auth/signin',
+			permanent: false,
+		},
+	};
+
 	return {
 		props: {},
 	};

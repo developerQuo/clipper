@@ -63,7 +63,7 @@ function Navigation() {
 							height: 11.88,
 						}}
 					/>
-					<MenuItem
+					{/* <MenuItem
 						name="Generate"
 						path="/generate"
 						icon={{
@@ -71,7 +71,7 @@ function Navigation() {
 							width: 13.33,
 							height: 12.99,
 						}}
-					/>
+					/> */}
 					<MenuItem
 						name="My Clip"
 						path="/my-clip"

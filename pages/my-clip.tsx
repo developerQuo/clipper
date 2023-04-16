@@ -13,7 +13,7 @@ const GeneratedContent = dynamic(
 
 const menuArr = [
 	{ name: '북마크', pathName: 'bookmark', content: <Bookmark /> },
-	{ name: '마이리포트', pathName: 'my-report', content: <GeneratedContent /> },
+	// { name: '마이리포트', pathName: 'my-report', content: <GeneratedContent /> },
 ];
 
 export default function MyClip() {
