@@ -12,7 +12,7 @@ const CONDENSE_PROMPT = `
 const QA_PROMPT = `
     I give you my question and the document.
 	Don't make up hyperlinks.
-	Please reply in korean.
+	Please reply in 1000 Korean characters or less.
 	
 	Question: {question}
 	Document: {context}

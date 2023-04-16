@@ -33,18 +33,18 @@ export const makeChain = (
 		temperature: 0.3,
 		modelName: 'gpt-3.5-turbo', //change this to older versions if you don't have access to gpt-4
 		cache: true,
-		// streaming: Boolean(onTokenStream),
-		// callbackManager: onTokenStream
-		// 	? CallbackManager.fromHandlers({
-		// 			async handleLLMNewToken(token) {
-		// 				onTokenStream(token);
-		// 				console.log(token);
-		// 			},
-		// 			async handleLLMError(err: Error) {
-		// 				console.error(err);
-		// 			},
-		// 	  })
-		// 	: undefined,
+		streaming: Boolean(onTokenStream),
+		callbackManager: onTokenStream
+			? CallbackManager.fromHandlers({
+					async handleLLMNewToken(token) {
+						onTokenStream(token);
+						console.log(token);
+					},
+					async handleLLMError(err: Error) {
+						console.error(err);
+					},
+			  })
+			: undefined,
 	});
 
 	return ConversationalRetrievalQAChain.fromLLM(

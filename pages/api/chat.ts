@@ -69,17 +69,17 @@ export default async function handler(
 		},
 	);
 
-	// res.writeHead(200, {
-	// 	'Content-Type': 'text/event-stream',
-	// 	'Cache-Control': 'no-cache, no-transform',
-	// 	Connection: 'keep-alive',
-	// });
+	res.writeHead(200, {
+		'Content-Type': 'text/event-stream',
+		'Cache-Control': 'no-cache, no-transform',
+		Connection: 'keep-alive',
+	});
 
 	const sendData = (data: string) => {
 		res.write(`data: ${data}\n\n`);
 	};
 
-	// sendData(JSON.stringify({ data: '' }));
+	sendData(JSON.stringify({ data: '' }));
 
 	//create chain
 	const chain = makeChain(vectorStore, (token: string) => {
@@ -166,20 +166,23 @@ export default async function handler(
 			.eq('user_id', userId)
 			.eq('content_id', contentId);
 
-		console.log(response);
-		res.status(200).json({
-			// data: response,
-			data: {
-				text: response.text,
-				metadata: response.sourceDocuments.map(
-					({ metadata }: DocumentType) => ({
-						source: metadata.source,
-						page: metadata.page,
-					}),
-				),
-			},
-		});
+		sendData(
+			JSON.stringify({
+				data: {
+					text: response.text,
+					metadata: response.sourceDocuments.map(
+						({ metadata }: DocumentType) => ({
+							source: metadata.source,
+							page: metadata.page,
+						}),
+					),
+				},
+			}),
+		);
 	} catch (error) {
 		console.log('error', error);
+	} finally {
+		sendData('[DONE]');
+		res.end();
 	}
 }

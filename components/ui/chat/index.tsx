@@ -1,27 +1,23 @@
-import { useRef, useState, useEffect, useMemo, useCallback } from 'react';
+import { useRef, useState, useEffect, useMemo } from 'react';
 import styles from '@/styles/Home.module.css';
-import { Message } from '@/types/chat';
+import { Message, SourceDocs } from '@/types/chat';
 import { fetchEventSource } from '@microsoft/fetch-event-source';
-import Image from 'next/image';
 import ReactMarkdown from 'react-markdown';
 import LoadingDots from '@/components/ui/LoadingDots';
-import { Document } from 'langchain/document';
 import {
 	Accordion,
 	AccordionContent,
 	AccordionItem,
 	AccordionTrigger,
 } from '@/components/ui/accordion';
-import { useRecoilValue } from 'recoil';
-import { SelectedKeyState, SelectedKeyType } from '@/store/table';
 import { supabase } from '@/utils/supabase-client';
 import { useSession } from 'next-auth/react';
-import { SelectedContent, SelectedContentState } from '@/store/content';
 
 type MessageState = {
 	messages: Message[];
 	history: [string, string][];
-	pendingSourceDocs?: Document[];
+	pendingSourceDocs?: SourceDocs[];
+	pending?: string;
 };
 
 const defaultMessageState: MessageState = {
@@ -93,7 +89,7 @@ export default function ChatDoc({
 		}
 	}, [contentId, userId]);
 
-	const { messages, history } = messageState;
+	const { messages, history, pending, pendingSourceDocs } = messageState;
 
 	const messageListRef = useRef<HTMLDivElement>(null);
 	const textAreaRef = useRef<HTMLTextAreaElement>(null);
@@ -124,13 +120,14 @@ export default function ChatDoc({
 					message: question,
 				},
 			],
+			pending: '',
 		}));
 
 		setLoading(true);
 		setQuery('');
-
+		const ctrl = new AbortController();
 		try {
-			const response = await fetch('/api/chat', {
+			await fetchEventSource('/api/chat', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -141,29 +138,46 @@ export default function ChatDoc({
 					contentId,
 					source,
 				}),
+				signal: ctrl.signal,
+				onmessage: (event) => {
+					// console.log('event', event.data);
+					if (event.data === '[DONE]') {
+						setMessageState((state) => {
+							// console.log('done', state);
+							return {
+								history: [...state.history, [question, state.pending ?? '']],
+								messages: [
+									...state.messages,
+									{
+										type: 'apiMessage',
+										message: state.pending ?? '',
+										sourceDocs: state.pendingSourceDocs,
+									},
+								],
+								// pending: undefined,
+								pendingSourceDocs: undefined,
+							};
+						});
+						setLoading(false);
+						ctrl.abort();
+					} else {
+						const { data } = JSON.parse(event.data);
+						if (data.metadata) {
+							// console.log('--------------', data.metadata);
+							setMessageState((state) => ({
+								...state,
+								pendingSourceDocs: data.metadata,
+								pending: data.text,
+							}));
+						} else {
+							setMessageState((state) => ({
+								...state,
+								pending: (state.pending ?? '') + data,
+							}));
+						}
+					}
+				},
 			});
-
-			const { data, error } = await response.json();
-
-			console.log(data);
-			if (error) {
-				setError(error);
-			} else {
-				setMessageState((state) => ({
-					...state,
-					messages: [
-						...state.messages,
-						{
-							type: 'apiMessage',
-							message: data.text,
-							sourceDocs: data.sourceDocuments,
-						},
-					],
-					history: [...state.history, [question, data.text]],
-				}));
-			}
-			console.log('messageState', messageState);
-
 			setLoading(false);
 		} catch (error) {
 			setLoading(false);
@@ -194,6 +208,21 @@ export default function ChatDoc({
 		}
 	};
 
+	const chatMessages = useMemo(() => {
+		return [
+			...messages,
+			...(pending
+				? [
+						{
+							type: 'apiMessage',
+							message: pending,
+							sourceDocs: pendingSourceDocs,
+						},
+				  ]
+				: []),
+		];
+	}, [messages, pending, pendingSourceDocs]);
+
 	useEffect(() => {
 		if (messageListRef.current) {
 			//scroll to bottom
@@ -202,10 +231,11 @@ export default function ChatDoc({
 			const maxScrollTop = scrollHeight - height;
 			messageListRef.current!.scrollTop = maxScrollTop > 0 ? maxScrollTop : 0;
 		}
-	}, [messages]);
-	console.log('render', messages);
+	}, [chatMessages]);
+
+	// console.log('render', chatMessages);
 	return (
-		<main className="flex w-full flex-1 flex-col items-center justify-between bg-white px-20 pb-4">
+		<main className="flex h-full w-full flex-col items-center justify-between bg-white px-20">
 			<div className="flex h-[75vh] w-full items-center justify-center rounded-lg">
 				<div
 					ref={messageListRef}
@@ -227,7 +257,7 @@ export default function ChatDoc({
 							</button>
 						))}
 					</div>
-					{messages.map((message, index) => {
+					{chatMessages.map((message, index) => {
 						let icon;
 						let className;
 						if (message.type === 'apiMessage') {
@@ -245,7 +275,7 @@ export default function ChatDoc({
 									key={`message-${message.type}-${index}`}
 									className={className}
 								>
-									<div className="chat-bubble">
+									<div className="chat-bubble max-w-7xl">
 										<div className={styles.markdownanswer}>
 											<ReactMarkdown linkTarget="_blank">
 												{message.message}
@@ -253,52 +283,39 @@ export default function ChatDoc({
 										</div>
 									</div>
 								</div>
-								{message.sourceDocs && (
+								{message.sourceDocs?.length ? (
 									<div className="p-5">
 										<Accordion type="single" collapsible className="flex-col">
-											{message.sourceDocs.map((doc, index) => (
-												<div key={`messageSourceDocs-${index}`}>
-													<AccordionItem value={`item-${index}`}>
-														<AccordionTrigger>
-															<h3>Source {index + 1}</h3>
-														</AccordionTrigger>
-														<AccordionContent>
-															<ReactMarkdown linkTarget="_blank">
-																{doc.pageContent}
-															</ReactMarkdown>
-															<p className="mt-2">
-																<b>Source:</b> {doc.metadata.source}
-															</p>
-														</AccordionContent>
-													</AccordionItem>
-												</div>
-											))}
+											<AccordionItem value={`item-${index}`}>
+												<AccordionTrigger>
+													<h3>출처</h3>
+												</AccordionTrigger>
+												<AccordionContent>
+													{message.sourceDocs
+														.sort((a, b) => (a.page > b.page ? 1 : -1))
+														// .map((doc) => `${doc.source}/p.${doc.page}`)
+														.reduce((result: string[], doc) => {
+															const source = `${doc.source}/p.${doc.page}`;
+															if (!result.includes(source)) {
+																result.push(source);
+															}
+															return result;
+														}, [])
+														.map((source) => (
+															<div key={`messageSourceDocs-${index}`}>
+																<p className="mt-2">{source}</p>
+															</div>
+														))}
+												</AccordionContent>
+											</AccordionItem>
 										</Accordion>
 									</div>
+								) : (
+									<></>
 								)}
 							</>
 						);
 					})}
-					{/* {sourceDocs.length > 0 && (
-							<div className="p-5">
-								<Accordion type="single" collapsible className="flex-col">
-									{sourceDocs.map((doc, index) => (
-										<div key={index}>
-											<AccordionItem value={`item-${index}`}>
-												<AccordionTrigger>
-													<h3>Source {index + 1}</h3>
-												</AccordionTrigger>
-												<AccordionContent>
-													<ReactMarkdown linkTarget="_blank">
-														{doc.pageContent}
-													</ReactMarkdown>
-												</AccordionContent>
-											</AccordionItem>
-										</div>
-									))}
-								</Accordion>
-							</div>
-						)} */}
 				</div>
 			</div>
 			<div className="relative flex w-full flex-col items-center justify-center py-8">
