@@ -1,5 +1,10 @@
-import { OpenAIChat } from 'langchain/llms';
-import { LLMChain, ChatVectorDBQAChain, loadQAChain } from 'langchain/chains';
+import { OpenAI, OpenAIChat } from 'langchain/llms';
+import {
+	LLMChain,
+	ChatVectorDBQAChain,
+	loadQAChain,
+	ConversationalRetrievalQAChain,
+} from 'langchain/chains';
 import { PineconeStore } from 'langchain/vectorstores';
 import { PromptTemplate } from 'langchain/prompts';
 import { CallbackManager } from 'langchain/callbacks';
@@ -14,7 +19,7 @@ const CONDENSE_PROMPT = PromptTemplate.fromTemplate(DEFAULT_CONDENSE_PROMPT);
 const QA_PROMPT = PromptTemplate.fromTemplate(DEFAULT_QA_PROMPT);
 
 export const makeChain = (
-	// vectorstore: PineconeStore,
+	vectorstore: PineconeStore,
 	onTokenStream?: (token: string) => void,
 ) => {
 	// const questionGenerator = new LLMChain({
@@ -24,9 +29,10 @@ export const makeChain = (
 	// 	}),
 	// 	prompt: CONDENSE_PROMPT,
 	// });
-	const chat = new ChatOpenAI({
+	const model = new OpenAI({
 		temperature: 0.3,
-		modelName: 'gpt-4', //change this to older versions if you don't have access to gpt-4
+		modelName: 'gpt-3.5-turbo', //change this to older versions if you don't have access to gpt-4
+		cache: true,
 		// streaming: Boolean(onTokenStream),
 		// callbackManager: onTokenStream
 		// 	? CallbackManager.fromHandlers({
@@ -40,37 +46,14 @@ export const makeChain = (
 		// 	  })
 		// 	: undefined,
 	});
-	const chain = new LLMChain({
-		prompt: QA_PROMPT,
-		llm: chat,
-	});
-	return chain;
-	// const docChain = loadQAChain(
-	// 	new OpenAIChat({
-	// 		temperature: 0,
-	// 		modelName: 'gpt-4-32k', //change this to older versions if you don't have access to gpt-4
-	// 		streaming: Boolean(onTokenStream),
-	// 		callbackManager: onTokenStream
-	// 			? CallbackManager.fromHandlers({
-	// 					async handleLLMNewToken(token) {
-	// 						onTokenStream(token);
-	// 						console.log(token);
-	// 					},
-	// 					async handleLLMError(err: Error) {
-	// 						console.error(err);
-	// 					},
-	// 			  })
-	// 			: undefined,
-	// 	}),
-	// 	{ prompt: QA_PROMPT },
-	// );
-	// return docChain;
 
-	// return new ChatVectorDBQAChain({
-	// 	vectorstore,
-	// 	combineDocumentsChain: docChain,
-	// 	questionGeneratorChain: questionGenerator,
-	// 	returnSourceDocuments: true,
-	// 	k: 2, //number of source documents to return
-	// });
+	return ConversationalRetrievalQAChain.fromLLM(
+		model,
+		vectorstore.asRetriever(5),
+		{
+			qaTemplate: DEFAULT_QA_PROMPT,
+			questionGeneratorTemplate: DEFAULT_CONDENSE_PROMPT,
+			returnSourceDocuments: true, //The number of source documents returned is 4 by default
+		},
+	);
 };

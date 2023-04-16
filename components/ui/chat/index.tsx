@@ -20,7 +20,6 @@ import { SelectedContent, SelectedContentState } from '@/store/content';
 
 type MessageState = {
 	messages: Message[];
-	pending?: string;
 	history: [string, string][];
 	pendingSourceDocs?: Document[];
 };
@@ -51,6 +50,7 @@ export default function ChatDoc({
 }: InputProps) {
 	const [query, setQuery] = useState<string>('');
 	const [loading, setLoading] = useState<boolean>(false);
+	const [error, setError] = useState<string | null>(null);
 	const [messageState, setMessageState] =
 		useState<MessageState>(defaultMessageState);
 
@@ -93,7 +93,7 @@ export default function ChatDoc({
 		}
 	}, [contentId, userId]);
 
-	const { messages, pending, history, pendingSourceDocs } = messageState;
+	const { messages, history } = messageState;
 
 	const messageListRef = useRef<HTMLDivElement>(null);
 	const textAreaRef = useRef<HTMLTextAreaElement>(null);
@@ -124,17 +124,13 @@ export default function ChatDoc({
 					message: question,
 				},
 			],
-			pending: undefined,
 		}));
 
 		setLoading(true);
 		setQuery('');
-		setMessageState((state) => ({ ...state, pending: '' }));
-
-		// const ctrl = new AbortController();
 
 		try {
-			fetch('/api/chat', {
+			const response = await fetch('/api/chat', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -145,67 +141,33 @@ export default function ChatDoc({
 					contentId,
 					source,
 				}),
-				// signal: ctrl.signal,
-				// onmessage: (event) => {
-				// 	if (event.data === '[DONE]') {
-				// 		setMessageState((state) => {
-				// 			console.log('state', state);
-				// 			return {
-				// 				history: [...state.history, [question, state.pending ?? '']],
-				// 				messages: [
-				// 					...state.messages,
-				// 					{
-				// 						type: 'apiMessage',
-				// 						message: state.pending ?? '',
-				// 						sourceDocs: state.pendingSourceDocs,
-				// 					},
-				// 				],
-				// 				pending: undefined,
-				// 				pendingSourceDocs: undefined,
-				// 			};
-				// 		});
-				// 		setLoading(false);
-				// 		ctrl.abort();
-				// 	} else {
-				// 		const data = JSON.parse(event.data);
-				// 		if (data.sourceDocs) {
-				// 			setMessageState((state) => ({
-				// 				...state,
-				// 				pendingSourceDocs: data.sourceDocs,
-				// 			}));
-				// 		} else {
-				// 			setMessageState((state) => ({
-				// 				...state,
-				// 				pending: (state.pending ?? '') + data.data,
-				// 			}));
-				// 		}
-				// 	}
-				// },
-			}).then(async (response: any) => {
-				if (response.ok) {
-					const { data } = await response.json();
-					setMessageState((state) => {
-						return {
-							history: [...state.history, [question, data ?? '']],
-							messages: [
-								...state.messages,
-								{
-									type: 'apiMessage',
-									message: data ?? '',
-								},
-							],
-							pending: undefined,
-							pendingSourceDocs: undefined,
-						};
-					});
-					setLoading(false);
-					// ctrl.abort();
-				} else {
-					// throw new Error(response.statusText);
-				}
 			});
+
+			const { data, error } = await response.json();
+
+			console.log(data);
+			if (error) {
+				setError(error);
+			} else {
+				setMessageState((state) => ({
+					...state,
+					messages: [
+						...state.messages,
+						{
+							type: 'apiMessage',
+							message: data.text,
+							sourceDocs: data.sourceDocuments,
+						},
+					],
+					history: [...state.history, [question, data.text]],
+				}));
+			}
+			console.log('messageState', messageState);
+
+			setLoading(false);
 		} catch (error) {
 			setLoading(false);
+			setError('An error occurred while fetching the data. Please try again.');
 			console.log('error', error);
 		}
 	}
@@ -218,20 +180,6 @@ export default function ChatDoc({
 			e.preventDefault();
 		}
 	};
-
-	const chatMessages = useMemo(() => {
-		return [
-			...messages,
-			...(pending
-				? [
-						{
-							type: 'apiMessage',
-							message: pending,
-						},
-				  ]
-				: []),
-		];
-	}, [messages, pending]);
 
 	// 채팅 기록 초기화
 	const resetChatHistory = async () => {
@@ -246,6 +194,16 @@ export default function ChatDoc({
 		}
 	};
 
+	useEffect(() => {
+		if (messageListRef.current) {
+			//scroll to bottom
+			const scrollHeight = messageListRef.current?.scrollHeight ?? 0;
+			const height = messageListRef.current?.clientHeight ?? 0;
+			const maxScrollTop = scrollHeight - height;
+			messageListRef.current!.scrollTop = maxScrollTop > 0 ? maxScrollTop : 0;
+		}
+	}, [messages]);
+	console.log('render', messages);
 	return (
 		<main className="flex w-full flex-1 flex-col items-center justify-between bg-white px-20 pb-4">
 			<div className="flex h-[75vh] w-full items-center justify-center rounded-lg">
@@ -269,7 +227,7 @@ export default function ChatDoc({
 							</button>
 						))}
 					</div>
-					{chatMessages.map((message, index) => {
+					{messages.map((message, index) => {
 						let icon;
 						let className;
 						if (message.type === 'apiMessage') {
@@ -295,29 +253,29 @@ export default function ChatDoc({
 										</div>
 									</div>
 								</div>
-								{/* {message.sourceDocs && (
-										<div className="p-5">
-											<Accordion type="single" collapsible className="flex-col">
-												{message.sourceDocs.map((doc, index) => (
-													<div key={index}>
-														<AccordionItem value={`item-${index}`}>
-															<AccordionTrigger>
-																<h3>Source {index + 1}</h3>
-															</AccordionTrigger>
-															<AccordionContent>
-																<ReactMarkdown linkTarget="_blank">
-																	{doc.pageContent}
-																</ReactMarkdown>
-																<p className="mt-2">
-																	<b>Source:</b> {doc.metadata.source}
-																</p>
-															</AccordionContent>
-														</AccordionItem>
-													</div>
-												))}
-											</Accordion>
-										</div>
-									)} */}
+								{message.sourceDocs && (
+									<div className="p-5">
+										<Accordion type="single" collapsible className="flex-col">
+											{message.sourceDocs.map((doc, index) => (
+												<div key={`messageSourceDocs-${index}`}>
+													<AccordionItem value={`item-${index}`}>
+														<AccordionTrigger>
+															<h3>Source {index + 1}</h3>
+														</AccordionTrigger>
+														<AccordionContent>
+															<ReactMarkdown linkTarget="_blank">
+																{doc.pageContent}
+															</ReactMarkdown>
+															<p className="mt-2">
+																<b>Source:</b> {doc.metadata.source}
+															</p>
+														</AccordionContent>
+													</AccordionItem>
+												</div>
+											))}
+										</Accordion>
+									</div>
+								)}
 							</>
 						);
 					})}
@@ -385,6 +343,11 @@ export default function ChatDoc({
 							)}
 						</button>
 					</form>
+					{error && (
+						<div className="rounded-md border border-red-400 p-4">
+							<p className="text-red-500">{error}</p>
+						</div>
+					)}
 				</div>
 			</div>
 			<button

@@ -12,6 +12,7 @@ import { OpenAIChat } from 'langchain/llms';
 import { CONDENSE_PROMPT as DEFAULT_CONDENSE_PROMPT } from '@/config/prompt';
 import { openai } from '@/utils/openai-client';
 import { ChatCompletionRequestMessageRoleEnum } from 'openai';
+import { DocumentType, MetaData } from '@/types/vector-store';
 
 const CONDENSE_PROMPT = PromptTemplate.fromTemplate(DEFAULT_CONDENSE_PROMPT);
 
@@ -42,7 +43,7 @@ export default async function handler(
 	// const questionGenerator = new LLMChain({
 	// 	llm: new OpenAIChat({
 	// 		temperature: 0,
-	// 		modelName: 'gpt-4',
+	// 		modelName: 'gpt-3.5-turbo',
 	// 	}),
 	// 	prompt: CONDENSE_PROMPT,
 	// });
@@ -54,19 +55,19 @@ export default async function handler(
 	// 			`someone: ${chat[1]}\n`,
 	// 		]) || [],
 	// });
-	// const index = pinecone.Index(PINECONE_INDEX_NAME);
+	const index = pinecone.Index(PINECONE_INDEX_NAME);
 	// console.log('source', source);
 
 	// /* create vectorstore*/
-	// const vectorStore = await PineconeStore.fromExistingIndex(
-	// 	new OpenAIEmbeddings({}),
-	// 	{
-	// 		pineconeIndex: index,
-	// 		textKey: 'text',
-	// 		namespace: PINECONE_NAME_SPACE,
-	// 		filter: { source: { $eq: source } },
-	// 	},
-	// );
+	const vectorStore = await PineconeStore.fromExistingIndex(
+		new OpenAIEmbeddings(),
+		{
+			pineconeIndex: index,
+			textKey: 'text',
+			namespace: PINECONE_NAME_SPACE,
+			filter: { source: { $eq: source } },
+		},
+	);
 
 	// res.writeHead(200, {
 	// 	'Content-Type': 'text/event-stream',
@@ -81,9 +82,9 @@ export default async function handler(
 	// sendData(JSON.stringify({ data: '' }));
 
 	//create chain
-	// const chain = makeChain((token: string) => {
-	// 	sendData(JSON.stringify({ data: token }));
-	// });
+	const chain = makeChain(vectorStore, (token: string) => {
+		sendData(JSON.stringify({ data: token }));
+	});
 	const { data } = await supabase
 		.from('content')
 		.select('content')
@@ -91,11 +92,12 @@ export default async function handler(
 		.single();
 	try {
 		//Ask a question
-		// const chainCall = {
-		// 	question: standaloneQuestion,
-		// 	context: data?.content,
-		// };
-		// let response = await chain.call(chainCall);
+		const chainCall = {
+			question: sanitizedQuestion,
+			chat_history: history || [],
+			context: data?.content,
+		};
+		let response = await chain.call(chainCall);
 
 		const [userHistory, botHistory] = history.reduce(
 			(acc: [string[], string[]], [userMessage, botMessage]) => {
@@ -106,34 +108,34 @@ export default async function handler(
 			[[], []],
 		);
 
-		const chat = await openai.createChatCompletion({
-			model: 'gpt-3.5-turbo',
-			messages: [
-				{
-					role: ChatCompletionRequestMessageRoleEnum.System,
-					content: `
-			I give you my question and the document.
-			Don't make up hyperlinks.
-			Please reply in language used in the question.
-			
-			Question: ${sanitizedQuestion}
-			Document: ${data?.content}
-			`,
-				},
-				...(history.flat().map((chat: string, index) => ({
-					role:
-						index % 2 == 0
-							? ChatCompletionRequestMessageRoleEnum.User
-							: ChatCompletionRequestMessageRoleEnum.Assistant,
-					content: chat,
-				})) || []),
-				{
-					role: ChatCompletionRequestMessageRoleEnum.User,
-					content: sanitizedQuestion,
-				},
-			],
-		});
-		const response = chat.data.choices[0].message?.content;
+		// const chat = await openai.createChatCompletion({
+		// 	model: 'gpt-3.5-turbo',
+		// 	messages: [
+		// 		{
+		// 			role: ChatCompletionRequestMessageRoleEnum.System,
+		// 			content: `
+		// 	I give you my question and the document.
+		// 	Don't make up hyperlinks.
+		// 	Please reply in language used in the question.
+
+		// 	Question: ${sanitizedQuestion}
+		// 	Document: ${data?.content}
+		// 	`,
+		// 		},
+		// 		...(history.flat().map((chat: string, index) => ({
+		// 			role:
+		// 				index % 2 == 0
+		// 					? ChatCompletionRequestMessageRoleEnum.User
+		// 					: ChatCompletionRequestMessageRoleEnum.Assistant,
+		// 			content: chat,
+		// 		})) || []),
+		// 		{
+		// 			role: ChatCompletionRequestMessageRoleEnum.User,
+		// 			content: sanitizedQuestion,
+		// 		},
+		// 	],
+		// });
+		// const response = chat.data.choices[0].message?.content;
 		// console.log((response as any)?.data?.error);
 		// if (response.text.includes('no data')) {
 		// 	const vectorStoreAllDocs = await PineconeStore.fromExistingIndex(
@@ -159,16 +161,25 @@ export default async function handler(
 				user_id: userId,
 				content_id: contentId,
 				user_history: [...userHistory, sanitizedQuestion],
-				bot_history: [...botHistory, response],
+				bot_history: [...botHistory, response.text],
 			})
 			.eq('user_id', userId)
 			.eq('content_id', contentId);
 
-		res.status(200).json({ data: response });
+		console.log(response);
+		res.status(200).json({
+			// data: response,
+			data: {
+				text: response.text,
+				metadata: response.sourceDocuments.map(
+					({ metadata }: DocumentType) => ({
+						source: metadata.source,
+						page: metadata.page,
+					}),
+				),
+			},
+		});
 	} catch (error) {
 		console.log('error', error);
-	} finally {
-		// sendData('[DONE]');
-		// res.end();
 	}
 }

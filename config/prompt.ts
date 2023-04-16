@@ -6,7 +6,8 @@ const CONDENSE_PROMPT = `
 
 	Chat History: {chat_history}
 	New Question: {question}
-`;
+
+	Standalone question:`;
 
 const QA_PROMPT = `
     I give you my question and the document.
@@ -15,6 +16,7 @@ const QA_PROMPT = `
 	
 	Question: {question}
 	Document: {context}
-`;
+
+	Helpful answer in markdown:`;
 
 export { CONDENSE_PROMPT, QA_PROMPT };

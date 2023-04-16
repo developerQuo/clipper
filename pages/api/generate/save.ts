@@ -1,9 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { getSession } from 'next-auth/react';
 import { supabase } from '@/utils/supabase-client';
-import { openai } from '@/utils/openai-client';
-import { ChatCompletionRequestMessageRoleEnum } from 'openai';
-import { IForm } from '../../generate';
 
 export default async function handler(
 	req: NextApiRequest,

@@ -33,13 +33,15 @@ export default function Bookmark() {
 			const { data, ...result } = await supabase
 				.from('content')
 				.select(
-					'id,title,summary,published_at,file_path,views,content_source(media(name)),bookmark(user_id)',
+					'id,title,summary,published_at,file_path,views,content_source(media(name)),bookmark(user_id),faq,tags,vector_upload',
 					{
 						count: 'exact',
 					},
 				)
 				.in('id', [contentIds])
-				.not('content', 'is', 'null')
+				.is('vector_upload', true)
+				.not('file_path', 'is', null)
+				.not('published_at', 'is', null)
 				.range((page - 1) * limit, page * limit - 1)
 				.order('published_at', { ascending: false });
 

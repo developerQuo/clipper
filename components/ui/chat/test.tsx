@@ -95,7 +95,7 @@ export default function ChatDoc({
 		}
 	}, [selectedKey, userId]);
 
-	const { messages, pending, history, pendingSourceDocs } = messageState;
+	const { messages, history } = messageState;
 
 	const messageListRef = useRef<HTMLDivElement>(null);
 	const textAreaRef = useRef<HTMLTextAreaElement>(null);
@@ -222,21 +222,6 @@ export default function ChatDoc({
 		}
 	};
 
-	const chatMessages = useMemo(() => {
-		return [
-			...messages,
-			...(pending
-				? [
-						{
-							type: 'apiMessage',
-							message: pending,
-							sourceDocs: pendingSourceDocs,
-						},
-				  ]
-				: []),
-		];
-	}, [messages, pending, pendingSourceDocs]);
-
 	// 채팅 기록 초기화
 	const resetChatHistory = async () => {
 		const { error } = await supabase
@@ -255,7 +240,7 @@ export default function ChatDoc({
 			<main className={styles.main}>
 				<div className={styles.cloud}>
 					<div ref={messageListRef} className={styles.messagelist}>
-						{chatMessages.map((message, index) => {
+						{messages.map((message, index) => {
 							let icon;
 							let className;
 							if (message.type === 'apiMessage') {
@@ -283,7 +268,7 @@ export default function ChatDoc({
 								);
 								// The latest message sent by the user will be animated while waiting for a response
 								className =
-									loading && index === chatMessages.length - 1
+									loading && index === messages.length - 1
 										? styles.usermessagewaiting
 										: styles.usermessage;
 							}
