@@ -1,8 +1,9 @@
 import { ChatInput } from '@/types/chat';
 import { openai } from '@/utils/openai-client';
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { getSession } from 'next-auth/react';
+import { getServerSession } from 'next-auth';
 import { ChatCompletionRequestMessageRoleEnum } from 'openai';
+import { authOptions } from './auth/[...nextauth]';
 
 export default async function handler(
 	req: NextApiRequest,
@@ -13,7 +14,7 @@ export default async function handler(
 	}
 
 	// get user id
-	const session = await getSession({ req });
+	const session = await getServerSession(req, res, authOptions);
 	const userId = session?.user?.id;
 
 	const { question, history, systemMessage } =

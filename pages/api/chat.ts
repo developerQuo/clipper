@@ -4,7 +4,6 @@ import { PineconeStore } from 'langchain/vectorstores';
 import { makeChain } from '@/utils/makechain';
 import { pinecone } from '@/utils/pinecone-client';
 import { PINECONE_INDEX_NAME, PINECONE_NAME_SPACE } from '@/config/pinecone';
-import { getSession } from 'next-auth/react';
 import { supabase } from '@/utils/supabase-client';
 import { ChatInput } from '@/types/chat';
 import { LLMChain, PromptTemplate } from 'langchain';
@@ -13,6 +12,8 @@ import { CONDENSE_PROMPT as DEFAULT_CONDENSE_PROMPT } from '@/config/prompt';
 import { openai } from '@/utils/openai-client';
 import { ChatCompletionRequestMessageRoleEnum } from 'openai';
 import { DocumentType, MetaData } from '@/types/vector-store';
+import { getServerSession } from 'next-auth';
+import { authOptions } from './auth/[...nextauth]';
 
 const CONDENSE_PROMPT = PromptTemplate.fromTemplate(DEFAULT_CONDENSE_PROMPT);
 
@@ -25,7 +26,7 @@ export default async function handler(
 	}
 
 	// get user id
-	const session = await getSession({ req });
+	const session = await getServerSession(req, res, authOptions);
 	const userId = session?.user?.id;
 
 	const { question, history, contentId, source } =

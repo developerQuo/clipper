@@ -7,9 +7,10 @@ import {
 	PINECONE_INDEX_NAME,
 	TEST_PINECONE_NAME_SPACE,
 } from '@/config/pinecone';
-import { getSession } from 'next-auth/react';
 import { supabase } from '@/utils/supabase-client';
 import { ChatInput, ChatOptionInput } from '@/types/chat';
+import { getServerSession } from 'next-auth';
+import { authOptions } from './auth/[...nextauth]';
 
 export default async function handler(
 	req: NextApiRequest,
@@ -20,7 +21,7 @@ export default async function handler(
 	}
 
 	// get user id
-	const session = await getSession({ req });
+	const session = await getServerSession(req, res, authOptions);
 	const userId = session?.user?.id;
 
 	const {

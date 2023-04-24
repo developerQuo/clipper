@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { getSession } from 'next-auth/react';
 import { supabase } from '@/utils/supabase-client';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '../auth/[...nextauth]';
 
 export default async function handler(
 	req: NextApiRequest,
@@ -11,7 +12,7 @@ export default async function handler(
 	}
 
 	// get user id
-	const session = await getSession({ req });
+	const session = await getServerSession(req, res, authOptions);
 	const userId = session?.user?.id;
 
 	const { title, content, published_at } = req.body as unknown as {
