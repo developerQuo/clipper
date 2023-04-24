@@ -18,7 +18,7 @@ export const authOptions: NextAuthOptions = {
 		url: process.env.DATABASE_URL ?? '',
 		secret: process.env.DATABASE_SECRET_KEY ?? '',
 	}),
-	debug: true,
+	// debug: true,
 	// callbacks: {
 	// 	async session({ session, user }) {
 	// 		const signingSecret = process.env.DATABASE_JWT_SECRET;
