@@ -6,6 +6,7 @@ import { RecoilRoot } from 'recoil';
 import { SessionProvider } from 'next-auth/react';
 import Script from 'next/script';
 import { useEffect } from 'react';
+import GoogleTranslate from '@/lib/google-translate';
 
 export default function App({ Component, pageProps, router }: AppProps) {
 	const isLogin = router.pathname === '/auth/signin';
@@ -40,6 +41,7 @@ export default function App({ Component, pageProps, router }: AppProps) {
 					Kakao.isInitialized();
 				}}
 			/>
+			<GoogleTranslate />
 			<RecoilRoot>
 				<SessionProvider session={pageProps.session}>
 					<NotificationContextProvider>

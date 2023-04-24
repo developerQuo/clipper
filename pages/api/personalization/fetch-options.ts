@@ -29,7 +29,7 @@ export default async function handler(
 					role: 'assistant',
 					content: `
 					Provide a list of keywords that people in the ${department} role working in the ${industry} industry might be interested in. 
-					Please reply only keywords in Korean.
+					Please reply only keywords in English.
 					Do not use any special characters or symbols.
 					Example: keyword1,keyword2,keyword3
 					`,

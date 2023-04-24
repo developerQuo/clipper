@@ -40,21 +40,22 @@ export default async function handler(
 	// OpenAI recommends replacing newlines with spaces for best results
 	const sanitizedQuestion = question.trim().replaceAll('\n', ' ');
 
-	// const questionGenerator = new LLMChain({
-	// 	llm: new OpenAIChat({
-	// 		temperature: 0,
-	// 		modelName: 'gpt-3.5-turbo',
-	// 	}),
-	// 	prompt: CONDENSE_PROMPT,
-	// });
-	// const standaloneQuestion = await questionGenerator.call({
-	// 	question: sanitizedQuestion,
-	// 	chat_history:
-	// 		history.map((chat: [string, string]) => [
-	// 			`me: ${chat[0]}\n`,
-	// 			`someone: ${chat[1]}\n`,
-	// 		]) || [],
-	// });
+	const questionGenerator = new LLMChain({
+		llm: new OpenAIChat({
+			temperature: 0,
+			modelName: 'gpt-3.5-turbo',
+		}),
+		prompt: CONDENSE_PROMPT,
+	});
+	const standaloneQuestion = await questionGenerator.call({
+		question: sanitizedQuestion,
+		chat_history:
+			history.map((chat: [string, string]) => [
+				`me: ${chat[0]}\n`,
+				`someone: ${chat[1]}\n`,
+			]) || [],
+	});
+	console.log('standaloneQuestion', standaloneQuestion);
 	const index = pinecone.Index(PINECONE_INDEX_NAME);
 	// console.log('source', source);
 
@@ -69,20 +70,29 @@ export default async function handler(
 		},
 	);
 
+	// TODO: 0.83 이하는 전체 검색. streaming 결과와 최종 텍스트 다름
 	res.writeHead(200, {
 		'Content-Type': 'text/event-stream',
 		'Cache-Control': 'no-cache, no-transform',
 		Connection: 'keep-alive',
 	});
 
+	let gptResponse = '';
 	const sendData = (data: string) => {
 		res.write(`data: ${data}\n\n`);
 	};
 
 	sendData(JSON.stringify({ data: '' }));
 
+	console.log('sanitizedQuestion: ', sanitizedQuestion);
+	const search = await vectorStore.similaritySearchWithScore(
+		sanitizedQuestion,
+		1,
+	);
+	console.log('search', search);
 	//create chain
 	const chain = makeChain(vectorStore, (token: string) => {
+		gptResponse += token;
 		sendData(JSON.stringify({ data: token }));
 	});
 	const { data } = await supabase
@@ -155,13 +165,14 @@ export default async function handler(
 
 		// sendData(JSON.stringify({ sourceDocs: response.sourceDocuments }));
 
+		const botResponse = gptResponse || response.text;
 		await supabase
 			.from('chat_history')
 			.upsert({
 				user_id: userId,
 				content_id: contentId,
 				user_history: [...userHistory, sanitizedQuestion],
-				bot_history: [...botHistory, response.text],
+				bot_history: [...botHistory, botResponse],
 			})
 			.eq('user_id', userId)
 			.eq('content_id', contentId);
@@ -169,7 +180,7 @@ export default async function handler(
 		sendData(
 			JSON.stringify({
 				data: {
-					text: response.text,
+					text: botResponse,
 					metadata: response.sourceDocuments.map(
 						({ metadata }: DocumentType) => ({
 							source: metadata.source,
