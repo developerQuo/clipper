@@ -6,7 +6,6 @@ import Bookmark from '@/components/ui/bookmark/button';
 import Link from 'next/link';
 import Share from '@/components/ui/share';
 import ChatDoc from '@/components/ui/generate/chat';
-import { Content } from '@/store/content';
 import moment from 'moment';
 import Image from 'next/image';
 import {
@@ -43,7 +42,6 @@ export default function Clip({ content: existContent }: InputProps) {
 			.then(async (res) => {
 				const { ok } = await res.json();
 
-				// TODO: modal로 변경
 				if (ok) {
 					alert('저장되었습니다.');
 				}

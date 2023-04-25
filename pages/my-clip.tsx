@@ -6,13 +6,13 @@ import Loading from '@/components/ui/Loading';
 
 const loading = () => <Loading />;
 const Bookmark = dynamic(() => import('@/components/ui/bookmark'), { loading });
-const GeneratedContent = dynamic(
-	() => import('@/components/ui/generate/content'),
-	{ loading },
-);
+const MyRequest = dynamic(() => import('@/components/ui/request/my-request'), {
+	loading,
+});
 
 const menuArr = [
-	{ name: '북마크', pathName: 'bookmark', content: <Bookmark /> },
+	{ name: 'Bookmark', pathName: 'bookmark', content: <Bookmark /> },
+	{ name: 'My Request', pathName: 'my-request', content: <MyRequest /> },
 	// { name: '마이리포트', pathName: 'my-report', content: <GeneratedContent /> },
 ];
 

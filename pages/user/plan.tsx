@@ -28,6 +28,15 @@ export default function Plan() {
 export const getServerSideProps: GetServerSideProps = async (context) => {
 	const guard = (await serverSideAuthGuard(context)) as any;
 	if (guard.hasOwnProperty('redirect')) return guard;
+
+	// block access to user plan page
+	return {
+		redirect: {
+			destination: '/',
+			permanent: false,
+		},
+	};
+
 	return {
 		props: {},
 	};

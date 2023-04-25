@@ -1,5 +1,5 @@
-import { Content } from '@/store/content';
 import NotificationContext from '@/store/notification-context';
+import { Content } from '@/types/content';
 import Image from 'next/image';
 import { useContext, useState } from 'react';
 

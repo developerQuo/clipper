@@ -54,7 +54,7 @@ function Navigation() {
 							height: 14.96,
 						}}
 					/>
-					<MenuItem
+					{/* <MenuItem
 						name="Trend"
 						path="/trend"
 						icon={{
@@ -62,7 +62,7 @@ function Navigation() {
 							width: 18.13,
 							height: 11.88,
 						}}
-					/>
+					/> */}
 					{/* <MenuItem
 						name="Generate"
 						path="/generate"
@@ -73,6 +73,15 @@ function Navigation() {
 						}}
 					/> */}
 					<MenuItem
+						name="Request"
+						path="/request"
+						icon={{
+							name: 'generate',
+							width: 13.33,
+							height: 12.99,
+						}}
+					/>
+					<MenuItem
 						name="My Clip"
 						path="/my-clip"
 						icon={{
@@ -81,11 +90,11 @@ function Navigation() {
 							height: 14.57,
 						}}
 					/>
-					<MenuItem
+					{/* <MenuItem
 						className="btn rounded-3xl"
 						name="무료체험"
 						path="/user/plan"
-					/>
+					/> */}
 				</ul>
 			</div>
 			{session && (

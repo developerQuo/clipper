@@ -13,15 +13,16 @@ import moment from 'moment';
 import Link from 'next/link';
 import Loading from '../Loading';
 import InfiniteScroll from 'react-infinite-scroll-component';
+import { Request } from './types';
 
 const limit = 10;
 
 // TODO: 무한 스크롤 테스트
-export default function GeneratedContent() {
+export default function MyRequest() {
 	const { data: session } = useSession();
 	const { id: userId } = session?.user ?? {};
 
-	const [content, setContent] = useState<SelectedGeneratedContent[]>();
+	const [content, setContent] = useState<Request[]>();
 	const [loading, setLoading] = useState<boolean>(false);
 	const [page, setPage] = useState(1);
 	const [hasMore, setHasMore] = useState(true);
@@ -30,13 +31,13 @@ export default function GeneratedContent() {
 		const fetch = async () => {
 			setLoading(true);
 			const { data, error } = await supabase
-				.from('generated_content')
+				.from('request')
 				.select('*')
 				.eq('user_id', userId)
 				.range((page - 1) * limit, page * limit - 1)
 				.order('id', { ascending: false });
 			if (!error && data && data.length > 0) {
-				setContent(data as SelectedGeneratedContent[]);
+				setContent(data as Request[]);
 			}
 			if (data?.length === 0) {
 				setHasMore(false);
@@ -45,7 +46,7 @@ export default function GeneratedContent() {
 					if (prev && prev[0]!.id === data[0].id) {
 						return prev;
 					}
-					return [...(prev || []), ...data];
+					return [...(prev || []), ...(data as Request[])];
 				});
 			}
 			setLoading(false);
@@ -54,7 +55,6 @@ export default function GeneratedContent() {
 			fetch();
 		}
 	}, [page, userId]);
-	console.log(content);
 	return (
 		<InfiniteScroll
 			dataLength={content?.length ?? 0}
@@ -69,28 +69,28 @@ export default function GeneratedContent() {
 		>
 			<div className="p-5">
 				<Accordion type="single" collapsible className="w-3/5 flex-col">
-					{content?.map((doc, index) => (
+					{content?.map((req, index) => (
 						<div key={index}>
 							<AccordionItem value={`item-${index}`} className="py-4">
 								<AccordionTrigger>
 									<div className="flex items-center space-x-8">
 										<h3 className="text-lg font-semibold">
-											{doc?.title?.slice(0, 30) ?? ''}...
+											{req?.note?.slice(0, 30) ?? ''}...
 										</h3>{' '}
 										<span className="text-xs text-text-secondary">
-											{moment(doc?.published_at).format('YYYY-MM-DD')}
+											{moment(req?.created_at).format('YYYY-MM-DD')}
 										</span>
 									</div>
 								</AccordionTrigger>
 								<AccordionContent>
 									<ReactMarkdown linkTarget="_blank">
-										{doc?.content?.slice(0, 300).replaceAll('\n', ' ') ?? ''}
+										{req?.note?.slice(0, 300).replaceAll('\n', ' ') ?? ''}
 									</ReactMarkdown>
-									<Link href={`/generate/${doc?.id}`} legacyBehavior>
+									{/* <Link href={`/generate/${req?.id}`} legacyBehavior>
 										<a className="btn float-right mb-4 mt-12 w-32 rounded-3xl">
 											전체보기
 										</a>
-									</Link>
+									</Link> */}
 								</AccordionContent>
 							</AccordionItem>
 						</div>

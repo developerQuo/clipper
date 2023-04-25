@@ -5,11 +5,7 @@ import Table from '@/components/ui/Table';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import { SelectedKeyType, SelectedKeyState } from '@/store/table';
 import Viewer from '@/components/ui/content/viewer';
-import {
-	SelectedContent,
-	Content,
-	SelectedContentState,
-} from '@/store/content';
+import { SelectedContent, SelectedContentState } from '@/store/content';
 import { PostgrestSingleResponse } from '@supabase/supabase-js';
 import Bookmark from '../../components/ui/bookmark/button';
 import { supabase } from '@/utils/supabase-client';
@@ -17,6 +13,7 @@ import { getSession, useSession } from 'next-auth/react';
 import { Textarea } from '@/components/ui/TextArea';
 import { CONDENSE_PROMPT, QA_PROMPT } from '@/config/prompt';
 import Link from 'next/link';
+import { Content } from '@/types/content';
 
 const columns: ColumnType<Content>[] = [
 	{

@@ -20,7 +20,7 @@ export default function ChangePasswordForm() {
 
 	const onSubmit = useCallback(async () => {
 		notificationCtx.showNotification({
-			title: "로딩중...",
+			title: "loading...",
 			message: "",
 			status: "pending",
 		});

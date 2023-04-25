@@ -43,7 +43,7 @@ export default function AuthForm({ title, isLogin }: AuthFormProps) {
 
 	const onSubmit = useCallback(async () => {
 		notificationCtx.showNotification({
-			title: "로딩중...",
+			title: "loading...",
 			message: "",
 			status: "pending",
 		});

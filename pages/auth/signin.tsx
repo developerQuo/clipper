@@ -15,30 +15,39 @@ export default function SignIn({ guard }: InputProps) {
 	const loginRequired = !guard?.props?.session;
 	return (
 		<div className="relative flex h-full min-h-screen min-w-[360px] flex-col">
-			{loginRequired ? <Login /> : <Personalization />}
+			<Login />
+			{/* {loginRequired ? <Login /> : <Personalization />} */}
 		</div>
 	);
 }
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
 	const guard = (await serverSideAuthGuard(context)) as any;
-	// 로그인 o && 개인화 설정 o -> redirect home
 	if (guard.props?.session) {
-		const { data } = await supabase
-			.from('personalization')
-			.select('id')
-			.eq('user_id', guard.props.session.user.id)
-			.single();
-
-		if (data?.id) {
-			return {
-				redirect: {
-					destination: '/',
-					permanent: false,
-				},
-			};
-		}
+		return {
+			redirect: {
+				destination: '/',
+				permanent: false,
+			},
+		};
 	}
+	// 로그인 o && 개인화 설정 o -> redirect home
+	// if (guard.props?.session) {
+	// 	const { data } = await supabase
+	// 		.from('personalization')
+	// 		.select('id')
+	// 		.eq('user_id', guard.props.session.user.id)
+	// 		.single();
+
+	// 	if (data?.id) {
+	// 		return {
+	// 			redirect: {
+	// 				destination: '/',
+	// 				permanent: false,
+	// 			},
+	// 		};
+	// 	}
+	// }
 	// 로그인 o && 개인화 설정 x -> 산업, 직무, 관심사 선택
 	return {
 		props: { guard },

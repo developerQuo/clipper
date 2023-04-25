@@ -33,5 +33,13 @@ export default function Profile({ session }: InputProps) {
 }
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
+	// block access to user profile page
+	return {
+		redirect: {
+			destination: '/',
+			permanent: false,
+		},
+	};
+
 	return serverSideAuthGuard(context);
 };

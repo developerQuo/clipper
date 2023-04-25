@@ -16,3 +16,8 @@
   background-color: transparent;
   overflow: hidden;
 }
+
+.required:after {
+  content:" *";
+  color: red;
+}
