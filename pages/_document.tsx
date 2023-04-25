@@ -12,7 +12,6 @@ class Document extends NextDocument {
 					<div id="drawer-root"></div>
 					<NextScript />
 					<div id="notifications"></div>
-					<div id="google_translate_element" style={{ display: 'none' }} />
 				</body>
 			</Html>
 		);

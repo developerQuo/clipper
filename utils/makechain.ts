@@ -19,7 +19,7 @@ export const makeChain = (
 	const model = new OpenAI({
 		temperature: 0.3,
 		modelName: 'gpt-3.5-turbo', //change this to older versions if you don't have access to gpt-4
-		cache: true,
+		// cache: true,
 		streaming: Boolean(onTokenStream),
 		callbackManager: onTokenStream
 			? CallbackManager.fromHandlers({

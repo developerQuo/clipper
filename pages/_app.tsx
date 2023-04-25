@@ -5,8 +5,6 @@ import Layout from '../components/layout/Layout';
 import { RecoilRoot } from 'recoil';
 import { SessionProvider } from 'next-auth/react';
 import Script from 'next/script';
-import { useEffect } from 'react';
-import useGoogleTranslate from '@/lib/google-translate';
 
 export default function App({ Component, pageProps, router }: AppProps) {
 	const isLogin = router.pathname === '/auth/signin';
@@ -17,7 +15,6 @@ export default function App({ Component, pageProps, router }: AppProps) {
 	// 	document.head.appendChild(script);
 	// 	console.log(script);
 	// }, []);
-	useGoogleTranslate();
 	return (
 		<>
 			{/* <Script

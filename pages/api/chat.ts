@@ -71,7 +71,7 @@ export default async function handler(
 		},
 	);
 
-	// TODO: 0.83 이하는 전체 검색. streaming 결과와 최종 텍스트 다름
+	// TODO: 0.83 이하는 전체 검색.
 	res.writeHead(200, {
 		'Content-Type': 'text/event-stream',
 		'Cache-Control': 'no-cache, no-transform',

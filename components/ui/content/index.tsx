@@ -24,7 +24,7 @@ export default function Content() {
 			const { data, ...result } = await supabase
 				.from('content')
 				.select(
-					'id,title,summary,published_at,file_path,views,content_source(media(name)),bookmark(user_id),faq,tags,vector_upload',
+					'id,title,title_en,summary,published_at,file_path,views,content_source(media(name,name_en)),bookmark(user_id),faq,tags,vector_upload',
 					{
 						count: 'exact',
 					},
@@ -41,6 +41,10 @@ export default function Content() {
 						media:
 							content_source && (content_source as any).length
 								? (content_source as any[])[0].media.name
+								: null,
+						media_en:
+							content_source && (content_source as any).length
+								? (content_source as any[])[0].media.name_en
 								: null,
 						bookmark: Boolean(
 							(bookmark as any).length &&

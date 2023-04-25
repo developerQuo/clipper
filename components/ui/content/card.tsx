@@ -1,9 +1,9 @@
-import { Content } from '@/store/content';
 import moment from 'moment';
 import Link from 'next/link';
 import Bookmark from '../bookmark/button';
 import { getColor } from '@/utils/randomColor';
 import Tags from './tags';
+import { Content } from '@/types/content';
 
 const Tag = ({ tag }: { tag: string }) => {
 	return <div className="badge-outline badge">{tag}</div>;
@@ -12,8 +12,8 @@ const Tag = ({ tag }: { tag: string }) => {
 type InputProps = Pick<
 	Content,
 	| 'id'
-	| 'title'
-	| 'media'
+	| 'title_en'
+	| 'media_en'
 	| 'tags'
 	| 'bookmark'
 	| 'bookmarks'
@@ -25,8 +25,8 @@ type InputProps = Pick<
 };
 const Card = ({
 	id,
-	title,
-	media,
+	title_en,
+	media_en,
 	tags,
 	bookmark,
 	bookmarks,
@@ -46,9 +46,9 @@ const Card = ({
 			>
 				<div className="card-body min-h-[16rem] p-6">
 					<div className="relatives flex flex-1 flex-col justify-evenly">
-						<h2 className="card-title cursor-pointer text-lg">{title}</h2>
+						<h2 className="card-title cursor-pointer text-lg">{title_en}</h2>
 						<p className="pt-4 text-default">
-							<span className="cursor-pointer font-medium">{media}</span>{' '}
+							<span className="cursor-pointer font-medium">{media_en}</span>{' '}
 							<span className="cursor-pointer text-text-secondary">
 								{publishedAt}
 							</span>

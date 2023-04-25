@@ -65,3 +65,18 @@ TODO:
 - 해당 보고서에서 못 찾으면 전체 보고서에서 찾기
 - [x] 답변시 스크롤 아래로
 - [x] 벡터스토어에 원본 저장
+
+```
+요약
+Please summarize the document into 500~550 characters in english.
+```
+
+```
+자주하는 질문
+Please provide a list of 5 key topics for FAQ extracted from the document, ensuring that your response is in English and formatted as shown in the example: ["key topic 1", "key topic 2", ...]. Note that responses in languages other than English will not be accepted.
+```
+
+```
+키워드
+Please create a list of keywords for search extracted from the document, ensuring that your response is in English and formatted as shown in the example: ["keyword 1", "keyword 2", ...]. Note that responses in languages other than English will not be accepted.
+```
