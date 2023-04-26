@@ -45,7 +45,7 @@ export default function Clip({ content }: InputProps) {
 							<span className="font-medium">{media_en}</span>
 							<span className="text-text-secondary">{publishedAt}</span>
 						</p>
-						<div className="mt-8 flex flex-wrap gap-2">
+						<div className="mt-8 flex flex-wrap gap-2 overflow-x-auto py-2">
 							<Tags tags={tags} />
 						</div>
 					</div>
@@ -112,6 +112,7 @@ export const getServerSideProps: GetServerSideProps<InputProps> = async (
 		props: {
 			content: {
 				...content,
+				tags: content.tags?.slice(0, 9),
 				media:
 					content.content_source && (content.content_source as any).length
 						? (content.content_source as any[])[0].media.name

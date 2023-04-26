@@ -39,12 +39,12 @@ export default function HomePage() {
 						Check out professional reports published overseas!
 					</p>
 				</h1>
-				<div className="flex justify-end">
+				{/* <div className="flex justify-end">
 					<Filter
 						onSearch={handleSearch}
 						onTimeFilterChange={handleTimeFilterChange}
 					/>
-				</div>
+				</div> */}
 			</div>
 			<Content />
 		</div>

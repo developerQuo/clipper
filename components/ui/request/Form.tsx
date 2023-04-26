@@ -59,144 +59,148 @@ export default function Form() {
 
 	return (
 		<form
-			className="form-control gap-y-8 px-[24px] md:gap-y-[92px] lg:px-0"
+			className="form-control mx-auto gap-y-8 px-[24px] md:gap-y-[92px] lg:max-w-6xl lg:px-0"
 			onSubmit={handleSubmit(onSubmit)}
 		>
-			<div className="form-control w-full items-start gap-4 text-[18px]">
-				<label className="required text-base font-bold text-text-primary">
-					About you
-				</label>
-				<div className="grid w-full grid-cols-2 gap-x-12 gap-y-4 2xl:grid-cols-3">
-					<div>
-						<input
-							type="text"
-							placeholder="First Name"
-							className="input-bordered input w-full focus:border-secondary focus:text-secondary"
-							{...register('first_name', { required: true })}
-						/>
-						{errors.first_name?.type === 'required' && (
-							<p role="alert" className="px-2 pt-1 text-sm text-error">
-								Type First Name
-							</p>
-						)}
-					</div>
-					<div>
-						<input
-							type="text"
-							placeholder="Last Name"
-							className="input-bordered input w-full focus:border-secondary focus:text-secondary"
-							{...register('last_name', { required: true })}
-						/>
-						{errors.last_name?.type === 'required' && (
-							<p role="alert" className="px-2 pt-1 text-sm text-error">
-								Type Last Name
-							</p>
-						)}
-					</div>
-					<div>
-						<input
-							type="email"
-							placeholder="Your email address"
-							className="input-bordered input w-full focus:border-secondary focus:text-secondary"
-							{...register('email', { required: true })}
-						/>
-						{errors.email?.type === 'required' && (
-							<p role="alert" className="px-2 pt-1 text-sm text-error">
-								Type email address
-							</p>
-						)}
-					</div>
-					<div>
-						<input
-							type="text"
-							placeholder="Job Title"
-							className="input-bordered input w-full focus:border-secondary focus:text-secondary"
-							{...register('job_title', { required: true })}
-						/>
-						{errors.job_title?.type === 'required' && (
-							<p role="alert" className="px-2 pt-1 text-sm text-error">
-								Type Job Title
-							</p>
-						)}
-					</div>
-					<div>
-						<input
-							type="text"
-							placeholder="Organization"
-							className="input-bordered input w-full focus:border-secondary focus:text-secondary"
-							{...register('organization', { required: true })}
-						/>
-						{errors.organization?.type === 'required' && (
-							<p role="alert" className="px-2 pt-1 text-sm text-error">
-								Type Organization
-							</p>
-						)}
+			<div className="flex flex-col gap-x-20 gap-y-8 px-[24px] md:gap-y-[92px] lg:flex-row lg:gap-x-32 lg:px-0">
+				<div className="form-control w-full items-start gap-4 text-[18px]">
+					<label className="required text-base font-bold text-text-primary">
+						About you
+					</label>
+					<div className="flex flex-1 flex-col gap-y-4">
+						<div className="flex flex-1 gap-x-4">
+							<div>
+								<input
+									type="text"
+									placeholder="First Name"
+									className="input-bordered input w-full focus:border-secondary focus:text-secondary"
+									{...register('first_name', { required: true })}
+								/>
+								{errors.first_name?.type === 'required' && (
+									<p role="alert" className="px-2 pt-1 text-sm text-error">
+										Type First Name
+									</p>
+								)}
+							</div>
+							<div>
+								<input
+									type="text"
+									placeholder="Last Name"
+									className="input-bordered input w-full focus:border-secondary focus:text-secondary"
+									{...register('last_name', { required: true })}
+								/>
+								{errors.last_name?.type === 'required' && (
+									<p role="alert" className="px-2 pt-1 text-sm text-error">
+										Type Last Name
+									</p>
+								)}
+							</div>
+						</div>
+						<div>
+							<input
+								type="email"
+								placeholder="Your business email"
+								className="input-bordered input w-full focus:border-secondary focus:text-secondary"
+								{...register('email', { required: true })}
+							/>
+							{errors.email?.type === 'required' && (
+								<p role="alert" className="px-2 pt-1 text-sm text-error">
+									Type email address
+								</p>
+							)}
+						</div>
+						<div>
+							<input
+								type="text"
+								placeholder="Job Title"
+								className="input-bordered input w-full focus:border-secondary focus:text-secondary"
+								{...register('job_title', { required: true })}
+							/>
+							{errors.job_title?.type === 'required' && (
+								<p role="alert" className="px-2 pt-1 text-sm text-error">
+									Type Job Title
+								</p>
+							)}
+						</div>
+						<div>
+							<input
+								type="text"
+								placeholder="Organization"
+								className="input-bordered input w-full focus:border-secondary focus:text-secondary"
+								{...register('organization', { required: true })}
+							/>
+							{errors.organization?.type === 'required' && (
+								<p role="alert" className="px-2 pt-1 text-sm text-error">
+									Type Organization
+								</p>
+							)}
+						</div>
 					</div>
 				</div>
-			</div>
-			<div className="form-control w-full items-start gap-4 text-[18px]">
-				<label className="required text-base font-bold text-text-primary">
-					About your business
-				</label>
-				<div className="grid w-full grid-cols-2 gap-x-12 gap-y-4 2xl:grid-cols-3">
-					<div>
-						<select
-							className="select-bordered select w-full focus:border-secondary focus:text-secondary"
-							{...register('industry', {
-								required: 'Select Industry',
-							})}
-						>
-							{' '}
-							<option disabled selected value={''}>
-								What industry are you in?
-							</option>
-							{industryOptions.map(({ label, value }) => (
-								<option key={value} value={value}>
-									{label}
+				<div className="form-control w-full items-start gap-4 text-[18px]">
+					<label className="required text-base font-bold text-text-primary">
+						About your business
+					</label>
+					<div className="flex flex-1 flex-col gap-y-4">
+						<div>
+							<select
+								className="select-bordered select w-full focus:border-secondary focus:text-secondary"
+								{...register('industry', {
+									required: 'Select Industry',
+								})}
+							>
+								{' '}
+								<option disabled selected value={''}>
+									Your industry
 								</option>
-							))}
-						</select>
-						{errors.industry?.type === 'required' && (
-							<p role="alert" className="px-2 pt-1 text-sm text-error">
-								{errors.industry.message}
-							</p>
-						)}
-					</div>
-					<div>
-						<select
-							className="select-bordered select w-full focus:border-secondary focus:text-secondary"
-							{...register('country', {
-								required: 'Select Country',
-							})}
-						>
-							{' '}
-							<option disabled selected value={''}>
-								Where are you from?
-							</option>
-							{countryCodeOptions.map(({ label, value }) => (
-								<option key={value} value={value}>
-									{label}
+								{industryOptions.map(({ label, value }) => (
+									<option key={value} value={value}>
+										{label}
+									</option>
+								))}
+							</select>
+							{errors.industry?.type === 'required' && (
+								<p role="alert" className="px-2 pt-1 text-sm text-error">
+									{errors.industry.message}
+								</p>
+							)}
+						</div>
+						<div>
+							<select
+								className="select-bordered select w-full focus:border-secondary focus:text-secondary"
+								{...register('country', {
+									required: 'Select Country',
+								})}
+							>
+								{' '}
+								<option disabled selected value={''}>
+									Your location
 								</option>
-							))}
-						</select>
-						{errors.country?.type === 'required' && (
-							<p role="alert" className="px-2 pt-1 text-sm text-error">
-								{errors.country.message}
-							</p>
-						)}
-					</div>
-					<div>
-						<input
-							type="url"
-							placeholder="company/service URL"
-							className="input-bordered input w-full focus:border-secondary focus:text-secondary"
-							{...register('homepage', { required: true })}
-						/>
-						{errors.homepage?.type === 'required' && (
-							<p role="alert" className="px-2 pt-1 text-sm text-error">
-								Type URL
-							</p>
-						)}
+								{countryCodeOptions.map(({ label, value }) => (
+									<option key={value} value={value}>
+										{label}
+									</option>
+								))}
+							</select>
+							{errors.country?.type === 'required' && (
+								<p role="alert" className="px-2 pt-1 text-sm text-error">
+									{errors.country.message}
+								</p>
+							)}
+						</div>
+						<div>
+							<input
+								type="url"
+								placeholder="Company/Service URL"
+								className="input-bordered input w-full focus:border-secondary focus:text-secondary"
+								{...register('homepage', { required: true })}
+							/>
+							{errors.homepage?.type === 'required' && (
+								<p role="alert" className="px-2 pt-1 text-sm text-error">
+									Type URL
+								</p>
+							)}
+						</div>
 					</div>
 				</div>
 			</div>

@@ -23,7 +23,7 @@ type MessageState = {
 const defaultMessageState: MessageState = {
 	messages: [
 		{
-			message: '다른 궁금한 점이 있으신가요?',
+			message: 'Find out more in chat!',
 			type: 'apiMessage',
 		},
 	],
@@ -243,7 +243,7 @@ export default function ChatDoc({
 				>
 					<div className="text-sm leading-6">{summary}</div>
 					<div className="mb-8 mt-6 flex flex-col space-y-2 text-sm">
-						<span>이런 내용이 담겨져 있어요. 클릭해서 확인하세요.</span>
+						<span>Check out and click the main topics below:</span>
 						{faq?.map((q, index) => (
 							<button
 								key={`faq-${index}`}
@@ -288,7 +288,7 @@ export default function ChatDoc({
 										<Accordion type="single" collapsible className="flex-col">
 											<AccordionItem value={`item-${index}`}>
 												<AccordionTrigger>
-													<h3>출처</h3>
+													<h3>Source</h3>
 												</AccordionTrigger>
 												<AccordionContent>
 													{message.sourceDocs
@@ -331,9 +331,7 @@ export default function ChatDoc({
 							id="userInput"
 							name="userInput"
 							placeholder={
-								loading
-									? '잠시만 기다려주세요...'
-									: '더 궁금한 것을 Clipper에게 물어보세요.'
+								loading ? 'Wait a moment...' : 'What would you like to know?'
 							}
 							value={query}
 							onChange={(e) => setQuery(e.target.value)}
@@ -371,7 +369,7 @@ export default function ChatDoc({
 				className="btn-error btn rounded-3xl text-white"
 				onClick={resetChatHistory}
 			>
-				채팅 기록 삭제
+				Refresh
 			</button>
 		</main>
 	);

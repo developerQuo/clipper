@@ -55,7 +55,7 @@ const Card = ({
 						</p>
 						<div className="flex items-center justify-between pt-10">
 							<div className="flex-1 space-x-2 space-y-2">
-								<Tags id={id} tags={tags?.slice(0, 2)} />
+								<Tags id={id} tags={tags} />
 							</div>
 							<div className="ml-4 flex">
 								<Bookmark id={id} bookmark={bookmark} />

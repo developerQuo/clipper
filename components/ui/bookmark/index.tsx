@@ -53,8 +53,9 @@ export default function Bookmark() {
 						),
 					),
 				)
-				.map(({ content_source, bookmark, ...row }) => ({
+				.map(({ content_source, bookmark, tags, ...row }) => ({
 					...row,
+					tags: tags?.slice(0, 2),
 					media:
 						content_source && (content_source as any).length
 							? (content_source as any[])[0].media.name

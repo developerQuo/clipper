@@ -36,8 +36,9 @@ export default function Content() {
 				.order('published_at', { ascending: false });
 			if (!result.error) {
 				const contentData = data?.map(
-					({ content_source, bookmark, vector_upload, ...row }) => ({
+					({ content_source, bookmark, vector_upload, tags, ...row }) => ({
 						...row,
+						tags: tags?.slice(0, 2),
 						media:
 							content_source && (content_source as any).length
 								? (content_source as any[])[0].media.name
