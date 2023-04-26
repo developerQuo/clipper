@@ -114,10 +114,10 @@ function Navigation() {
 						</label>
 						<ul
 							tabIndex={0}
-							className="dropdown-content menu rounded-box w-52 bg-base-100 p-2 shadow"
+							className="dropdown-content menu rounded-box w-36 bg-base-100 p-2 shadow"
 						>
 							<li>
-								<Link href="/api/auth/signout">로그아웃</Link>
+								<Link href="/api/auth/signout">Logout</Link>
 							</li>
 						</ul>
 					</div>
