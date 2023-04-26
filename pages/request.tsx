@@ -1,4 +1,6 @@
 import Form from '@/components/ui/request/Form';
+import serverSideAuthGuard from '@/components/utils/serverSideAuthGuard';
+import { GetServerSideProps } from 'next';
 
 export default function Request() {
 	return (
@@ -17,3 +19,11 @@ export default function Request() {
 		</div>
 	);
 }
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+	const guard = (await serverSideAuthGuard(context)) as any;
+	if (guard.hasOwnProperty('redirect')) return guard;
+	return {
+		props: {},
+	};
+};

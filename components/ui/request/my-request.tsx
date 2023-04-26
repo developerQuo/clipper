@@ -7,10 +7,8 @@ import {
 	AccordionItem,
 	AccordionTrigger,
 } from '@/components/ui/accordion';
-import { SelectedGeneratedContent } from '@/store/generated-content';
 import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
 import moment from 'moment';
-import Link from 'next/link';
 import Loading from '../Loading';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { Request } from './types';

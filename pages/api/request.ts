@@ -3,9 +3,9 @@ import { supabase } from '@/utils/supabase-client';
 import { getServerSession } from 'next-auth';
 import { authOptions } from './auth/[...nextauth]';
 import { Request } from '@/components/ui/request/types';
-import { GoogleAuth } from 'google-auth-library';
-import { google } from 'googleapis';
 import { publishMessage } from '@/utils/slack-client';
+import moment from 'moment';
+import { updateValues } from '@/utils/google-client';
 
 export default async function handler(
 	req: NextApiRequest,
@@ -24,20 +24,26 @@ export default async function handler(
 	if (!user_id || !values) {
 		return res.status(400).json({ message: 'No question in the request' });
 	}
-	const inputValues = { ...values, user_id };
+	const inputValues = {
+		...values,
+		created_at: moment().format('YYYY-MM-DD, h:mm:ss a'),
+		user_id,
+	};
 	try {
-		const result = await supabase
+		// insert into db
+		const dbResult = await supabase
 			.from('request')
 			.insert({ ...values, user_id });
-		// await updateValues(
-		// 	'1wtnZZVqnCOsLhoN4aBhSVy_BQp20N1nQiutKadpIrhw',
-		// 	'A1',
-		// 	'RAW',
-		// 	inputValues,
-		// );
+
+		// insert into google sheet
+		if (!dbResult.error) {
+			await updateValues(inputValues);
+		}
+
+		// send slack message
 		await publishMessage(
 			`[${
-				result.error ? 'Failed' : 'Success'
+				dbResult.error ? 'Failed' : 'Success'
 			}] Clipper App Request received by "${values.first_name} ${
 				values.last_name
 			}"`,
@@ -47,43 +53,5 @@ export default async function handler(
 	} catch (error) {
 		console.log('error', error);
 		res.status(200).json({ ok: false });
-	}
-}
-
-async function updateValues(
-	spreadsheetId: string,
-	range: string,
-	valueInputOption: string,
-	_values: Request & { user_id: string },
-) {
-	const auth = new GoogleAuth({
-		scopes: 'https://www.googleapis.com/auth/spreadsheets',
-		credentials: {
-			private_key: 'd8e23fe259f3a4a54a2f896931e4e4c14f6d6f7f',
-			client_email: '452046615879-compute@developer.gserviceaccount.com',
-		},
-	});
-
-	const service = google.sheets({ version: 'v4', auth });
-	let values = [
-		[Object.values(_values)],
-		// Additional rows ...
-	];
-	console.log(values);
-	const requestBody = {
-		values,
-	};
-	try {
-		const result = await service.spreadsheets.values.append({
-			spreadsheetId,
-			range,
-			valueInputOption,
-			requestBody,
-		});
-		console.log(`${result.data.updates?.updatedCells} cells appended.`);
-		return result;
-	} catch (err) {
-		// TODO (developer) - Handle exception
-		throw err;
 	}
 }

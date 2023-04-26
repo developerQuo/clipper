@@ -12,6 +12,6 @@ type Request = {
 	created_at: string;
 };
 
-type IForm = Omit<Request, 'id'>;
+type IForm = Omit<Request, 'id'|'created_at'>;
 
 export type { Request, IForm };
