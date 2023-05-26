@@ -26,7 +26,7 @@ yarn-error.log*
 .pnpm-debug.log*
 
 # local env files
-.env*.local
+.env.*
 .env
 
 # credentials
@@ -38,3 +38,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# backup files
+*.bak
