@@ -24,6 +24,11 @@
 			"@/*": ["./*"]
 		}
 	},
-	"include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+	"include": [
+		"next-env.d.ts",
+		"**/*.ts",
+		"**/*.tsx",
+		"utils/__tests__/randomColor.test.ts"
+	],
 	"exclude": ["node_modules", ".next", "public/**/*"]
 }
