@@ -1,4 +1,4 @@
-import ChatDoc from '@/components/ui/chat/test';
+import ChatDoc from '@/components/ui/chat/test-page';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { ColumnType } from 'rc-table/lib/interface';
 import Table from '@/components/ui/Table';
