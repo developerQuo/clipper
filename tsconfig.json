@@ -29,6 +29,6 @@
 		"**/*.ts",
 		"**/*.tsx",
 		"utils/__tests__/randomColor.test.ts"
-	],
+, "pages/api/content/bookmark.test.js"	],
 	"exclude": ["node_modules", ".next", "public/**/*"]
 }
