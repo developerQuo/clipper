@@ -1,17 +1,16 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { OpenAIEmbeddings } from 'langchain/embeddings';
-import { PineconeStore } from 'langchain/vectorstores';
+import { OpenAIEmbeddings } from '@langchain/openai';
+import { PineconeStore } from '@langchain/pinecone';
 import { makeChain } from '@/utils/makechain';
 import { pinecone } from '@/utils/pinecone-client';
 import { PINECONE_INDEX_NAME, PINECONE_NAME_SPACE } from '@/config/pinecone';
 import { supabase } from '@/utils/supabase-client';
 import { ChatInput } from '@/types/chat';
-import { LLMChain, PromptTemplate } from 'langchain';
-import { OpenAIChat } from 'langchain/llms';
+import { LLMChain } from 'langchain/chains';
+import { PromptTemplate } from '@langchain/core/prompts';
+import { ChatOpenAI } from '@langchain/openai';
 import { CONDENSE_PROMPT as DEFAULT_CONDENSE_PROMPT } from '@/config/prompt';
-import { openai } from '@/utils/openai-client';
-import { ChatCompletionRequestMessageRoleEnum } from 'openai';
-import { DocumentType, MetaData } from '@/types/vector-store';
+import { DocumentType } from '@/types/vector-store';
 import { getServerSession } from 'next-auth';
 import { authOptions } from './auth/[...nextauth]';
 
@@ -42,7 +41,7 @@ export default async function handler(
 	const sanitizedQuestion = question.trim().replaceAll('\n', ' ');
 
 	const questionGenerator = new LLMChain({
-		llm: new OpenAIChat({
+		llm: new ChatOpenAI({
 			temperature: 0,
 			modelName: 'gpt-3.5-turbo',
 		}),
@@ -58,7 +57,6 @@ export default async function handler(
 	});
 	console.log('standaloneQuestion', standaloneQuestion);
 	const index = pinecone.Index(PINECONE_INDEX_NAME);
-	// console.log('source', source);
 
 	// /* create vectorstore*/
 	const vectorStore = await PineconeStore.fromExistingIndex(

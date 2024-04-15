@@ -7,7 +7,7 @@ import {
 	AccordionItem,
 	AccordionTrigger,
 } from '@/components/ui/accordion';
-import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
+import ReactMarkdown from 'react-markdown';
 import moment from 'moment';
 import Loading from '../Loading';
 import InfiniteScroll from 'react-infinite-scroll-component';
@@ -81,7 +81,7 @@ export default function MyRequest() {
 									</div>
 								</AccordionTrigger>
 								<AccordionContent>
-									<ReactMarkdown linkTarget="_blank">
+									<ReactMarkdown>
 										{req?.note?.slice(0, 300).replaceAll('\n', ' ') ?? ''}
 									</ReactMarkdown>
 									{/* <Link href={`/generate/${req?.id}`} legacyBehavior>

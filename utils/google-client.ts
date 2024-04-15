@@ -1,5 +1,4 @@
-import { GoogleAuth } from 'google-auth-library';
-import { google } from 'googleapis';
+import { google, GoogleApis } from 'googleapis';
 import { Request } from '@/components/ui/request/types';
 
 const client_email = process.env.GOOGLE_SPREADSHEET_CLIENT_EMAIL;
@@ -12,6 +11,8 @@ if (!client_email || !private_key || !spreadsheetId) {
 	throw new Error('Missing Google SpreadSheet Credentials');
 }
 
+const GoogleAuth = new GoogleApis().auth.GoogleAuth
+
 const auth = new GoogleAuth({
 	scopes: 'https://www.googleapis.com/auth/spreadsheets',
 	credentials: {
@@ -19,6 +20,7 @@ const auth = new GoogleAuth({
 		client_email,
 	},
 });
+
 
 export async function updateValues(_values: Request & { user_id: string }) {
 	const service = google.sheets({ version: 'v4', auth });

@@ -1,15 +1,12 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { supabase } from '@/utils/supabase-client';
-import { openai } from '@/utils/openai-client';
-import { ChatCompletionRequestMessageRoleEnum } from 'openai';
 import { IForm } from '../../generate';
 import { pinecone } from '@/utils/pinecone-client';
 import { PINECONE_INDEX_NAME, PINECONE_NAME_SPACE } from '@/config/pinecone';
-import { PineconeStore } from 'langchain/vectorstores';
-import { OpenAIEmbeddings } from 'langchain/embeddings';
+import { PineconeStore } from '@langchain/pinecone';
+import { OpenAIEmbeddings } from '@langchain/openai';
 import { loadQAMapReduceChain } from 'langchain/chains';
-import { OpenAI } from 'langchain';
-import { getServerSession } from 'next-auth';
+import { OpenAI } from '@langchain/openai';
+import { getServerSession } from 'next-auth'; 
 import { authOptions } from '../auth/[...nextauth]';
 
 export default async function handler(

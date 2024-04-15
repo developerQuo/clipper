@@ -233,7 +233,7 @@ export default function ChatDoc({
 		}
 	}, [chatMessages]);
 
-	// console.log('render', chatMessages);
+	// console.log('render', chatMessages); 
 	return (
 		<main className="flex h-full w-full flex-col items-center justify-between bg-white px-20">
 			<div className="flex h-[75vh] w-full items-center justify-center rounded-lg">
@@ -279,7 +279,7 @@ export default function ChatDoc({
 								>
 									<div className="chat-bubble max-w-7xl">
 										<div className={styles.markdownanswer}>
-											<ReactMarkdown linkTarget="_blank">
+											<ReactMarkdown>
 												{message.message}
 											</ReactMarkdown>
 										</div>

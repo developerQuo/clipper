@@ -2,8 +2,10 @@ import { ChatInput } from '@/types/chat';
 import { openai } from '@/utils/openai-client';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { getServerSession } from 'next-auth';
-import { ChatCompletionRequestMessageRoleEnum } from 'openai';
 import { authOptions } from './auth/[...nextauth]';
+import OpenAI from 'openai';
+
+type Message = OpenAI.ChatCompletionUserMessageParam | OpenAI.ChatCompletionSystemMessageParam | OpenAI.ChatCompletionAssistantMessageParam
 
 export default async function handler(
 	req: NextApiRequest,
@@ -21,7 +23,7 @@ export default async function handler(
 		req.body as unknown as ChatInput & {
 			systemMessage?: string;
 		};
-
+		
 	if (!userId || !question) {
 		return res.status(400).json({ message: 'No question in the request' });
 	}
@@ -31,37 +33,39 @@ export default async function handler(
 
 	console.log('sanitizedQuestion', sanitizedQuestion);
 	console.log('sanitizedSystemMessage', sanitizedSystemMessage);
+
 	try {
 		//Ask a question
-		const completion = await openai.createChatCompletion({
+		const completion = await openai.chat.completions.create({
 			model: 'gpt-3.5-turbo',
 			temperature: 0,
 			messages: [
+				
 				...(sanitizedSystemMessage
 					? [
 							{
-								role: ChatCompletionRequestMessageRoleEnum.System,
-								content: sanitizedSystemMessage,
+								"role":'system',
+								"content": sanitizedSystemMessage,
 							},
-					  ]
+					  ] 
 					: []),
 				...history.flat().map((text, index) => ({
-					role:
+					"role":
 						index % 2 === 0
-							? ChatCompletionRequestMessageRoleEnum.User
-							: ChatCompletionRequestMessageRoleEnum.Assistant,
-					content: text,
+							? 'user'
+							: 'assistant',
+					"content": text,
 				})),
 				{
-					role: ChatCompletionRequestMessageRoleEnum.User,
-					content: sanitizedQuestion,
+					"role": 'user',
+					"content": sanitizedQuestion,
 				},
-			],
+			] as unknown as Message[],
 		});
 
-		if (completion.data.choices && completion.data.choices.length > 0) {
+		if (completion.choices && completion.choices.length > 0) {
 			console.log('completion', completion);
-			const answer = completion.data.choices[0].message?.content!;
+			const answer = completion.choices[0].message?.content!;
 			console.log('answer', answer);
 			res.status(200).json({ answer });
 		} else {

@@ -1,6 +1,6 @@
-import { OpenAI } from 'langchain/llms';
+import { OpenAI } from '@langchain/openai';
 import { ConversationalRetrievalQAChain } from 'langchain/chains';
-import { PineconeStore } from 'langchain/vectorstores';
+import { PineconeStore } from '@langchain/pinecone';
 import { PromptTemplate } from 'langchain/prompts';
 import { CallbackManager } from 'langchain/callbacks';
 import {

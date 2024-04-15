@@ -187,7 +187,7 @@ export default function ChatDoc({ systemMessage }: InputProps) {
 									<div key={index} className={className}>
 										{icon}
 										<div className={styles.markdownanswer}>
-											<ReactMarkdown linkTarget="_blank">
+											<ReactMarkdown >
 												{message.message}
 											</ReactMarkdown>
 										</div>

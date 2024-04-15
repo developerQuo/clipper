@@ -8,7 +8,7 @@ import {
 	AccordionTrigger,
 } from '@/components/ui/accordion';
 import { SelectedGeneratedContent } from '@/store/generated-content';
-import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
+import  ReactMarkdown  from 'react-markdown';
 import moment from 'moment';
 import Link from 'next/link';
 import Loading from '../Loading';
@@ -83,7 +83,7 @@ export default function GeneratedContent() {
 									</div>
 								</AccordionTrigger>
 								<AccordionContent>
-									<ReactMarkdown linkTarget="_blank">
+									<ReactMarkdown>
 										{doc?.content?.slice(0, 300).replaceAll('\n', ' ') ?? ''}
 									</ReactMarkdown>
 									<Link href={`/generate/${doc?.id}`} legacyBehavior>

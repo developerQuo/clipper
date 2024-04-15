@@ -35,6 +35,7 @@ export default function Clip({ content }: InputProps) {
 		}
 	}, [file_path]);
 	const source = useMemo(() => `${media}/${title}`, [media, title]);
+	console.log(id)
 	return (
 		<div className="flex h-full">
 			<div className="flex flex-col justify-between px-8 py-12">

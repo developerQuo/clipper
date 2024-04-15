@@ -195,7 +195,7 @@ export default function ChatDoc({ content }: InputProps) {
 					className="h-full w-full overflow-y-auto rounded-lg"
 				>
 					<div className={styles.markdownanswer}>
-						<ReactMarkdown linkTarget="_blank">{content}</ReactMarkdown>
+						<ReactMarkdown>{content}</ReactMarkdown>
 					</div>
 					{/* <div className="text-sm">{content}</div> */}
 					{/* {chatMessages.map((message, index) => {
