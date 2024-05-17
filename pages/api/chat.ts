@@ -18,14 +18,9 @@ export default async function handler(
 		return;
 	}
 
-	const { userId, question, history, contentId, source } = await getReqParams(
-		req,
-		res,
-	);
+	const userId = getUser(req, res);
+	const chat = new Chat(req, res);
 
-	const sanitizedQuestion = question.trim().replaceAll('\n', ' ');
-
-	// TODO: 0.83 이하는 전체 검색.
 	res.writeHead(200, {
 		'Content-Type': 'text/event-stream',
 		'Cache-Control': 'no-cache, no-transform',
@@ -43,18 +38,18 @@ export default async function handler(
 	const { data } = await supabase
 		.from('content')
 		.select('content')
-		.eq('id', contentId)
+		.eq('id', chat.contentId)
 		.single();
 
-	const vectorStore = await createVectorStore(source);
+	const vectorStore = await createVectorStore(chat.source);
 
 	const chain = makeChain(vectorStore, (token: string) => {
 		gptResponse += token;
 		sendData(JSON.stringify({ data: token }));
 	});
 	const chainCall = {
-		question: sanitizedQuestion,
-		chat_history: history || [],
+		question: chat.question,
+		chat_history: chat.history,
 		context: data?.content,
 	};
 	try {
@@ -66,12 +61,12 @@ export default async function handler(
 			.from('chat_history')
 			.upsert({
 				user_id: userId,
-				content_id: contentId,
-				user_history: [...history.map((chat) => chat[0]), sanitizedQuestion],
-				bot_history: [...history.map((chat) => chat[1]), botResponse],
+				content_id: chat.contentId,
+				user_history: [...chat.userHistory, chat.question],
+				bot_history: [...chat.botHistory, botResponse],
 			})
 			.eq('user_id', userId)
-			.eq('content_id', contentId);
+			.eq('content_id', chat.contentId);
 
 		sendData(
 			JSON.stringify({
@@ -94,21 +89,63 @@ export default async function handler(
 	}
 }
 
-async function getReqParams(req: NextApiRequest, res: NextApiResponse) {
+async function getUser(req: NextApiRequest, res: NextApiResponse) {
 	const session = await getServerSession(req, res, authOptions);
 	const userId = session?.user?.id;
 
-	const { question, history, contentId, source } =
-		req.body as unknown as ChatInput & {
-			contentId: string;
-			source: string;
-		};
-
-	if (!userId || !question || !contentId || !source) {
-		res.status(400).json({ message: 'No question in the request' });
+	if (!userId) {
+		res.status(400).json({ message: 'No user id' });
 	}
 
-	return { userId, question, history, contentId, source };
+	return userId;
+}
+
+class Chat {
+	private _question: string;
+	private _history: [string, string][];
+	private _contentId: string;
+	private _source: string;
+
+	constructor(req: NextApiRequest, res: NextApiResponse) {
+		const { question, history, contentId, source } =
+			req.body as unknown as ChatInput & {
+				contentId: string;
+				source: string;
+			};
+
+		if (!question || !contentId || !source) {
+			res.status(400).json({ message: 'No parameters in the request' });
+		}
+
+		this._question = question;
+		this._history = history || [];
+		this._contentId = contentId;
+		this._source = source;
+	}
+
+	get question() {
+		return this._question.trim().replaceAll('\n', ' ');
+	}
+
+	get history() {
+		return this._history;
+	}
+
+	get userHistory() {
+		return this._history.map((chat) => chat[0]);
+	}
+
+	get botHistory() {
+		return this._history.map((chat) => chat[1]);
+	}
+
+	get contentId() {
+		return this._contentId;
+	}
+
+	get source() {
+		return this._source;
+	}
 }
 
 async function createVectorStore(source: string) {
