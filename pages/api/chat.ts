@@ -20,6 +20,8 @@ export default async function handler(
 	req: NextApiRequest,
 	res: NextApiResponse,
 ) {
+	// 인자 체크 ------------------------------------------------
+	// TODO: 테스트 코드 - 인자 체크
 	if (req.method !== 'POST') {
 		return;
 	}
@@ -37,6 +39,9 @@ export default async function handler(
 	if (!userId || !question || !contentId || !source) {
 		return res.status(400).json({ message: 'No question in the request' });
 	}
+	// ------------------------------------------------
+
+	// 질문 생성 ------------------------------------------------
 	// OpenAI recommends replacing newlines with spaces for best results
 	const sanitizedQuestion = question.trim().replaceAll('\n', ' ');
 
@@ -56,6 +61,9 @@ export default async function handler(
 			]) || [],
 	});
 	console.log('standaloneQuestion', standaloneQuestion);
+	// ------------------------------------------------
+
+	// 벡터스토어 초기화 ------------------------------------------------
 	const index = pinecone.Index(PINECONE_INDEX_NAME);
 
 	// /* create vectorstore*/
@@ -68,7 +76,10 @@ export default async function handler(
 			filter: { source: { $eq: source } },
 		},
 	);
+	// ------------------------------------------------
 
+	// sse 세팅 ------------------------------------------------
+	// TODO: 테스트 코드 - 스트리밍 답변 가는지
 	// TODO: 0.83 이하는 전체 검색.
 	res.writeHead(200, {
 		'Content-Type': 'text/event-stream',
@@ -82,13 +93,18 @@ export default async function handler(
 	};
 
 	sendData(JSON.stringify({ data: '' }));
+	// ------------------------------------------------
 
+	// 벡터스토어에서 질문 내용 검색 ------------------------------------------------
 	console.log('sanitizedQuestion: ', sanitizedQuestion);
 	const search = await vectorStore.similaritySearchWithScore(
-		sanitizedQuestion,
+		sanitizedQuestion, // TODO: sanitizedQuestion => standaloneQuestion
 		1,
 	);
 	console.log('search', search);
+	// ------------------------------------------------
+
+	// 체인 생성 ------------------------------------------------
 	//create chain
 	const chain = makeChain(vectorStore, (token: string) => {
 		gptResponse += token;
@@ -106,6 +122,9 @@ export default async function handler(
 			chat_history: history || [],
 			context: data?.content,
 		};
+		// ------------------------------------------------
+
+		// 답변 받고 마무리하기 ------------------------------------------------
 		let response = await chain.call(chainCall);
 
 		const [userHistory, botHistory] = history.reduce(
@@ -116,53 +135,6 @@ export default async function handler(
 			},
 			[[], []],
 		);
-
-		// const chat = await openai.createChatCompletion({
-		// 	model: 'gpt-3.5-turbo',
-		// 	messages: [
-		// 		{
-		// 			role: ChatCompletionRequestMessageRoleEnum.System,
-		// 			content: `
-		// 	I give you my question and the document.
-		// 	Don't make up hyperlinks.
-		// 	Please reply in language used in the question.
-
-		// 	Question: ${sanitizedQuestion}
-		// 	Document: ${data?.content}
-		// 	`,
-		// 		},
-		// 		...(history.flat().map((chat: string, index) => ({
-		// 			role:
-		// 				index % 2 == 0
-		// 					? ChatCompletionRequestMessageRoleEnum.User
-		// 					: ChatCompletionRequestMessageRoleEnum.Assistant,
-		// 			content: chat,
-		// 		})) || []),
-		// 		{
-		// 			role: ChatCompletionRequestMessageRoleEnum.User,
-		// 			content: sanitizedQuestion,
-		// 		},
-		// 	],
-		// });
-		// const response = chat.data.choices[0].message?.content;
-		// console.log((response as any)?.data?.error);
-		// if (response.text.includes('no data')) {
-		// 	const vectorStoreAllDocs = await PineconeStore.fromExistingIndex(
-		// 		new OpenAIEmbeddings({}),
-		// 		{
-		// 			pineconeIndex: index,
-		// 			textKey: 'text',
-		// 			namespace: PINECONE_NAME_SPACE,
-		// 		},
-		// 	);
-		// 	const chainAllDocs = makeChain(vectorStoreAllDocs, (token: string) => {
-		// 		sendData(JSON.stringify({ data: token }));
-		// 	});
-		// 	sendData(JSON.stringify({ data: '\n\n' }));
-		// 	response = await chainAllDocs.call(chainCall);
-		// }
-
-		// sendData(JSON.stringify({ sourceDocs: response.sourceDocuments }));
 
 		const botResponse = gptResponse || response.text;
 		await supabase
@@ -192,7 +164,9 @@ export default async function handler(
 	} catch (error) {
 		console.log('error', error);
 	} finally {
+		// TODO: 테스트 코드 - 스트리밍 마무리 잘 되는지
 		sendData('[DONE]');
 		res.end();
 	}
+	// ------------------------------------------------
 }
