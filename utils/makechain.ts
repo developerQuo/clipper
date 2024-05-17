@@ -1,16 +1,8 @@
 import { OpenAI } from '@langchain/openai';
 import { ConversationalRetrievalQAChain } from 'langchain/chains';
 import { PineconeStore } from '@langchain/pinecone';
-import { PromptTemplate } from 'langchain/prompts';
 import { CallbackManager } from 'langchain/callbacks';
-import {
-	CONDENSE_PROMPT as DEFAULT_CONDENSE_PROMPT,
-	QA_PROMPT as DEFAULT_QA_PROMPT,
-} from '@/config/prompt';
-
-const CONDENSE_PROMPT = PromptTemplate.fromTemplate(DEFAULT_CONDENSE_PROMPT);
-
-const QA_PROMPT = PromptTemplate.fromTemplate(DEFAULT_QA_PROMPT);
+import { CONDENSE_PROMPT, QA_PROMPT } from '@/config/prompt';
 
 export const makeChain = (
 	vectorstore: PineconeStore,
@@ -30,7 +22,7 @@ export const makeChain = (
 					async handleLLMError(err: Error) {
 						console.error(err);
 					},
-			  })
+				})
 			: undefined,
 	});
 
@@ -38,8 +30,8 @@ export const makeChain = (
 		model,
 		vectorstore.asRetriever(5),
 		{
-			qaTemplate: DEFAULT_QA_PROMPT,
-			questionGeneratorTemplate: DEFAULT_CONDENSE_PROMPT,
+			qaTemplate: QA_PROMPT,
+			questionGeneratorTemplate: CONDENSE_PROMPT,
 			returnSourceDocuments: true, //The number of source documents returned is 4 by default
 		},
 	);
