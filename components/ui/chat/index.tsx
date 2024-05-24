@@ -20,6 +20,14 @@ type MessageState = {
 	pending?: string;
 };
 
+/**
+ * 리팩토링
+ * 1. 테스트 목록 작성
+ * 2. 단일 관심사 분리
+ * 3. 테스트 코드 작성
+ * 4. 리팩토링
+ */
+
 const defaultMessageState: MessageState = {
 	messages: [
 		{
@@ -47,9 +55,7 @@ export default function ChatDoc({
 	const [query, setQuery] = useState<string>('');
 	const [loading, setLoading] = useState<boolean>(false);
 	const [error, setError] = useState<string | null>(null);
-	const [messageState, setMessageState] =
-		useState<MessageState>(defaultMessageState);
-
+	// ------------------------------------------------------------------------------------- 데이터 로딩
 	const { data: session } = useSession();
 	const { id: userId } = session?.user ?? {};
 
@@ -88,16 +94,9 @@ export default function ChatDoc({
 			fetch();
 		}
 	}, [contentId, userId]);
+	// -------------------------------------------------------------------------------------
 
-	const { messages, history, pending, pendingSourceDocs } = messageState;
-
-	const messageListRef = useRef<HTMLDivElement>(null);
-	const textAreaRef = useRef<HTMLTextAreaElement>(null);
-
-	useEffect(() => {
-		textAreaRef.current?.focus();
-	}, []);
-
+	// ------------------------------------------------------------------------------------- 유저 질문
 	//handle form submission
 	async function handleSubmit(e: any, value?: string) {
 		e.preventDefault();
@@ -194,7 +193,38 @@ export default function ChatDoc({
 			e.preventDefault();
 		}
 	};
+	// -------------------------------------------------------------------------------------
 
+	// ------------------------------------------------------------------------------------- 유저 질문 상태 관리
+	const [messageState, setMessageState] =
+		useState<MessageState>(defaultMessageState);
+
+	const { messages, history, pending, pendingSourceDocs } = messageState;
+
+	const messageListRef = useRef<HTMLDivElement>(null);
+	const textAreaRef = useRef<HTMLTextAreaElement>(null);
+
+	useEffect(() => {
+		textAreaRef.current?.focus();
+	}, []);
+
+	const chatMessages = useMemo(() => {
+		return [
+			...messages,
+			...(pending
+				? [
+						{
+							type: 'apiMessage',
+							message: pending,
+							sourceDocs: pendingSourceDocs,
+						},
+					]
+				: []),
+		];
+	}, [messages, pending, pendingSourceDocs]);
+	// -------------------------------------------------------------------------------------
+
+	// ------------------------------------------------------------------------------------- 채팅 기록 초기화
 	// 채팅 기록 초기화
 	const resetChatHistory = async () => {
 		const { error } = await supabase
@@ -207,22 +237,9 @@ export default function ChatDoc({
 			setMessageState(defaultMessageState);
 		}
 	};
+	// -------------------------------------------------------------------------------------
 
-	const chatMessages = useMemo(() => {
-		return [
-			...messages,
-			...(pending
-				? [
-						{
-							type: 'apiMessage',
-							message: pending,
-							sourceDocs: pendingSourceDocs,
-						},
-				  ]
-				: []),
-		];
-	}, [messages, pending, pendingSourceDocs]);
-
+	// ------------------------------------------------------------------------------------- 스크롤 위치 조정
 	useEffect(() => {
 		if (messageListRef.current) {
 			//scroll to bottom
@@ -232,8 +249,9 @@ export default function ChatDoc({
 			messageListRef.current!.scrollTop = maxScrollTop > 0 ? maxScrollTop : 0;
 		}
 	}, [chatMessages]);
+	// -------------------------------------------------------------------------------------
 
-	// console.log('render', chatMessages); 
+	// console.log('render', chatMessages);
 	return (
 		<main className="flex h-full w-full flex-col items-center justify-between bg-white px-20">
 			<div className="flex h-[75vh] w-full items-center justify-center rounded-lg">
@@ -279,9 +297,7 @@ export default function ChatDoc({
 								>
 									<div className="chat-bubble max-w-7xl">
 										<div className={styles.markdownanswer}>
-											<ReactMarkdown>
-												{message.message}
-											</ReactMarkdown>
+											<ReactMarkdown>{message.message}</ReactMarkdown>
 										</div>
 									</div>
 								</div>
