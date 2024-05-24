@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/accordion';
 import { supabase } from '@/utils/supabase-client';
 import { useSession } from 'next-auth/react';
+import Introduce from './Introduce';
 
 type MessageState = {
 	messages: Message[];
@@ -259,24 +260,7 @@ export default function ChatDoc({
 					ref={messageListRef}
 					className="h-full w-full overflow-y-auto rounded-lg"
 				>
-					<div className="text-sm leading-6">{summary}</div>
-					<div className="mb-8 mt-6 flex flex-col space-y-2 text-sm">
-						<span className="text-base font-extrabold">
-							Check out and click the main topics below:
-						</span>
-						{faq?.map((q, index) => (
-							<button
-								key={`faq-${index}`}
-								className="btn-outline btn-sm btn w-fit rounded-3xl px-4 text-xs font-medium"
-								onClick={(e) => {
-									const val = (e.target as any).textContent;
-									handleSubmit(e, val);
-								}}
-							>
-								{q}
-							</button>
-						))}
-					</div>
+					<Introduce summary={summary} faq={faq} askQuestion={handleSubmit} />
 					{chatMessages.map((message, index) => {
 						let icon;
 						let className;
