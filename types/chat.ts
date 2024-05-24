@@ -12,6 +12,13 @@ export type Message = {
 	sourceDocs?: SourceDocs[];
 };
 
+export type MessageState = {
+	messages: Message[];
+	history: [string, string][];
+	pendingSourceDocs?: SourceDocs[];
+	pending?: string;
+};
+
 export type ChatInput = { question: string; history: [string, string][] };
 
 export type ChatOptionInput = {

@@ -1,6 +1,6 @@
 import { useRef, useState, useEffect, useMemo } from 'react';
 import styles from '@/styles/Home.module.css';
-import { Message, SourceDocs } from '@/types/chat';
+import { Message, MessageState, SourceDocs } from '@/types/chat';
 import { fetchEventSource } from '@microsoft/fetch-event-source';
 import ReactMarkdown from 'react-markdown';
 import LoadingDots from '@/components/ui/LoadingDots';
@@ -13,13 +13,7 @@ import {
 import { supabase } from '@/utils/supabase-client';
 import { useSession } from 'next-auth/react';
 import Introduce from './Introduce';
-
-type MessageState = {
-	messages: Message[];
-	history: [string, string][];
-	pendingSourceDocs?: SourceDocs[];
-	pending?: string;
-};
+import useAskQuestion from './useAskQuestion';
 
 /**
  * 리팩토링
@@ -111,79 +105,13 @@ export default function ChatDoc({
 
 		const question = input.trim();
 
-		setMessageState((state) => ({
-			...state,
-			messages: [
-				...state.messages,
-				{
-					type: 'userMessage',
-					message: question,
-				},
-			],
-			pending: '',
-		}));
-
-		setLoading(true);
-		setQuery('');
-		const ctrl = new AbortController();
-		try {
-			await fetchEventSource('/api/chat', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify({
-					question,
-					history,
-					contentId,
-					source,
-				}),
-				signal: ctrl.signal,
-				onmessage: (event) => {
-					// console.log('event', event.data);
-					if (event.data === '[DONE]') {
-						setMessageState((state) => {
-							// console.log('done', state);
-							return {
-								history: [...state.history, [question, state.pending ?? '']],
-								messages: [
-									...state.messages,
-									{
-										type: 'apiMessage',
-										message: state.pending ?? '',
-										sourceDocs: state.pendingSourceDocs,
-									},
-								],
-								// pending: undefined,
-								pendingSourceDocs: undefined,
-							};
-						});
-						setLoading(false);
-						ctrl.abort();
-					} else {
-						const { data } = JSON.parse(event.data);
-						if (data.metadata) {
-							// console.log('--------------', data.metadata);
-							setMessageState((state) => ({
-								...state,
-								pendingSourceDocs: data.metadata,
-								pending: data.text,
-							}));
-						} else {
-							setMessageState((state) => ({
-								...state,
-								pending: (state.pending ?? '') + data,
-							}));
-						}
-					}
-				},
-			});
-			setLoading(false);
-		} catch (error) {
-			setLoading(false);
-			setError('An error occurred while fetching the data. Please try again.');
-			console.log('error', error);
-		}
+		useAskQuestion({
+			values: { question, history, contentId, source },
+			setMessageState,
+			setLoading,
+			setQuery,
+			setError,
+		});
 	}
 
 	//prevent empty submissions

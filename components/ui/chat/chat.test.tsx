@@ -1,21 +1,13 @@
 import { findByRole, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
-import { http } from 'msw';
-import { setupServer } from 'msw/node';
 import Introduce from './Introduce';
+import useAskQuestion from './useAskQuestion';
+import { fetchEventSource } from '@microsoft/fetch-event-source';
 
-const reqServer = setupServer(
-	http.get('/api/chat', ({ request }) => {
-		expect(request.body).toEqual({
-			question: 'net zero industry act',
-			history: [],
-			contentId: '1',
-			source: 'EU Legislative Process Guide',
-		});
-		return;
-	}),
-);
+jest.mock('@microsoft/fetch-event-source', () => ({
+	fetchEventSource: jest.fn(),
+}));
 
 describe('챗 봇', () => {
 	test('채팅 데이터가 화면에 표시된다.', async () => {
@@ -47,11 +39,34 @@ describe('챗 봇', () => {
 	});
 
 	test('사용자 질문 req', async () => {
-		reqServer.listen();
 		// ACT
-		await useAskQuestion('net zero industry act');
+		await useAskQuestion({
+			values: {
+				question: 'net zero industry act',
+				history: [],
+				contentId: '1',
+				source: 'EU Legislative Process Guide',
+			},
+			setMessageState: jest.fn(),
+			setLoading: jest.fn(),
+			setQuery: jest.fn(),
+			setError: jest.fn(),
+		});
 
-		reqServer.close();
+		expect(fetchEventSource).toHaveBeenCalledWith('/api/chat', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({
+				question: 'net zero industry act',
+				history: [],
+				contentId: '1',
+				source: 'EU Legislative Process Guide',
+			}),
+			signal: expect.any(AbortSignal),
+			onmessage: expect.any(Function),
+		});
 	});
 
 	test('텍스트 스트림', async () => {
