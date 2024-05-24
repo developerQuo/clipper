@@ -1,7 +1,21 @@
 import { findByRole, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
+import { http } from 'msw';
+import { setupServer } from 'msw/node';
 import Introduce from './Introduce';
+
+const reqServer = setupServer(
+	http.get('/api/chat', ({ request }) => {
+		expect(request.body).toEqual({
+			question: 'net zero industry act',
+			history: [],
+			contentId: '1',
+			source: 'EU Legislative Process Guide',
+		});
+		return;
+	}),
+);
 
 describe('챗 봇', () => {
 	test('채팅 데이터가 화면에 표시된다.', async () => {
@@ -33,9 +47,11 @@ describe('챗 봇', () => {
 	});
 
 	test('사용자 질문 req', async () => {
-		// ARRANGE
+		reqServer.listen();
 		// ACT
-		// ASSERT
+		await useAskQuestion('net zero industry act');
+
+		reqServer.close();
 	});
 
 	test('텍스트 스트림', async () => {
